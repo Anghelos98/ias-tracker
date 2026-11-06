@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -12,6 +12,8 @@ import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
 import MyReports from './src/components/MyReports';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
+import { checkForUpdates, dataDate, loadStoredManifest, readSpeciesPoints, withRemoteStats } from './src/data/remote';
+import { SPECIES } from './src/data/species';
 import {
   ITALY_REGION,
   bboxToRegion,
@@ -84,6 +86,23 @@ function IASTracker() {
     clustersRef.current = clusters;
   }, [clusters]);
 
+  // Dati aggiornati: prima quelli già scaricati, poi (al massimo ogni 12 ore) controllo online.
+  const [manifest, setManifest] = useState(null);
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const stored = await loadStoredManifest();
+      if (active && stored) setManifest(stored);
+      const { manifest: latest } = await checkForUpdates();
+      if (active && latest) setManifest(latest);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+  const speciesList = useMemo(() => SPECIES.map((s) => withRemoteStats(s, manifest)), [manifest]);
+  const loadRequest = useRef(0);
+
   // Permesso di geolocalizzazione: abilita il pallino blu della posizione dell'utente.
   useEffect(() => {
     Location.requestForegroundPermissionsAsync()
@@ -91,23 +110,29 @@ function IASTracker() {
       .catch(() => setHasLocation(false));
   }, []);
 
-  const selectSpecies = useCallback((item) => {
-    setPanelOpen(false);
-    setSelection(null);
-    setSpecies(item);
-    if (!item.load) {
-      setData(null);
-      return;
-    }
-    setLoading(true);
-    // Caricamento dinamico: il JSON della specie viene valutato solo ora.
-    // setTimeout lascia a React il tempo di mostrare l'indicatore di caricamento.
-    setTimeout(() => {
-      setData(item.load());
-      setLoading(false);
-      if (item.bbox) mapRef.current?.animateToRegion(bboxToRegion(item.bbox), 600);
-    }, 0);
-  }, []);
+  const selectSpecies = useCallback(
+    (item) => {
+      setPanelOpen(false);
+      setSelection(null);
+      setSpecies(item);
+      const request = ++loadRequest.current;
+      if (!item.total) {
+        setData(null);
+        return;
+      }
+      setLoading(true);
+      // Caricamento dinamico: dati scaricati (se più recenti) o inclusi nell'app.
+      readSpeciesPoints(item, manifest)
+        .catch(() => null)
+        .then((points) => {
+          if (request !== loadRequest.current) return; // nel frattempo è stata scelta un'altra specie
+          setData(points);
+          setLoading(false);
+          if (points && item.bbox) mapRef.current?.animateToRegion(bboxToRegion(item.bbox), 600);
+        });
+    },
+    [manifest],
+  );
 
   const centerOnUser = useCallback(async () => {
     if (!hasLocation) {
@@ -362,6 +387,8 @@ function IASTracker() {
       </View>
 
       <SpeciesPanel
+        species={speciesList}
+        dataUpdatedAt={dataDate(manifest)}
         visible={panelOpen}
         selectedSlug={species?.slug}
         onSelect={selectSpecies}
@@ -384,7 +411,12 @@ function IASTracker() {
         </Pressable>
       )}
 
-      <SpeciesSheet species={sheetSpecies} visible={!!sheetSpecies} onClose={() => setSheetSpecies(null)} />
+      <SpeciesSheet
+        species={sheetSpecies}
+        manifest={manifest}
+        visible={!!sheetSpecies}
+        onClose={() => setSheetSpecies(null)}
+      />
       <ReportScreen
         key={reportKey}
         visible={reportOpen}

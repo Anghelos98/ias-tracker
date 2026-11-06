@@ -1,0 +1,65 @@
+# Aggiorna i dati di IAS Tracker e li pubblica su GitHub Pages.
+#
+# Ogni lunedì scarica le segnalazioni da GBIF e le schede da ISPRA, prepara i file per
+# l'app e pubblica il sito https://anghelos98.github.io/ias-tracker/ (manifest in
+# data/v1/manifest.json). L'app scarica da lì solo i file cambiati.
+#
+# I dati non vengono salvati nel repository: ogni esecuzione li rigenera da zero.
+# Si può avviare anche a mano da GitHub: Actions > "Aggiorna dati" > Run workflow.
+
+name: Aggiorna dati
+
+on:
+  schedule:
+    - cron: "0 4 * * 1" # lunedì alle 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa dipendenze
+        run: pip install requests beautifulsoup4
+
+      - name: Scarica le segnalazioni da GBIF
+        run: python sync_ias_data.py --all
+
+      - name: Scarica le schede da ISPRA
+        # Se ISPRA non risponde si tengono le schede già presenti nel repository.
+        run: python scripts/fetch_ispra_sheets.py || echo "::warning::Schede ISPRA non aggiornate"
+
+      - name: Prepara i dati per l'app
+        run: python scripts/build_app_data.py
+
+      - name: Prepara il sito
+        run: python scripts/build_site.py _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

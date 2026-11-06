@@ -43,6 +43,9 @@ ias_reference.json          elenco delle specie di rilevanza unionale
 sync_ias_data.py            scarica le segnalazioni da GBIF in data/ (non versionata)
 scripts/build_app_data.py   converte data/ nei file usati dall'app
 scripts/fetch_ispra_sheets.py  scarica le schede delle specie dal sito ISPRA
+scripts/build_site.py       prepara il sito GitHub Pages con i dati per l'app
+src/data/remote.js          aggiornamento dei dati nell'app (manifest, download, cache)
+.github/workflows/          aggiornamento settimanale automatico
 ```
 
 ## Avviare l'app
@@ -74,6 +77,17 @@ python3 -m venv .venv
 .venv/bin/python scripts/fetch_ispra_sheets.py   # scarica/aggiorna le schede ISPRA
 .venv/bin/python scripts/build_app_data.py       # rigenera assets/data e src/data/species.js
 ```
+
+## Aggiornamento automatico dei dati
+
+Ogni lunedì il workflow [`Aggiorna dati`](.github/workflows/update-data.yml) di GitHub Actions
+scarica le segnalazioni da GBIF e le schede da ISPRA, e pubblica i file su GitHub Pages:
+<https://anghelos98.github.io/ias-tracker/> (indice in `data/v1/manifest.json`).
+
+L'app controlla il manifest al massimo ogni 12 ore, scarica solo i file cambiati e li salva sul
+telefono: i dati si aggiornano senza pubblicare una nuova versione. Senza rete usa i dati già
+scaricati o quelli inclusi nell'app. Il workflow si può avviare anche a mano da GitHub
+(Actions → Aggiorna dati → Run workflow).
 
 ## Dati e licenze
 

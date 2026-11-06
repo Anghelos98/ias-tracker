@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,6 +12,7 @@ import {
   WHAT_TO_DO,
   formatDateIt,
 } from '../data/legal';
+import { readSpeciesSheet } from '../data/remote';
 
 const PRESENCE_COLORS = {
   diffusa: '#c62828',
@@ -29,10 +30,23 @@ function openUrl(url) {
 }
 
 /** Scheda completa di una specie: riconoscimento, legge, cosa fare, schede ISPRA. */
-export default function SpeciesSheet({ species, visible, onClose }) {
+export default function SpeciesSheet({ species, manifest, visible, onClose }) {
   const insets = useSafeAreaInsets();
-  // La scheda ISPRA viene caricata solo quando si apre la schermata.
-  const sheet = useMemo(() => (visible && species?.sheet ? species.sheet() : null), [visible, species]);
+  // La scheda ISPRA viene caricata solo quando si apre la schermata (scaricata o inclusa nell'app).
+  const [loaded, setLoaded] = useState({ slug: null, sheet: null });
+  useEffect(() => {
+    if (!visible || !species) return undefined;
+    let active = true;
+    readSpeciesSheet(species, manifest)
+      .catch(() => null)
+      .then((s) => {
+        if (active) setLoaded({ slug: species.slug, sheet: s });
+      });
+    return () => {
+      active = false;
+    };
+  }, [visible, species, manifest]);
+  const sheet = loaded.slug === species?.slug ? loaded.sheet : null;
 
   if (!species) return null;
   const { listing } = species;

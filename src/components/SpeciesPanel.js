@@ -2,27 +2,30 @@ import { useMemo, useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { SPECIES } from '../data/species';
 
 /** Pannello a scomparsa dal basso con l'elenco ricercabile delle 49 specie. */
-export default function SpeciesPanel({ visible, selectedSlug, onSelect, onInfo, onClose }) {
+export default function SpeciesPanel({ species, dataUpdatedAt, visible, selectedSlug, onSelect, onInfo, onClose }) {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return SPECIES;
-    return SPECIES.filter(
+    if (!q) return species;
+    return species.filter(
       (s) => s.commonName.toLowerCase().includes(q) || s.scientificName.toLowerCase().includes(q),
     );
-  }, [query]);
+  }, [query, species]);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Chiudi elenco" />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 8 }]}>
         <View style={styles.handle} />
-        <Text style={styles.title}>Specie di rilevanza unionale ({SPECIES.length})</Text>
+        <Text style={styles.title}>Specie di rilevanza unionale ({species.length})</Text>
+        <Text style={styles.updated}>
+          Dati GBIF aggiornati al{' '}
+          {new Date(dataUpdatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </Text>
         <TextInput
           style={styles.search}
           placeholder="Cerca per nome comune o scientifico"
@@ -80,7 +83,8 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: '#ccc', marginBottom: 12 },
-  title: { fontSize: 17, fontWeight: '600', marginBottom: 10 },
+  title: { fontSize: 17, fontWeight: '600' },
+  updated: { fontSize: 12, color: '#777', marginTop: 2, marginBottom: 10 },
   search: {
     backgroundColor: '#f1f3f4',
     borderRadius: 10,
