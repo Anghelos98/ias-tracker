@@ -62,9 +62,13 @@ Poi apri il progetto da Expo Go (QR code o URL `exp://<IP del computer>:8081`).
 Controlli del codice:
 
 ```bash
-npm run lint
-npx expo-doctor
+npm run lint                       # stile e possibili errori
+npm test                           # test dell'app (Jest)
+.venv/bin/python -m pytest tests   # test degli script dati
+npx expo-doctor                    # configurazione Expo
 ```
+
+Gli stessi controlli girano su GitHub a ogni push (workflow [`Controlli`](.github/workflows/ci.yml)).
 
 ## Aggiornare i dati
 

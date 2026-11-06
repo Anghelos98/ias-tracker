@@ -39,10 +39,29 @@ export function bboxToRegion([west, south, east, north], padding = 1.3) {
 const toMercator = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
 const fromMercator = (y) => (Math.atan(Math.exp(y)) * 360) / Math.PI - 90;
 
+/**
+ * Bordi superiore e inferiore della regione, in coordinate di Mercatore.
+ * La mappa mette il centro della regione al centro dello schermo, quindi i bordi sono
+ * simmetrici in Mercatore (non in gradi) e distano in gradi esattamente latitudeDelta.
+ * Si trova la semi-ampiezza k con merc(top) = c + k, merc(bottom) = c - k per bisezione.
+ */
+function verticalBounds(region) {
+  const c = toMercator(region.latitude);
+  const span = (k) => fromMercator(c + k) - fromMercator(c - k);
+  let lo = 0;
+  let hi = 10;
+  for (let i = 0; i < 60; i += 1) {
+    const mid = (lo + hi) / 2;
+    if (span(mid) < region.latitudeDelta) lo = mid;
+    else hi = mid;
+  }
+  const k = (lo + hi) / 2;
+  return { top: c + k, bottom: c - k };
+}
+
 /** Posizione verticale (in punti dello schermo) di una latitudine dentro la regione visibile. */
 export function latitudeToScreenY(latitude, region, mapHeight) {
-  const top = toMercator(region.latitude + region.latitudeDelta / 2);
-  const bottom = toMercator(region.latitude - region.latitudeDelta / 2);
+  const { top, bottom } = verticalBounds(region);
   return ((top - toMercator(latitude)) / (top - bottom)) * mapHeight;
 }
 
@@ -51,8 +70,7 @@ export function latitudeToScreenY(latitude, region, mapHeight) {
  * `shiftY` punti (positivo = il contenuto sale sullo schermo). Lo zoom non cambia.
  */
 export function shiftCenterLatitude(region, mapHeight, shiftY) {
-  const top = toMercator(region.latitude + region.latitudeDelta / 2);
-  const bottom = toMercator(region.latitude - region.latitudeDelta / 2);
+  const { top, bottom } = verticalBounds(region);
   const mercatorPerPoint = (top - bottom) / mapHeight;
   return fromMercator(toMercator(region.latitude) - shiftY * mercatorPerPoint);
 }
@@ -61,4 +79,33 @@ export function shiftCenterLatitude(region, mapHeight, shiftY) {
 export function longitudeToScreenX(longitude, region, mapWidth) {
   const west = region.longitude - region.longitudeDelta / 2;
   return ((longitude - west) / region.longitudeDelta) * mapWidth;
+}
+
+/**
+ * Elemento della mappa (cluster o punto) toccato: il più vicino al punto toccato tra quelli
+ * entro il proprio raggio di tocco. Restituisce null se nessuno è abbastanza vicino.
+ *
+ * @param {object[]} features   cluster e punti visibili (GeoJSON)
+ * @param {{latitude: number, longitude: number}} tap   coordinate del tocco
+ * @param {object} region       regione visibile della mappa
+ * @param {{width: number, height: number}} size   dimensioni della mappa in punti
+ * @param {(feature: object) => number} hitRadius  raggio di tocco in punti per ogni elemento
+ */
+export function findTappedFeature(features, tap, region, { width, height }, hitRadius) {
+  const tapX = longitudeToScreenX(tap.longitude, region, width);
+  const tapY = latitudeToScreenY(tap.latitude, region, height);
+  let best = null;
+  let bestDistance = Infinity;
+  for (const f of features) {
+    const [lon, lat] = f.geometry.coordinates;
+    const distance = Math.hypot(
+      longitudeToScreenX(lon, region, width) - tapX,
+      latitudeToScreenY(lat, region, height) - tapY,
+    );
+    if (distance <= hitRadius(f) && distance < bestDistance) {
+      best = f;
+      bestDistance = distance;
+    }
+  }
+  return best;
 }

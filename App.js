@@ -14,13 +14,7 @@ import MyReports from './src/components/MyReports';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import { checkForUpdates, dataDate, loadStoredManifest, readSpeciesPoints, withRemoteStats } from './src/data/remote';
 import { SPECIES } from './src/data/species';
-import {
-  ITALY_REGION,
-  bboxToRegion,
-  latitudeToScreenY,
-  longitudeToScreenX,
-  shiftCenterLatitude,
-} from './src/utils/geo';
+import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
 
 // Colore di fondo mostrato mentre le tile della mappa si caricano: un tono vicino a
 // quello della mappa evita il "flash" bianco durante lo zoom.
@@ -199,24 +193,9 @@ function IASTracker() {
         clearSelection();
         return;
       }
-      const tapX = longitudeToScreenX(coordinate.longitude, region, width);
-      const tapY = latitudeToScreenY(coordinate.latitude, region, height);
-
-      let best = null;
-      let bestDistance = Infinity;
-      for (const f of clustersRef.current) {
-        const [lon, lat] = f.geometry.coordinates;
-        const dx = longitudeToScreenX(lon, region, width) - tapX;
-        const dy = latitudeToScreenY(lat, region, height) - tapY;
-        const distance = Math.hypot(dx, dy);
-        const radius = f.properties.cluster
-          ? clusterSize(f.properties.records) / 2 + CLUSTER_HIT_SLOP
-          : DOT_HIT_RADIUS;
-        if (distance <= radius && distance < bestDistance) {
-          best = f;
-          bestDistance = distance;
-        }
-      }
+      const best = findTappedFeature(clustersRef.current, coordinate, region, { width, height }, (f) =>
+        f.properties.cluster ? clusterSize(f.properties.records) / 2 + CLUSTER_HIT_SLOP : DOT_HIT_RADIUS,
+      );
 
       if (!best) clearSelection();
       else if (best.properties.cluster) pressCluster(best);

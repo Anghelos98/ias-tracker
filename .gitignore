@@ -51,3 +51,7 @@ timeout_screenshot.png
 
 # Dati scaricati da GBIF (rigenerabili con sync_ias_data.py; l'app usa assets/data/)
 /data/
+
+# Test
+.pytest_cache/
+coverage/

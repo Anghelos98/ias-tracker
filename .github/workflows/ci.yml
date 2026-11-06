@@ -1,0 +1,37 @@
+# Controlli automatici a ogni push e pull request: lint e test dell'app (JavaScript)
+# e test degli script della pipeline dati (Python).
+
+name: Controlli
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: App (lint e test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test -- --ci
+
+  scripts:
+    name: Script dati (test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests beautifulsoup4 pytest
+      - run: python -m pytest -q tests

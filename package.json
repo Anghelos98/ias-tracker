@@ -21,13 +21,27 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "private": true,
   "devDependencies": {
+    "@testing-library/react-native": "^14.1.0",
     "eslint": "^9.0.0",
-    "eslint-config-expo": "~58.0.4"
+    "eslint-config-expo": "~58.0.4",
+    "jest": "~30.5.2",
+    "jest-expo": "~58.0.14"
   },
   "license": "MIT",
-  "description": "IAS Tracker: mappa delle segnalazioni in Italia delle piante esotiche invasive di rilevanza unionale"
+  "description": "IAS Tracker: mappa delle segnalazioni in Italia delle piante esotiche invasive di rilevanza unionale",
+  "jest": {
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/.venv/"
+    ]
+  }
 }

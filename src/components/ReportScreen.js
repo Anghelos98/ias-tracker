@@ -17,7 +17,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { REPORT_EMAIL } from '../data/legal';
 import { SPECIES } from '../data/species';
-import { gpsFromExif, sendByEmail, shareReport } from '../reports/send';
+import { gpsFromExif } from '../reports/format';
+import { sendByEmail, shareReport } from '../reports/send';
 import { addReport, newReportId, persistPhotos } from '../reports/storage';
 
 const MAX_PHOTOS = 3;
