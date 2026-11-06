@@ -6,6 +6,19 @@ import { DEFAULT_FILTERS } from './points';
 
 const FILTERS_KEY = 'ias-tracker/filters/v1';
 const WELCOME_KEY = 'ias-tracker/welcome-seen/v1';
+const GRID_KEY = 'ias-tracker/show-grid/v1';
+
+export async function loadShowGrid() {
+  try {
+    return (await AsyncStorage.getItem(GRID_KEY)) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function saveShowGrid(show) {
+  return AsyncStorage.setItem(GRID_KEY, show ? '1' : '0').catch(() => {});
+}
 
 export async function loadFilters() {
   try {

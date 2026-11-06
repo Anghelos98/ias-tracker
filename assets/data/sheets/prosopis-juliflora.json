@@ -83,6 +83,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Prosopois_juliflora-Prosopis_a_fioritura_estiva.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Prosopis_juliflora_RA.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Prosopis juliflora",
  "nome_comune_ispra": "Prosopis a fioritura estiva",
  "presenza_italia": "Assente in naturasolo coltivata",

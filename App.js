@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,11 +16,25 @@ import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
 import MyReports from './src/components/MyReports';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
-import { checkForUpdates, dataDate, loadStoredManifest, readSpeciesPoints, withRemoteStats } from './src/data/remote';
+import {
+  checkForUpdates,
+  dataDate,
+  loadStoredManifest,
+  readSpeciesGrid,
+  readSpeciesPoints,
+  withRemoteStats,
+} from './src/data/remote';
 import { SPECIES } from './src/data/species';
 import { loadAllDatasets } from './src/data/allSpecies';
 import { DEFAULT_FILTERS, activeFilterCount } from './src/data/points';
-import { hasSeenWelcome, loadFilters, markWelcomeSeen, saveFilters } from './src/data/preferences';
+import {
+  hasSeenWelcome,
+  loadFilters,
+  loadShowGrid,
+  markWelcomeSeen,
+  saveFilters,
+  saveShowGrid,
+} from './src/data/preferences';
 import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
 
 // Colore di fondo mostrato mentre le tile della mappa si caricano: un tono vicino a
@@ -72,6 +86,9 @@ function IASTracker() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [nearbyOpen, setNearbyOpen] = useState(false);
+  // Griglia ufficiale ISPRA 10×10 km della specie mostrata (livello attivabile dai Filtri)
+  const [showGrid, setShowGrid] = useState(false);
+  const [grid, setGrid] = useState({ slug: null, data: null });
   // { key, coordinate, points: [proprietà delle segnalazioni], pointId? } oppure null
   const [selection, setSelection] = useState(null);
 
@@ -344,6 +361,41 @@ function IASTracker() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    loadShowGrid().then((show) => {
+      if (active) setShowGrid(show);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const toggleGrid = useCallback((show) => {
+    setShowGrid(show);
+    saveShowGrid(show);
+  }, []);
+
+  // Carica la griglia della specie mostrata solo quando il livello è attivo.
+  useEffect(() => {
+    if (!showGrid || !species || species.all || grid.slug === species.slug) return undefined;
+    let active = true;
+    readSpeciesGrid(species, manifest)
+      .catch(() => null)
+      .then((data) => {
+        if (active) setGrid({ slug: species.slug, data });
+      });
+    return () => {
+      active = false;
+    };
+  }, [showGrid, species, manifest, grid.slug]);
+  const gridPolygons = showGrid && species && grid.slug === species.slug ? (grid.data?.poligoni ?? []) : [];
+  let gridNote = '';
+  if (!species) gridNote = 'Scegli una specie.';
+  else if (species.all) gridNote = 'Disponibile per una specie alla volta.';
+  else if (grid.slug === species.slug && grid.data) gridNote = `${grid.data.celle} celle per questa specie.`;
+  else if (!species.grid) gridNote = 'ISPRA non pubblica la griglia per questa specie.';
+
   const changeFilters = useCallback((next) => {
     setSelection(null);
     setFilters(next);
@@ -389,6 +441,17 @@ function IASTracker() {
             />
           );
         })}
+        {gridPolygons.map((poly, i) => (
+          <Polygon
+            key={`g-${grid.slug}-${i}`}
+            coordinates={poly.esterno.map(([longitude, latitude]) => ({ latitude, longitude }))}
+            holes={poly.buchi.map((h) => h.map(([longitude, latitude]) => ({ latitude, longitude })))}
+            fillColor="rgba(21,101,192,0.18)"
+            strokeColor="rgba(21,101,192,0.7)"
+            strokeWidth={1}
+            tappable={false}
+          />
+        ))}
         {reportPin && (
           <Marker
             coordinate={{ latitude: reportPin.latitude, longitude: reportPin.longitude }}
@@ -483,6 +546,9 @@ function IASTracker() {
         visible={filtersOpen}
         filters={filters}
         onChange={changeFilters}
+        showGrid={showGrid}
+        onToggleGrid={toggleGrid}
+        gridNote={gridNote}
         onClose={() => setFiltersOpen(false)}
         extra={
           <ExportSection

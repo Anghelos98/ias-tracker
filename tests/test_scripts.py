@@ -8,6 +8,7 @@ import build_app_data
 import build_lookalikes
 import build_site
 import fetch_easin as easin
+import fetch_ispra_grids as grids
 import fetch_ispra_sheets as ispra
 import fetch_species_photos as photos
 import sync_ias_data as sync
@@ -255,3 +256,45 @@ def test_easin_riepilogo():
                                      "Rilascio intenzionale in natura"]
     assert s["impatti"] == [{"settore": "Agricoltura", "livello": "alto"}, {"settore": "Suolo", "livello": "medio"}]
     assert s["url"].endswith("/R1")
+
+
+# --------------------------------------------------------------------------- griglia ISPRA
+
+def _shapefile_zip(cells):
+    """Zip di uno shapefile con celle 10x10 km (EPSG:3035) e il campo Species."""
+    import io
+    import zipfile
+
+    import shapefile as pyshp
+
+    shp, shx, dbf = io.BytesIO(), io.BytesIO(), io.BytesIO()
+    w = pyshp.Writer(shp=shp, shx=shx, dbf=dbf, shapeType=pyshp.POLYGON)
+    w.field("CELLCODE", "C")
+    w.field("Species", "C")
+    for code, x, y, species in cells:
+        w.poly([[(x, y), (x, y + 10000), (x + 10000, y + 10000), (x + 10000, y), (x, y)]])
+        w.record(code, species)
+    w.close()
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w") as z:
+        z.writestr("g.shp", shp.getvalue())
+        z.writestr("g.shx", shx.getvalue())
+        z.writestr("g.dbf", dbf.getvalue())
+    return out.getvalue()
+
+
+def test_griglia_solo_celle_con_la_specie_unite_e_convertite():
+    data = _shapefile_zip([
+        ("10kmE452N205", 4520000, 2050000, "Planta probatoria"),
+        ("10kmE453N205", 4530000, 2050000, "Planta probatoria"),  # adiacente alla prima
+        ("10kmE460N210", 4600000, 2100000, ""),                   # cella senza la specie
+    ])
+    cells, codes = grids.read_cells(data)
+    assert codes == {"10kmE452N205", "10kmE453N205"}
+    polygons = grids.to_polygons(cells)
+    assert len(polygons) == 1 and polygons[0]["buchi"] == []
+    lons = [p[0] for p in polygons[0]["esterno"]]
+    lats = [p[1] for p in polygons[0]["esterno"]]
+    # la griglia LAEA attorno a E4520 N2050 km cade in Italia centrale
+    assert 11 < min(lons) < max(lons) < 14 and 41 < min(lats) < max(lats) < 43
+    assert grids.to_polygons([]) == []

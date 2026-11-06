@@ -52,6 +52,15 @@ A novembre 2026 sette schede ISPRA sono incomplete (per queste l'app mostra comu
 *Hakea sericea* e *Nanozostera japonica* (solo pagina segnaposto) e *Gunnera tinctoria*,
 *Microstegium vimineum*, *Myriophyllum heterophyllum* (solo descrizione; scheda completa in PDF).
 
+## Griglia ufficiale ISPRA (10×10 km)
+
+Il livello "Griglia ufficiale ISPRA" mostra le celle 10×10 km della griglia europea
+(ETRS89-LAEA, EPSG:3035) in cui ISPRA registra la specie, dalla rendicontazione UE di
+giugno 2025 (art. 24 Reg. UE 1143/2014). `scripts/fetch_ispra_grids.py` scarica gli shapefile
+pubblicati da ISPRA (CC BY 4.0), tiene solo le celle con la specie, le unisce in aree e le
+converte in coordinate geografiche (`assets/data/grid/`). ISPRA pubblica la griglia per 22
+specie: non per quelle assenti in Italia né per le specie aggiunte all'elenco nel 2025.
+
 ## Specie simili
 
 La sezione "Con cosa si può confondere" riporta **citazioni letterali** dalle schede ISPRA

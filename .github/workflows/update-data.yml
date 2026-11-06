@@ -36,7 +36,7 @@ jobs:
           python-version: "3.12"
 
       - name: Installa dipendenze
-        run: pip install requests beautifulsoup4
+        run: pip install requests beautifulsoup4 pyshp pyproj shapely
 
       - name: Scarica le segnalazioni da GBIF
         run: python sync_ias_data.py --all
@@ -44,6 +44,10 @@ jobs:
       - name: Scarica le schede da ISPRA
         # Se ISPRA non risponde si tengono le schede già presenti nel repository.
         run: python scripts/fetch_ispra_sheets.py || echo "::warning::Schede ISPRA non aggiornate"
+
+      - name: Scarica la griglia ISPRA 10×10 km
+        # Se ISPRA non risponde si tengono le griglie già presenti nel repository.
+        run: python scripts/fetch_ispra_grids.py || echo "::warning::Griglie ISPRA non aggiornate"
 
       - name: Aggiorna le specie simili (citazioni ISPRA)
         # Se una frase ISPRA è cambiata la voce viene omessa e compare un avviso.

@@ -78,6 +78,7 @@
  "pdf_scheda": null,
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Koenigia_polystachya.pdf",
  "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Koenigia_polystachya_2025.jpg",
+ "shapefile_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/shapefile/Koenigia_polystachya.zip",
  "nome_scientifico": "Koenigia polystachya",
  "nome_comune_ispra": "Poligono dell'Himalaya",
  "presenza_italia": "Localizzata",

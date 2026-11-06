@@ -83,6 +83,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Salvinia_molesta-Erba_pesce_gigante.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Salvinia_molesta.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Salvinia molesta",
  "nome_comune_ispra": "Erba pesce gigante",
  "presenza_italia": "Assente",

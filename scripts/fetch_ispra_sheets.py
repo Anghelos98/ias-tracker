@@ -186,6 +186,7 @@ def parse_sheet(soup: BeautifulSoup) -> dict:
     sheet["pdf_scheda"] = first_link("/images/schede-specie/")
     sheet["pdf_valutazione_rischio"] = first_link("/images/schede-risk-assessment/")
     sheet["mappa_distribuzione"] = first_link("/images/distribuzione-specie/immagini/")
+    sheet["shapefile_distribuzione"] = first_link("/images/distribuzione-specie/shapefile/")
     return sheet
 
 

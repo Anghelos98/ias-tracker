@@ -84,6 +84,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Humulus_scandens-Luppolo_del_Giappone.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Humulus_scandens.pdf",
  "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Humulus_japonicus_2025.jpg",
+ "shapefile_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/shapefile/Humulus_japonicus.zip",
  "nome_scientifico": "Humulus scandens",
  "nome_comune_ispra": "Luppolo del Giappone",
  "presenza_italia": "Diffusa",

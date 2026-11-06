@@ -78,6 +78,7 @@
  "pdf_scheda": null,
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Reynoutria_sachalinensis.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Reynoutria sachalinensis",
  "nome_comune_ispra": "Poligono di Sachalin",
  "presenza_italia": "Diffusa",

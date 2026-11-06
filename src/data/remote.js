@@ -19,7 +19,7 @@ const TIMEOUT_MS = 15000;
 const GLOBAL_FILES = ['foto', 'simili', 'europa']; // file del manifest comuni a tutte le specie
 
 function cacheFile(relPath) {
-  // relPath: "species/<slug>.json", "sheets/<slug>.json" o "root/photos.json"
+  // relPath: "species/<slug>.json", "sheets/<slug>.json", "grid/<slug>.json" o "root/<file>.json"
   const [folder, name] = relPath.split('/');
   const dir = new Directory(Paths.document, 'data-v1', folder);
   if (!dir.exists) dir.create({ intermediates: true, idempotent: true });
@@ -97,7 +97,7 @@ export async function checkForUpdates({ force = false } = {}) {
     for (const [slug, entry] of Object.entries(remote.specie)) {
       const previous = stored?.specie?.[slug];
       const next = { ...entry };
-      for (const kind of ['punti', 'scheda']) {
+      for (const kind of ['punti', 'scheda', 'griglia']) {
         const file = entry[kind];
         if (!file) continue;
         const local = cacheFile(file.file);
@@ -164,6 +164,15 @@ async function readGlobal(manifest, key) {
     }
   }
   return null;
+}
+
+/** Griglia ISPRA 10×10 km di una specie: scaricata se più recente, altrimenti inclusa nell'app. */
+export async function readSpeciesGrid(species, manifest) {
+  if (remoteIsNewer(manifest)) {
+    const cached = await readCached(manifest, species.slug, 'griglia');
+    if (cached) return cached;
+  }
+  return species.grid ? species.grid() : null;
 }
 
 /** Foto delle specie (iNaturalist): scaricate se più recenti, altrimenti quelle incluse nell'app. */

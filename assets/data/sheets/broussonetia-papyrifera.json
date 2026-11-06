@@ -74,6 +74,7 @@
  "pdf_scheda": null,
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Broussonetia_papyrifera.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Broussonetia papyrifera",
  "nome_comune_ispra": "Gelso da carta",
  "presenza_italia": "Diffusa",

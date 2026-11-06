@@ -83,6 +83,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Cortaderia_jubata-Cortaderia_a_fiori_rosa.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Cortaderia_jubata.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Cortaderia jubata",
  "nome_comune_ispra": "Cortaderia a fiori rosa",
  "presenza_italia": "Assente in naturaSolo coltivata",

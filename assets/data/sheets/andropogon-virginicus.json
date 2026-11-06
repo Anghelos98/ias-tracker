@@ -83,6 +83,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Andropogon_virginicus-Andropogon_della_Virginia.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Andropogon_virginicus.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Andropogon virginicus",
  "nome_comune_ispra": "Andropogon della Virginia",
  "presenza_italia": "Assente",

@@ -23,6 +23,7 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
   con fonte e licenza di ogni dato
 - Filtri per periodo, precisione della posizione e identificazioni automatiche (Pl@ntNet),
   salvati sul telefono; le posizioni approssimative (oltre 1 km) hanno un pallino vuoto
+- Griglia ufficiale ISPRA 10×10 km sovrapponibile alla mappa, per confrontarla con le segnalazioni
 - "Vicino a me": specie segnalate entro 1, 5, 10 o 25 km dalla propria posizione, con la
   distanza della segnalazione più vicina
 - Scheda di ogni specie: foto (iNaturalist, CC0/CC BY), come riconoscerla, con cosa si può
@@ -56,6 +57,7 @@ scripts/fetch_ispra_sheets.py  scarica le schede delle specie dal sito ISPRA
 scripts/fetch_species_photos.py  raccoglie le foto delle specie da iNaturalist
 scripts/build_lookalikes.py specie simili (citazioni dalle schede ISPRA)
 scripts/fetch_easin.py      dati europei dal catalogo EASIN
+scripts/fetch_ispra_grids.py  griglia ISPRA 10×10 km (shapefile → aree in WGS84)
 scripts/build_site.py       prepara il sito GitHub Pages con i dati per l'app
 src/data/remote.js          aggiornamento dei dati nell'app (manifest, download, cache)
 .github/workflows/          aggiornamento settimanale automatico
@@ -89,11 +91,12 @@ Requisiti: Python 3.10+.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install requests beautifulsoup4
+.venv/bin/pip install requests beautifulsoup4 pyshp pyproj shapely
 .venv/bin/python sync_ias_data.py --all          # scarica/aggiorna le segnalazioni da GBIF
 .venv/bin/python scripts/fetch_ispra_sheets.py   # scarica/aggiorna le schede ISPRA
 .venv/bin/python scripts/build_lookalikes.py     # specie simili dalle schede ISPRA
 .venv/bin/python scripts/fetch_easin.py          # dati europei EASIN
+.venv/bin/python scripts/fetch_ispra_grids.py    # griglia ISPRA 10×10 km
 .venv/bin/python scripts/fetch_species_photos.py # raccoglie le foto da iNaturalist
 .venv/bin/python scripts/build_app_data.py       # rigenera assets/data e src/data/species.js
 ```

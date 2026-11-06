@@ -115,6 +115,7 @@ DEFERRED = {"Celastrus orbiculatus": "2027-08-02", "Rugulopteryx okamurae": "202
 SPECIES_LISTING = {name: reg for reg, names in LISTING.items() for name in names}
 
 SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
+GRID_DIR = ROOT / "assets" / "data" / "grid"
 
 
 def compact(geojson: dict) -> dict:
@@ -184,7 +185,9 @@ def main() -> None:
         loader = f"() => require('../../assets/data/species/{slug}.json')" if has_data else "null"
         sheet = (f"() => require('../../assets/data/sheets/{slug}.json')"
                  if (SHEETS_DIR / f"{slug}.json").exists() else "null")
-        lines.append(f"  {{ {body}, load: {loader}, sheet: {sheet} }},")
+        grid = (f"() => require('../../assets/data/grid/{slug}.json')"
+                if (GRID_DIR / f"{slug}.json").exists() else "null")
+        lines.append(f"  {{ {body}, load: {loader}, sheet: {sheet}, grid: {grid} }},")
     lines += ["];", ""]
     OUT_JS.parent.mkdir(parents=True, exist_ok=True)
     OUT_JS.write_text("\n".join(lines), encoding="utf-8")

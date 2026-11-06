@@ -4,6 +4,7 @@
 Legge:   data/index.json               statistiche per specie (da sync_ias_data.py)
          assets/data/species/*.json    punti in formato compatto (da build_app_data.py)
          assets/data/sheets/*.json     schede ISPRA (da fetch_ispra_sheets.py)
+         assets/data/grid/*.json       griglia ISPRA 10×10 km (da fetch_ispra_grids.py)
          assets/data/photos.json       foto iNaturalist (da fetch_species_photos.py)
          assets/data/lookalikes.json   specie simili (da build_lookalikes.py)
          assets/data/easin.json        dati europei EASIN (da fetch_easin.py)
@@ -33,6 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "data" / "index.json"
 SPECIES_DIR = ROOT / "assets" / "data" / "species"
 SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
+GRID_DIR = ROOT / "assets" / "data" / "grid"
 PHOTOS = ROOT / "assets" / "data" / "photos.json"
 LOOKALIKES = ROOT / "assets" / "data" / "lookalikes.json"
 EASIN = ROOT / "assets" / "data" / "easin.json"
@@ -67,6 +69,7 @@ def main(site: Path) -> None:
             "bbox": s["bbox"],
             "punti": copy_entry(SPECIES_DIR / f"{slug}.json", out / "species", f"species/{slug}.json"),
             "scheda": copy_entry(SHEETS_DIR / f"{slug}.json", out / "sheets", f"sheets/{slug}.json"),
+            "griglia": copy_entry(GRID_DIR / f"{slug}.json", out / "grid", f"grid/{slug}.json"),
         }
 
     manifest = {

@@ -78,6 +78,7 @@
  "pdf_scheda": null,
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Delairea_odorata.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Delairea odorata",
  "nome_comune_ispra": "Edera del Capo",
  "presenza_italia": "Diffusa",

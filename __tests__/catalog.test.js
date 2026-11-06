@@ -52,6 +52,22 @@ describe('catalogo delle specie', () => {
     }
   });
 
+  test('griglie ISPRA: poligoni validi per le specie che le hanno', () => {
+    const withGrid = SPECIES.filter((s) => s.grid);
+    expect(withGrid.length).toBeGreaterThan(15);
+    for (const s of withGrid) {
+      const g = s.grid();
+      expect(g.celle).toBeGreaterThan(0);
+      for (const poly of g.poligoni) {
+        expect(poly.esterno.length).toBeGreaterThanOrEqual(4);
+        for (const [lon, lat] of poly.esterno) {
+          expect(lon).toBeGreaterThan(5);
+          expect(lat).toBeGreaterThan(34);
+        }
+      }
+    }
+  });
+
   test('le specie con segnalazioni hanno dati e area', () => {
     for (const s of SPECIES.filter((x) => x.total > 0)) {
       expect(typeof s.load).toBe('function');

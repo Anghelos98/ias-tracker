@@ -31,7 +31,7 @@ export function describeFilters(filters) {
 }
 
 /** Pannello dal basso con i filtri della mappa. */
-export default function FiltersPanel({ visible, filters, onChange, onClose, extra }) {
+export default function FiltersPanel({ visible, filters, onChange, showGrid, onToggleGrid, gridNote, onClose, extra }) {
   const insets = useSafeAreaInsets();
   const set = (patch) => onChange({ ...filters, ...patch });
 
@@ -64,6 +64,16 @@ export default function FiltersPanel({ visible, filters, onChange, onClose, extr
               <Text style={styles.note}>Segnalazioni Pl@ntNet riconosciute solo dall’algoritmo, senza verifica.</Text>
             </View>
             <Switch value={filters.includeAutomatic} onValueChange={(includeAutomatic) => set({ includeAutomatic })} />
+          </View>
+
+          <View style={styles.switchRow}>
+            <View style={styles.flex}>
+              <Text style={styles.switchLabel}>Griglia ufficiale ISPRA (10×10 km)</Text>
+              <Text style={styles.note}>
+                Celle in cui ISPRA registra la specie (rendicontazione UE, giugno 2025). {gridNote}
+              </Text>
+            </View>
+            <Switch value={showGrid} onValueChange={onToggleGrid} />
           </View>
 
           <Text style={styles.label}>Legenda</Text>
@@ -105,6 +115,7 @@ function Legend() {
       <LegendItem dotStyle={styles.dotAutomatic} text="Identificazione automatica" />
       <LegendItem dotStyle={styles.dotApprox} text={`Posizione approssimativa (oltre ${km} km)`} />
       <LegendItem dotStyle={styles.dotCluster} text="Gruppo di segnalazioni" />
+      <LegendItem dotStyle={styles.gridSwatch} text="Cella ISPRA con presenza della specie" />
     </View>
   );
 }
@@ -149,5 +160,6 @@ const styles = StyleSheet.create({
   dotAutomatic: { backgroundColor: '#ef8a00', borderColor: '#fff' },
   dotApprox: { backgroundColor: '#fff', borderColor: '#2e7d32', borderWidth: 2.5 },
   dotCluster: { width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(46,125,50,0.85)', borderColor: '#fff' },
+  gridSwatch: { borderRadius: 2, backgroundColor: 'rgba(21,101,192,0.18)', borderColor: 'rgba(21,101,192,0.7)', borderWidth: 1 },
   legendText: { fontSize: 13, color: '#444' },
 });

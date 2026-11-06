@@ -83,6 +83,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Lygodium_japonicum-Felce_rampicante_del_Giappone.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Lygodium_japonicum.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Lygodium japonicum",
  "nome_comune_ispra": "Felce rampicante del Giappone",
  "presenza_italia": "AssenteSolo coltivata",

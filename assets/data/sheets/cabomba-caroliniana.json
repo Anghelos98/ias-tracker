@@ -89,6 +89,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Cabomba_caroliniana.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Cabomba_caroliniana_RA.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Cabomba caroliniana",
  "nome_comune_ispra": "Cabomba della Carolina",
  "presenza_italia": "Assente",

@@ -86,6 +86,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Persicaria_perfoliata-Stracciabraghe_asiatico.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Persicaria_perfoliata_RA.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Persicaria perfoliata",
  "nome_comune_ispra": "Stracciabraghe asiatico",
  "presenza_italia": "Assente",

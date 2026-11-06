@@ -70,6 +70,7 @@
  "pdf_scheda": null,
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Rugulopteryx_okamurae.pdf",
  "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Rugulopteryx_okamurae_2025.jpg",
+ "shapefile_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/shapefile/Rugulopteryx_okamurae.zip",
  "nome_scientifico": "Rugulopteryx okamurae",
  "nome_comune_ispra": "Rugulopteryx okamurae",
  "presenza_italia": "Localizzata",

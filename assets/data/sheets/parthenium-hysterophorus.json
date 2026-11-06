@@ -89,6 +89,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Parthenium_hysterophorus-Partenio_infestante.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Parthenium_hysterophorus_EPPORA.pdf",
  "mappa_distribuzione": null,
+ "shapefile_distribuzione": null,
  "nome_scientifico": "Parthenium hysterophorus",
  "nome_comune_ispra": "Partenio infestante",
  "presenza_italia": "Assente",

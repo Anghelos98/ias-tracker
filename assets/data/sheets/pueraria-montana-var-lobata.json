@@ -86,6 +86,7 @@
  "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Kudzu-Pueraria_montana.pdf",
  "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Pueraria_lobata_EPPORA.pdf",
  "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Pueraria_montana_2025.jpg",
+ "shapefile_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/shapefile/Pueraria_montana.zip",
  "nome_scientifico": "Pueraria montana var. lobata",
  "nome_comune_ispra": "Kudzu",
  "presenza_italia": "Localizzata",
