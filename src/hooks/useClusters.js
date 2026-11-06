@@ -26,13 +26,13 @@ const VIEWPORT_MARGIN = 0.15;
  *
  * @param {{fonti: {nome: string, licenza: string|null}[], punti: Array<[number, number, number|null, number, 0|1, number|null]>} | null} data
  * @param {object} region  regione visibile della mappa
- * @param {boolean} includeAutomatic  includere le identificazioni solo automatiche
+ * @param {import('../data/points').Filters} filters  filtri scelti dall'utente
  */
-export function useClusters(data, region, includeAutomatic) {
+export function useClusters(data, region, filters) {
   // L'indice si ricostruisce solo quando cambiano dati o filtro, non a ogni pan/zoom.
   const index = useMemo(() => {
     if (!data) return null;
-    const { features, count } = groupByLocation(data, { includeAutomatic });
+    const { features, count } = groupByLocation(data, filters);
 
     const sc = new Supercluster({
       ...CLUSTER_OPTIONS,
@@ -44,7 +44,7 @@ export function useClusters(data, region, includeAutomatic) {
     });
     sc.load(features);
     return { sc, count };
-  }, [data, includeAutomatic]);
+  }, [data, filters]);
 
   const zoom = regionToZoom(region);
 

@@ -111,7 +111,13 @@ export const DotMarker = memo(function DotMarker({ feature, selected, onPress })
       <View style={styles.dotBox}>
         {selected && <View style={styles.ring} />}
         <Animated.View
-          style={[styles.dot, feature.properties.automatic && styles.dotAutomatic, { transform: [{ scale }] }]}
+          style={[
+            styles.dot,
+            feature.properties.automatic && styles.dotAutomatic,
+            feature.properties.approximate &&
+              (feature.properties.automatic ? styles.dotApproximateAutomatic : styles.dotApproximate),
+            { transform: [{ scale }] },
+          ]}
         />
       </View>
     </Marker>
@@ -137,6 +143,9 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
   },
   dotAutomatic: { backgroundColor: '#ef8a00' },
+  // posizione approssimativa: pallino vuoto con il bordo del colore della categoria
+  dotApproximate: { backgroundColor: '#fff', borderColor: '#2e7d32', borderWidth: 2.5 },
+  dotApproximateAutomatic: { backgroundColor: '#fff', borderColor: '#ef8a00', borderWidth: 2.5 },
   ring: {
     position: 'absolute',
     top: (DOT_BOX - RING) / 2,

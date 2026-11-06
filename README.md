@@ -17,7 +17,8 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 - Mappa a schermo intero con la posizione dell'utente
 - Raggruppamento delle segnalazioni vicine (cluster numerati) per una mappa fluida
 - Scheda della segnalazione: anno, fonte, coordinate e incertezza della posizione
-- Filtro per escludere le identificazioni solo automatiche (Pl@ntNet)
+- Filtri per periodo, precisione della posizione e identificazioni automatiche (Pl@ntNet),
+  salvati sul telefono; le posizioni approssimative (oltre 1 km) hanno un pallino vuoto
 - Scheda di ogni specie: come riconoscerla, cosa dice la legge (D.Lgs. 230/2017), cosa fare
   se la trovi, approfondimenti e mappa di distribuzione ISPRA
 - Segnalazioni: specie, posizione GPS automatica e foto in pochi tocchi; invio per email al
@@ -32,6 +33,7 @@ src/components/             pannello specie, scheda segnalazione, marker
 src/hooks/useClusters.js    raggruppamento con supercluster
 src/utils/geo.js            calcoli su zoom, coordinate e proiezione
 src/components/SpeciesSheet.js  scheda della specie
+src/components/FiltersPanel.js  filtri della mappa e legenda
 src/components/ReportScreen.js  nuova segnalazione (GPS, foto, invio)
 src/components/MyReports.js     segnalazioni salvate sul telefono
 src/reports/                    salvataggio e invio delle segnalazioni

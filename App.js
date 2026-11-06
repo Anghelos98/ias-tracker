@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +7,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 
 import { ClusterMarker, DOT_HIT_RADIUS, DotMarker, clusterSize } from './src/components/MapMarkers';
 import PointCard from './src/components/PointCard';
+import FiltersPanel, { describeFilters } from './src/components/FiltersPanel';
 import SpeciesPanel from './src/components/SpeciesPanel';
 import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
@@ -14,6 +15,8 @@ import MyReports from './src/components/MyReports';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import { checkForUpdates, dataDate, loadStoredManifest, readSpeciesPoints, withRemoteStats } from './src/data/remote';
 import { SPECIES } from './src/data/species';
+import { DEFAULT_FILTERS, activeFilterCount } from './src/data/points';
+import { loadFilters, saveFilters } from './src/data/preferences';
 import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
 
 // Colore di fondo mostrato mentre le tile della mappa si caricano: un tono vicino a
@@ -57,7 +60,8 @@ function IASTracker() {
   const [species, setSpecies] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [includeAutomatic, setIncludeAutomatic] = useState(false);
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   // { key, coordinate, points: [proprietà delle segnalazioni], pointId? } oppure null
   const [selection, setSelection] = useState(null);
 
@@ -75,7 +79,7 @@ function IASTracker() {
     setRegion(next);
   }, []);
 
-  const { clusters, visibleCount, expansionZoom, leaves } = useClusters(data, region, includeAutomatic);
+  const { clusters, visibleCount, expansionZoom, leaves } = useClusters(data, region, filters);
   useEffect(() => {
     clustersRef.current = clusters;
   }, [clusters]);
@@ -254,10 +258,24 @@ function IASTracker() {
     setTimeout(() => setSheetSpecies(item), 400);
   }, []);
 
-  const toggleAutomatic = useCallback((value) => {
-    setSelection(null);
-    setIncludeAutomatic(value);
+  // Filtri: ripristinati all'avvio, salvati a ogni modifica.
+  useEffect(() => {
+    let active = true;
+    loadFilters().then((saved) => {
+      if (active) setFilters(saved);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
+
+  const changeFilters = useCallback((next) => {
+    setSelection(null);
+    setFilters(next);
+    saveFilters(next);
+  }, []);
+  const filtersSummary = describeFilters(filters);
+  const filtersActive = activeFilterCount(filters);
 
   return (
     <View
@@ -351,12 +369,21 @@ function IASTracker() {
         onOpenSheet={() => setSheetSpecies(species)}
       />
 
-      {/* Barra inferiore: filtro identificazioni automatiche, elenco, posizione */}
+      {/* Barra inferiore: filtri, elenco specie, posizione */}
       <View style={[styles.bottomBar, { bottom: insets.bottom + 12 }]}>
-        <View style={styles.filter}>
-          <Switch value={includeAutomatic} onValueChange={toggleAutomatic} />
-          <Text style={styles.filterText}>Includi identificazioni{'\n'}automatiche (Pl@ntNet)</Text>
-        </View>
+        <Pressable
+          style={styles.filter}
+          onPress={() => setFiltersOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={`Filtri${filtersActive ? `, ${filtersActive} attivi` : ''}`}
+        >
+          <Text style={styles.filterTitle}>
+            Filtri{filtersActive ? <Text style={styles.filterBadge}> ● {filtersActive}</Text> : null}
+          </Text>
+          <Text style={styles.filterText} numberOfLines={1}>
+            {filtersSummary || 'Tutte le segnalazioni verificate'}
+          </Text>
+        </Pressable>
         <Pressable style={styles.roundButton} onPress={() => setPanelOpen(true)} accessibilityLabel="Elenco specie">
           <Text style={styles.roundButtonText}>☰</Text>
         </Pressable>
@@ -364,6 +391,13 @@ function IASTracker() {
           <Text style={styles.roundButtonText}>◎</Text>
         </Pressable>
       </View>
+
+      <FiltersPanel
+        visible={filtersOpen}
+        filters={filters}
+        onChange={changeFilters}
+        onClose={() => setFiltersOpen(false)}
+      />
 
       <SpeciesPanel
         species={speciesList}
@@ -428,16 +462,16 @@ const styles = StyleSheet.create({
   bottomBar: { position: 'absolute', left: 12, right: 12, flexDirection: 'row', alignItems: 'center', gap: 10 },
   filter: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    height: 52,
+    justifyContent: 'center',
     backgroundColor: '#fff',
     borderRadius: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    gap: 8,
+    paddingHorizontal: 14,
     ...shadow,
   },
-  filterText: { flex: 1, fontSize: 12, color: '#333' },
+  filterTitle: { fontSize: 15, fontWeight: '700', color: '#2e7d32' },
+  filterBadge: { fontSize: 13, color: '#ef6c00' },
+  filterText: { fontSize: 12, color: '#555', marginTop: 1 },
   roundButton: {
     width: 52,
     height: 52,

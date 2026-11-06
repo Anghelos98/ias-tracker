@@ -1,4 +1,5 @@
-import { groupByLocation } from '../src/data/points';
+import { describeFilters } from '../src/components/FiltersPanel';
+import { DEFAULT_FILTERS, activeFilterCount, groupByLocation, passesFilters } from '../src/data/points';
 
 const DATA = {
   fonti: [
@@ -28,4 +29,40 @@ test('include le identificazioni automatiche solo se richiesto', () => {
   expect(all.count).toBe(4);
   const auto = all.features.find((f) => f.geometry.coordinates[0] === 12.6);
   expect(auto.properties.automatic).toBe(true);
+});
+
+describe('filtri', () => {
+  const base = { includeAutomatic: true, minYear: null, maxUncertainty: null };
+
+  test('periodo: esclude le segnalazioni precedenti e quelle senza anno', () => {
+    const { count } = groupByLocation(DATA, { ...base, minYear: 2015 });
+    expect(count).toBe(2); // 2020 e 2021
+  });
+
+  test('precisione: esclude incertezza maggiore o non indicata', () => {
+    const { count } = groupByLocation(DATA, { ...base, maxUncertainty: 100 });
+    expect(count).toBe(2); // 10 m e 5 m
+  });
+
+  test('posizione approssimativa solo se tutte le incertezze sono note e ampie', () => {
+    const { features } = groupByLocation(DATA, base);
+    const approx = features.find((f) => f.geometry.coordinates[0] === 12.7);
+    const mixed = features.find((f) => f.geometry.coordinates[0] === 12.5); // 10 m e non indicata
+    expect(approx.properties.approximate).toBe(true);
+    expect(mixed.properties.approximate).toBe(false);
+  });
+
+  test('passesFilters e conteggio dei filtri attivi', () => {
+    expect(passesFilters({ year: 2020, automatic: false, uncertainty: null }, DEFAULT_FILTERS)).toBe(true);
+    expect(passesFilters({ year: 2020, automatic: true, uncertainty: null }, DEFAULT_FILTERS)).toBe(false);
+    expect(activeFilterCount(DEFAULT_FILTERS)).toBe(0);
+    expect(activeFilterCount({ ...DEFAULT_FILTERS, minYear: 2015, includeAutomatic: true })).toBe(2);
+  });
+
+  test('descrizione breve dei filtri', () => {
+    expect(describeFilters(DEFAULT_FILTERS)).toBe('');
+    expect(describeFilters({ includeAutomatic: true, minYear: 2015, maxUncertainty: 1000 })).toBe(
+      'dal 2015 · ≤ 1 km · con Pl@ntNet',
+    );
+  });
 });
