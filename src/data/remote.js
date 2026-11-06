@@ -16,7 +16,7 @@ const MANIFEST_KEY = 'ias-tracker/remote-manifest/v1';
 const LAST_CHECK_KEY = 'ias-tracker/remote-last-check/v1';
 const CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000; // al massimo un controllo ogni 12 ore
 const TIMEOUT_MS = 15000;
-const GLOBAL_FILES = ['foto', 'simili', 'europa']; // file del manifest comuni a tutte le specie
+const GLOBAL_FILES = ['foto', 'simili', 'europa', 'novita']; // file del manifest comuni a tutte le specie
 
 function cacheFile(relPath) {
   // relPath: "species/<slug>.json", "sheets/<slug>.json", "grid/<slug>.json" o "root/<file>.json"
@@ -188,6 +188,11 @@ export async function readLookalikes(manifest) {
 /** Dati europei EASIN: scaricati se più recenti, altrimenti quelli inclusi nell'app. */
 export async function readEasin(manifest) {
   return (await readGlobal(manifest, 'europa')) ?? require('../../assets/data/easin.json');
+}
+
+/** Novità delle ultime settimane: scaricate se più recenti, altrimenti quelle incluse nell'app. */
+export async function readNews(manifest) {
+  return (await readGlobal(manifest, 'novita')) ?? require('../../assets/data/news.json');
 }
 
 /** Statistiche della specie (totale, anni, area) aggiornate con i dati scaricati. */

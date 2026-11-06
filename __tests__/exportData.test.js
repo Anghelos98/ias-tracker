@@ -29,11 +29,11 @@ test('CSV con intestazione e campi tra virgolette quando serve', () => {
   const csv = toCSV(exportRows(DATASETS, DEFAULT_FILTERS));
   const lines = csv.trim().split('\n');
   expect(lines[0]).toBe(
-    'specie,nome_comune,latitudine,longitudine,anno,incertezza_m,fonte,licenza,identificazione_automatica,regione',
+    'specie,nome_comune,latitudine,longitudine,anno,incertezza_m,fonte,licenza,identificazione_automatica,regione,gbif,dato_originale',
   );
-  expect(lines[1]).toBe('Ailanthus altissima,Ailanto,41.9,12.5,2020,10,"Herbarium, ""Roma""",CC BY 4.0,false,Lazio');
+  expect(lines[1]).toBe('Ailanthus altissima,Ailanto,41.9,12.5,2020,10,"Herbarium, ""Roma""",CC BY 4.0,false,Lazio,,');
   expect(lines[2]).toContain(',2018,,'); // incertezza non indicata = campo vuoto
-  expect(lines[2]).toMatch(/,false,$/); // regione non indicata = campo vuoto
+  expect(lines[2]).toMatch(/,false,,,$/); // regione e collegamenti non indicati = campi vuoti
 });
 
 test('GeoJSON valido con attribuzione', () => {

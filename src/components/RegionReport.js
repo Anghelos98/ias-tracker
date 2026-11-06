@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { describeFilters } from './FiltersPanel';
+import { CONTACTS_SOURCE, PEC_NOTE, REGIONAL_OFFICES } from '../data/contacts';
 import { loadAllDatasets } from '../data/allSpecies';
 import { regionReport, regionReportCSV, regionSummaries } from '../data/regionReport';
 import { useColors, useThemedStyles } from '../theme';
+import { dataDate } from '../data/remote';
+import { regionReportHtml } from '../reports/regionReportHtml';
+import { sharePdf } from '../utils/sharePdf';
 import { shareTextFile } from '../utils/shareFile';
 
 const CSV = { mimeType: 'text/csv', uti: 'public.comma-separated-values-text' };
@@ -18,7 +22,17 @@ function plural(n, one, many) {
  * Rapporto per regione: elenco delle regioni con numero di segnalazioni e di specie; per la
  * regione scelta, andamento negli anni e specie presenti. Rispetta i filtri attivi.
  */
-export default function RegionReport({ visible, speciesList, manifest, filters, onShowSpecies, onInfo, onClose }) {
+export default function RegionReport({
+  visible,
+  speciesList,
+  manifest,
+  filters,
+  onShowSpecies,
+  onInfo,
+  onClose,
+  followedRegions = [],
+  onToggleFollowRegion,
+}) {
   const insets = useSafeAreaInsets();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
@@ -58,6 +72,26 @@ export default function RegionReport({ visible, speciesList, manifest, filters, 
       Alert.alert('Esportazione non riuscita', 'Non è stato possibile creare o condividere il file.');
     }
   }, [report, region]);
+
+  const [printing, setPrinting] = useState(false);
+  const sharePDF = useCallback(async () => {
+    if (!report || !region || printing) return;
+    setPrinting(true);
+    try {
+      const date = new Date().toISOString().slice(0, 10);
+      const slug = region.name.toLowerCase().replace(/[^a-z]+/g, '-');
+      const html = regionReportHtml(report, {
+        regionName: region.name,
+        dataDate: dataDate(manifest),
+        filtersText: filtersText || null,
+      });
+      await sharePdf(`ias-tracker_${slug}_${date}.pdf`, html);
+    } catch {
+      Alert.alert('Esportazione non riuscita', 'Non è stato possibile creare o condividere il PDF.');
+    } finally {
+      setPrinting(false);
+    }
+  }, [report, region, manifest, filtersText, printing]);
 
   const close = () => {
     setRegion(null);
@@ -121,12 +155,38 @@ export default function RegionReport({ visible, speciesList, manifest, filters, 
               {plural(report.species.length, 'specie', 'specie')}
               {filtersText ? ` (filtri: ${filtersText})` : ''}
             </Text>
-            {report.total > 0 && <Trend report={report} styles={styles} />}
-            {report.total > 0 && (
-              <Pressable onPress={share} style={styles.shareButton} accessibilityRole="button">
-                <Text style={styles.shareText}>Esporta la tabella (CSV)</Text>
+            {onToggleFollowRegion && (
+              <Pressable
+                onPress={() => onToggleFollowRegion(region.code)}
+                style={[styles.follow, followedRegions.includes(region.code) && styles.followOn]}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: followedRegions.includes(region.code) }}
+                accessibilityLabel={`Segui ${region.name}`}
+                accessibilityHint="Mostra nelle Novità le nuove segnalazioni in questa regione"
+              >
+                <Text style={[styles.followText, followedRegions.includes(region.code) && styles.followTextOn]}>
+                  {followedRegions.includes(region.code) ? '★ Segui questa regione' : '☆ Segui questa regione'}
+                </Text>
               </Pressable>
             )}
+            {report.total > 0 && <Trend report={report} styles={styles} />}
+            {report.total > 0 && (
+              <View style={styles.shareRow}>
+                <Pressable
+                  onPress={sharePDF}
+                  style={styles.shareButton}
+                  accessibilityRole="button"
+                  accessibilityState={{ busy: printing }}
+                  accessibilityHint="Crea un documento PDF con grafico, tabella e fonti"
+                >
+                  <Text style={styles.shareText}>{printing ? 'Preparo il PDF…' : 'Rapporto in PDF'}</Text>
+                </Pressable>
+                <Pressable onPress={share} style={styles.shareButton} accessibilityRole="button">
+                  <Text style={styles.shareText}>Tabella (CSV)</Text>
+                </Pressable>
+              </View>
+            )}
+            <RegionContacts code={region.code} styles={styles} />
             <Text style={styles.sectionTitle} accessibilityRole="header">
               Specie segnalate
             </Text>
@@ -202,6 +262,48 @@ export default function RegionReport({ visible, speciesList, manifest, filters, 
       </View>
       {body}
     </Modal>
+  );
+}
+
+const open = (url) => Linking.openURL(url).catch(() => {});
+
+/** Uffici a cui segnalare una specie esotica invasiva in questa regione. */
+function RegionContacts({ code, styles }) {
+  const offices = REGIONAL_OFFICES[code] ?? [];
+  if (!offices.length) return null;
+  return (
+    <View>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        A chi segnalare
+      </Text>
+      {offices.map((o) => (
+        <View key={o.name} style={styles.office}>
+          <Text style={styles.common}>{o.name}</Text>
+          {o.email && (
+            <Pressable onPress={() => open(`mailto:${o.email}`)} accessibilityRole="link" hitSlop={6}>
+              <Text style={styles.contactLink}>
+                {o.emailLabel}: {o.email}
+              </Text>
+            </Pressable>
+          )}
+          <Pressable onPress={() => open(`mailto:${o.pec}`)} accessibilityRole="link" hitSlop={6}>
+            <Text style={styles.contactLink}>PEC: {o.pec}</Text>
+          </Pressable>
+          {o.page && (
+            <Pressable onPress={() => open(o.page.url)} accessibilityRole="link" hitSlop={6}>
+              <Text style={styles.contactLink}>Pagina della Regione: {o.page.label} ↗</Text>
+            </Pressable>
+          )}
+        </View>
+      ))}
+      <Text style={styles.note}>
+        Uffici responsabili per le specie esotiche invasive indicati dal {CONTACTS_SOURCE.label.replace('Ministero dell’Ambiente, ', 'Ministero dell’Ambiente (')}).{' '}
+        {PEC_NOTE} Per le nuove comparse si può scrivere anche al Ministero, dalla scheda di ogni specie.
+      </Text>
+      <Pressable onPress={() => open(CONTACTS_SOURCE.url)} accessibilityRole="link" hitSlop={6}>
+        <Text style={styles.contactLink}>Documento del Ministero ↗</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -285,9 +387,22 @@ const createStyles = (c) =>
     axis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
     axisText: { fontSize: 11, color: c.textMuted },
     note: { fontSize: 12, color: c.textMuted, marginTop: 8, lineHeight: 17 },
-    shareButton: {
+    office: { marginBottom: 8 },
+    contactLink: { fontSize: 13, color: c.link, marginTop: 3 },
+    follow: {
       alignSelf: 'flex-start',
-      marginTop: 12,
+      borderWidth: 1.5,
+      borderColor: c.primary,
+      borderRadius: 16,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      marginTop: 10,
+    },
+    followOn: { backgroundColor: c.primaryFill, borderColor: c.primaryFill },
+    followText: { color: c.primary, fontWeight: '600', fontSize: 14 },
+    followTextOn: { color: c.onPrimary },
+    shareRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
+    shareButton: {
       borderWidth: 1.5,
       borderColor: c.primary,
       borderRadius: 10,

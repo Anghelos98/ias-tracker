@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,11 +17,13 @@ import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
 import Notebook from './src/components/Notebook';
 import RegionReport from './src/components/RegionReport';
+import NewsScreen from './src/components/NewsScreen';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import {
   checkForUpdates,
   dataDate,
   loadStoredManifest,
+  readNews,
   readSpeciesGrid,
   readSpeciesPoints,
   withRemoteStats,
@@ -29,11 +32,29 @@ import { SPECIES } from './src/data/species';
 import { loadAllDatasets } from './src/data/allSpecies';
 import { DEFAULT_FILTERS, activeFilterCount } from './src/data/points';
 import {
+  NO_FOLLOWS,
+  filterFollowed,
+  hasFollows,
+  latestWeeks,
+  newestDate,
+  summarize,
+  toggleFollow,
+  weeksSince,
+} from './src/data/news';
+import { disableNewsAlerts, enableNewsAlerts } from './src/notifications/newsAlerts';
+import {
   hasSeenWelcome,
   loadFilters,
+  loadFollows,
+  loadNewsSeen,
+  loadNotify,
   loadShowGrid,
   markWelcomeSeen,
   saveFilters,
+  saveFollows,
+  saveNewsNotified,
+  saveNewsSeen,
+  saveNotify,
   saveShowGrid,
 } from './src/data/preferences';
 import { useColors, useThemedStyles } from './src/theme';
@@ -100,6 +121,7 @@ function IASTracker() {
   const mapWidthRef = useRef(0);
   const clustersRef = useRef([]);
   const topBarBottomRef = useRef(0);
+  const [topBarBottom, setTopBarBottom] = useState(0);
   const selectionCounter = useRef(0);
   const centeredKeyRef = useRef(null);
 
@@ -449,6 +471,137 @@ function IASTracker() {
     setFilters(next);
     saveFilters(next);
   }, []);
+  // Novità della settimana e specie / regioni seguite
+  const [news, setNews] = useState(null);
+  const [follows, setFollows] = useState(NO_FOLLOWS);
+  const [newsSeen, setNewsSeen] = useState(undefined); // undefined = non ancora letto
+  const [newsOpen, setNewsOpen] = useState(false);
+  const [seenAtOpen, setSeenAtOpen] = useState(null);
+  const [notify, setNotify] = useState(false);
+  useEffect(() => {
+    let active = true;
+    readNews(manifest)
+      .catch(() => null)
+      .then((n) => {
+        if (active) setNews(n);
+      });
+    return () => {
+      active = false;
+    };
+  }, [manifest]);
+  useEffect(() => {
+    let active = true;
+    Promise.all([loadFollows(), loadNewsSeen(), loadNotify()]).then(([f, seen, n]) => {
+      if (!active) return;
+      setFollows(f);
+      setNewsSeen(seen);
+      setNotify(n);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Avviso sulla mappa: novità non ancora viste (solo quelle seguite, se l'utente segue qualcosa).
+  const newsBadge = useMemo(() => {
+    if (!news || newsSeen === undefined) return null;
+    // mai aperte: solo l'ultima settimana, non tutto lo storico
+    const summary = summarize(newsSeen ? weeksSince(news, newsSeen) : latestWeeks(news));
+    if (hasFollows(follows)) {
+      const followed = filterFollowed(summary, follows);
+      return followed.total ? `${followed.total.toLocaleString('it-IT')} novità per te` : null;
+    }
+    return summary.total ? 'Novità della settimana' : null;
+  }, [news, newsSeen, follows]);
+
+  // Le novità risultano viste quando la schermata si apre davvero (anche dalla notifica).
+  const newsSeenRef = useRef(undefined);
+  useEffect(() => {
+    newsSeenRef.current = newsSeen;
+  }, [newsSeen]);
+  const openNews = useCallback(() => {
+    setSeenAtOpen(newsSeenRef.current ?? null);
+    setNewsOpen(true);
+  }, []);
+  const markNewsSeen = useCallback(() => {
+    const newest = newestDate(news);
+    if (newest) {
+      setNewsSeen(newest);
+      saveNewsSeen(newest);
+    }
+  }, [news]);
+
+  // Apertura dell'app toccando la notifica delle novità (anche ad app chiusa).
+  useEffect(() => {
+    const handle = (response) => {
+      if (response?.notification.request.content.data?.screen !== 'novita') return;
+      setPanelOpen(false);
+      setTimeout(openNews, 400);
+    };
+    Notifications.getLastNotificationResponseAsync()
+      .then((response) => {
+        handle(response);
+        Notifications.clearLastNotificationResponseAsync().catch(() => {});
+      })
+      .catch(() => {});
+    const subscription = Notifications.addNotificationResponseReceivedListener(handle);
+    return () => subscription.remove();
+  }, [openNews]);
+
+  const changeFollow = useCallback(
+    (kind, value) => {
+      const next = toggleFollow(follows, kind, value);
+      setFollows(next);
+      saveFollows(next);
+      if (!hasFollows(next) && notify) {
+        // niente da seguire: niente avvisi
+        setNotify(false);
+        saveNotify(false);
+        disableNewsAlerts().catch(() => {});
+      }
+    },
+    [follows, notify],
+  );
+
+  const changeNotify = useCallback(async (enabled) => {
+    if (!enabled) {
+      setNotify(false);
+      saveNotify(false);
+      disableNewsAlerts().catch(() => {});
+      return;
+    }
+    try {
+      if (await enableNewsAlerts()) {
+        setNotify(true);
+        saveNotify(true);
+        // si avvisa solo delle novità che arriveranno da ora in poi
+        const newest = newestDate(news);
+        if (newest) saveNewsNotified(newest);
+      } else {
+        Alert.alert(
+          'Notifiche non consentite',
+          'Per ricevere gli avvisi consenti le notifiche a IAS Tracker nelle impostazioni del telefono.',
+        );
+      }
+    } catch {
+      Alert.alert('Avvisi non disponibili', 'Non è stato possibile attivare il controllo in background.');
+    }
+  }, [news]);
+
+  const showSpeciesFromNews = useCallback(
+    (item, region) => {
+      if (!item) return;
+      setNewsOpen(false);
+      const full = speciesList.find((s) => s.slug === item.slug) ?? item;
+      selectSpecies(full, region ? { bbox: region.bbox } : null);
+    },
+    [selectSpecies, speciesList],
+  );
+  const openSheetFromNews = useCallback((item) => {
+    setNewsOpen(false);
+    setTimeout(() => setSheetSpecies(item), 400);
+  }, []);
+
   const filtersSummary = describeFilters(filters);
   const filtersActive = activeFilterCount(filters);
 
@@ -518,6 +671,7 @@ function IASTracker() {
         onLayout={(e) => {
           const { y, height } = e.nativeEvent.layout;
           topBarBottomRef.current = y + height;
+          setTopBarBottom(y + height);
         }}
       >
         <Pressable
@@ -564,6 +718,17 @@ function IASTracker() {
           </Pressable>
         )}
       </View>
+
+      {newsBadge && !selection && (
+        <Pressable
+          style={[styles.newsPill, { top: topBarBottom + 8 }]}
+          onPress={openNews}
+          accessibilityRole="button"
+          accessibilityLabel={`${newsBadge}. Apri le novità`}
+        >
+          <Text style={styles.newsPillText}>● {newsBadge}</Text>
+        </Pressable>
+      )}
 
       <PointCard
         key={selection?.key}
@@ -662,6 +827,11 @@ function IASTracker() {
         onAbout={openWelcomeFromPanel}
         onRegions={() => openFromPanel(setRegionsOpen)}
         onNotebook={() => openFromPanel(setNotebookOpen)}
+        onNews={() => {
+          setPanelOpen(false);
+          setTimeout(openNews, 400);
+        }}
+        newsBadge={newsBadge}
         onClose={() => setPanelOpen(false)}
       />
 
@@ -672,7 +842,24 @@ function IASTracker() {
         filters={filters}
         onShowSpecies={showSpeciesInRegion}
         onInfo={openSheetFromRegions}
+        followedRegions={follows.regions}
+        onToggleFollowRegion={(code) => changeFollow('regions', code)}
         onClose={() => setRegionsOpen(false)}
+      />
+
+      <NewsScreen
+        visible={newsOpen}
+        news={news}
+        follows={follows}
+        seenAtOpen={seenAtOpen}
+        speciesList={speciesList}
+        notify={notify}
+        onToggleNotify={changeNotify}
+        onToggleFollow={changeFollow}
+        onShowSpecies={showSpeciesFromNews}
+        onInfo={openSheetFromNews}
+        onShow={markNewsSeen}
+        onClose={() => setNewsOpen(false)}
       />
 
       <WelcomeScreen visible={welcomeOpen} onDone={finishWelcome} />
@@ -697,6 +884,8 @@ function IASTracker() {
         visible={!!sheetSpecies}
         onClose={() => setSheetSpecies(null)}
         onOpenSpecies={(slug) => setSheetSpecies(speciesList.find((s) => s.slug === slug) ?? null)}
+        followed={sheetSpecies ? follows.species.includes(sheetSpecies.slug) : false}
+        onToggleFollow={(slug) => changeFollow('species', slug)}
       />
       <ReportScreen
         key={reportKey}
@@ -786,5 +975,15 @@ const createStyles = (c) => {
       ...shadow,
     },
     reportButtonText: { color: c.onPrimary, fontSize: 16, fontWeight: '700' },
+    newsPill: {
+      position: 'absolute',
+      left: 12,
+      backgroundColor: c.surface,
+      borderRadius: 16,
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      ...shadow,
+    },
+    newsPillText: { color: c.warning, fontSize: 13, fontWeight: '700' },
   });
 };

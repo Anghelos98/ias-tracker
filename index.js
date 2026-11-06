@@ -1,5 +1,8 @@
 import { registerRootComponent } from 'expo';
 
+// Definisce l'attività in background degli avvisi sulle novità: deve avvenire al caricamento,
+// anche quando il sistema avvia l'app solo per eseguirla.
+import './src/notifications/newsAlerts';
 import App from './App';
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);

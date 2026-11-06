@@ -6,8 +6,15 @@ Scrive:  assets/data/species/<slug>.json   punti in formato compatto
          src/data/species.js                catalogo delle 49 specie + loader lazy
 
 Formato compatto di un file specie:
-    {"fonti": [{"nome": "iNaturalist ...", "licenza": "CC BY-NC 4.0"}, ...],
-     "punti": [[lon, lat, anno|null, indice_fonte, auto(0/1), incertezza_m|null, regione|null], ...]}
+    {"fonti": [{"nome": "iNaturalist ...", "licenza": "CC BY-NC 4.0",
+                "link": "https://www.inaturalist.org/observations/"}, ...],
+     "punti": [[lon, lat, anno|null, indice_fonte, auto(0/1), incertezza_m|null, regione|null,
+                gbif_id, id_originale|null], ...]}
+
+"gbif_id" porta alla pagina del record su GBIF (https://www.gbif.org/occurrence/<gbif_id>).
+"id_originale" è il numero finale dell'indirizzo del dato nella banca dati di origine: la
+fonte ne riporta la prima parte in "link" (solo se l'indirizzo finisce con un numero; le
+fonti con prefissi diversi, come i progetti di Pl@ntNet, diventano voci distinte).
 
 "regione" è il codice ISTAT (1-20) della regione in cui cade il punto, calcolato con i
 confini di scripts/data/regioni.json (da fetch_istat_regions.py). I punti appena fuori
@@ -25,6 +32,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from pathlib import Path
 
 from shapely import STRtree
@@ -159,6 +167,15 @@ class RegionLocator:
         return self.codes[int(best)]
 
 
+LINK_RE = re.compile(r"^(https?://.+?[/=])(\d{1,15})/?$")
+
+
+def split_link(url: str | None) -> tuple[str | None, int | None]:
+    """'https://www.inaturalist.org/observations/123' -> ('https://www.inaturalist.org/observations/', 123)."""
+    m = LINK_RE.match(url or "")
+    return (m.group(1), int(m.group(2))) if m else (None, None)
+
+
 def compact(geojson: dict, locator: RegionLocator | None = None) -> dict:
     sources: list[dict] = []
     source_idx: dict[tuple, int] = {}
@@ -166,15 +183,21 @@ def compact(geojson: dict, locator: RegionLocator | None = None) -> dict:
     for f in geojson["features"]:
         lon, lat = f["geometry"]["coordinates"]
         p = f["properties"]
-        src = (p.get("dataset") or "Fonte sconosciuta", p.get("licenza"))
+        prefix, original_id = split_link(p.get("riferimento"))
+        src = (p.get("dataset") or "Fonte sconosciuta", p.get("licenza"), prefix)
         if src not in source_idx:
             source_idx[src] = len(sources)
-            sources.append({"nome": src[0], "licenza": src[1]})
+            entry = {"nome": src[0], "licenza": src[1]}
+            if prefix:
+                entry["link"] = prefix
+            sources.append(entry)
         unc = p.get("incertezza_m")
         points.append([round(lon, 5), round(lat, 5), p.get("anno"), source_idx[src],
                        1 if p.get("identificazione_automatica") else 0,
                        round(unc) if unc is not None else None,
-                       locator.locate(lon, lat) if locator else None])
+                       locator.locate(lon, lat) if locator else None,
+                       p.get("gbifID") if p.get("gbifID") is not None else f.get("id"),
+                       original_id])
     return {"fonti": sources, "punti": points}
 
 

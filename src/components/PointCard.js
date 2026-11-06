@@ -1,6 +1,6 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { speciesOfRecords } from '../data/points';
+import { originalSiteName, speciesOfRecords } from '../data/points';
 import { useThemedStyles } from '../theme';
 
 /**
@@ -87,6 +87,7 @@ export default function PointCard({ points, coordinate, onClose, onOpenSheet, on
                         .join(' · ')}
                     </Text>
                   )}
+                  <SourceLinks point={item} compact />
                 </View>
               </View>
             )}
@@ -130,7 +131,37 @@ function SinglePoint({ point }) {
       {point.automatic && (
         <Text style={styles.warning}>Identificazione solo automatica (non verificata da un esperto)</Text>
       )}
+      <SourceLinks point={point} />
     </>
+  );
+}
+
+/**
+ * Collegamenti al dato originale: la pagina del record su GBIF e, se nota, la pagina nella
+ * banca dati di origine (dove si vedono le foto o si può aiutare a identificare).
+ */
+function SourceLinks({ point, compact = false }) {
+  const styles = useThemedStyles(createStyles);
+  const site = originalSiteName(point.originalUrl);
+  const links = [
+    point.originalUrl && site ? { url: point.originalUrl, label: `Vedi su ${site}` } : null,
+    point.gbifUrl ? { url: point.gbifUrl, label: 'Vedi su GBIF' } : null,
+  ].filter(Boolean);
+  if (!links.length) return null;
+  return (
+    <View style={[styles.links, compact && styles.linksCompact]}>
+      {links.map((l) => (
+        <Pressable
+          key={l.url}
+          onPress={() => Linking.openURL(l.url).catch(() => {})}
+          hitSlop={compact ? 6 : 10}
+          accessibilityRole="link"
+          accessibilityHint="Apre la pagina del dato originale nel browser"
+        >
+          <Text style={compact ? styles.linkSmall : styles.link}>{l.label} ↗</Text>
+        </Pressable>
+      ))}
+    </View>
   );
 }
 
@@ -170,4 +201,8 @@ const createStyles = (c) =>
     listSpecies: { fontSize: 13, fontWeight: '700', color: c.link },
     listSource: { fontSize: 13, color: c.textSecondary },
     listMeta: { fontSize: 12, color: c.textMuted, marginTop: 1 },
+    links: { flexDirection: 'row', flexWrap: 'wrap', gap: 18, marginTop: 10 },
+    linksCompact: { gap: 14, marginTop: 2 },
+    link: { fontSize: 14, fontWeight: '600', color: c.link },
+    linkSmall: { fontSize: 12, fontWeight: '600', color: c.link },
   });

@@ -5,6 +5,8 @@ import json
 from bs4 import BeautifulSoup
 
 import build_app_data
+import build_news
+import build_region_shapes
 import build_lookalikes
 import build_site
 import fetch_easin as easin
@@ -91,7 +93,38 @@ def test_compact():
     ]}
     out = build_app_data.compact(geojson)
     assert out["fonti"] == [{"nome": "A", "licenza": "CC BY 4.0"}]
-    assert out["punti"] == [[12.12346, 41.76543, 2020, 0, 0, 12, None], [12.0, 41.0, None, 0, 1, None, None]]
+    assert out["punti"] == [[12.12346, 41.76543, 2020, 0, 0, 12, None, None, None],
+                            [12.0, 41.0, None, 0, 1, None, None, None, None]]
+
+
+def test_collegamento_al_dato_originale():
+    inat = "https://www.inaturalist.org/observations/"
+    feature = lambda gid, ref, ds="iNat": {
+        "id": gid, "geometry": {"coordinates": [12.0, 41.0]},
+        "properties": {"gbifID": gid, "dataset": ds, "licenza": "CC BY 4.0", "riferimento": ref}}
+    geojson = {"features": [
+        feature(10, inat + "333966041"),
+        feature(11, inat + "5"),
+        feature(12, None),                                      # nessun indirizzo: solo GBIF
+        feature(13, "https://identify.plantnet.org/k-se/observations/1025791115", "PlantNet"),
+        feature(14, "https://identify.plantnet.org/k-world/observations/7", "PlantNet"),
+        feature(15, "urn:catalog:XYZ:123", "Erbario"),           # non è un indirizzo web
+    ]}
+    out = build_app_data.compact(geojson)
+    assert [p[7] for p in out["punti"]] == [10, 11, 12, 13, 14, 15]
+    assert [p[8] for p in out["punti"]] == [333966041, 5, None, 1025791115, 7, None]
+    links = [out["fonti"][p[3]].get("link") for p in out["punti"]]
+    assert links == [inat, inat, None, "https://identify.plantnet.org/k-se/observations/",
+                     "https://identify.plantnet.org/k-world/observations/", None]
+    # stessa fonte e licenza ma prefissi diversi: voci distinte
+    assert len(out["fonti"]) == 5
+
+
+def test_riferimento_nel_record():
+    raw = {"key": 3, "decimalLatitude": 41, "decimalLongitude": 12, "datasetName": "iNat",
+           "occurrenceID": "https://www.inaturalist.org/observations/9", "references": None}
+    assert sync.clean_record(raw, FakeClient())["riferimento"] == "https://www.inaturalist.org/observations/9"
+    assert sync.clean_record({**raw, "occurrenceID": "o-9"}, FakeClient())["riferimento"] is None
 
 
 def test_regione_dei_punti():
@@ -182,6 +215,9 @@ def test_build_site(tmp_path, monkeypatch):
     easin_file = tmp_path / "easin.json"
     easin_file.write_text('{"specie": {}}')
     monkeypatch.setattr(build_site, "EASIN", easin_file)
+    news_file = tmp_path / "news.json"
+    news_file.write_text('{"schema": 1, "settimane": []}')
+    monkeypatch.setattr(build_site, "NEWS", news_file)
 
     site = tmp_path / "site"
     build_site.main(site)
@@ -194,6 +230,7 @@ def test_build_site(tmp_path, monkeypatch):
     assert manifest["foto"]["file"] == "photos.json"
     assert manifest["simili"]["file"] == "lookalikes.json"
     assert manifest["europa"]["file"] == "easin.json"
+    assert manifest["novita"]["file"] == "news.json"
     assert (site / "data" / "v1" / "photos.json").exists()
     assert (site / "index.html").exists() and (site / ".nojekyll").exists()
     assert "Informativa sulla privacy" in (site / "privacy.html").read_text(encoding="utf-8")
@@ -322,3 +359,62 @@ def test_griglia_solo_celle_con_la_specie_unite_e_convertite():
     # la griglia LAEA attorno a E4520 N2050 km cade in Italia centrale
     assert 11 < min(lons) < max(lons) < 14 and 41 < min(lats) < max(lats) < 43
     assert grids.to_polygons([]) == []
+
+
+# --------------------------------------------------------------------------- novità
+
+def _data(points, sources=("A",)):
+    return {"fonti": [{"nome": n, "licenza": None} for n in sources], "punti": points}
+
+
+def test_novita_per_identificativo_gbif():
+    old = _data([[12, 41, 2020, 0, 0, None, 9, 1, None], [12, 42, 2021, 0, 0, None, 9, 2, None]])
+    new = _data([[12, 41, 2020, 0, 0, None, 9, 1, None], [12, 42, 2021, 0, 0, None, 9, 2, None],
+                 [12, 43, 2019, 0, 0, None, 9, 3, None],        # nuova in Toscana (già presente)
+                 [10, 45, 2024, 0, 0, None, 3, 4, None],        # prima in Lombardia
+                 [10, 45, 2024, 0, 1, None, 1, 5, None],        # automatica: ignorata
+                 [15, 38, 2024, 0, 0, None, None, 6, None]])    # in mare: regione 0
+    d = build_news.diff_species(old, new)
+    assert d == {"nuove": 3, "regioni": {"0": 1, "3": 1, "9": 1}, "prime_regioni": [3], "prima_in_italia": False}
+    assert build_news.diff_species(new, new) is None
+
+
+def test_novita_con_dati_precedenti_senza_identificativi():
+    old = _data([[12, 41, 2020, 0, 0, None, 9]])
+    new = _data([[12, 41, 2020, 0, 0, None, 9, 1, None], [12, 41, 2020, 0, 0, None, 9, 2, None]])
+    d = build_news.diff_species(old, new)
+    assert d["nuove"] == 1 and d["prime_regioni"] == []      # stessa posizione: una sola è nuova
+
+
+def test_novita_specie_prima_volta_in_italia():
+    new = _data([[12, 41, 2025, 0, 0, None, 12, 7, None]])
+    d = build_news.diff_species(None, new)
+    assert d["prima_in_italia"] is True and d["prime_regioni"] == [12]
+
+
+def test_settimana_e_storico():
+    week = build_news.build_week({"a": None, "b": _data([])},
+                                 {"a": _data([[12, 41, 2025, 0, 0, None, 12, 7, None]]), "b": _data([])},
+                                 "2026-11-02", "2026-11-09")
+    assert week["nuove"] == 1 and list(week["specie"]) == ["a"]
+    old = [{"dati_al": f"2026-08-{d:02d}", "specie": {}} for d in range(1, 16)]
+    old.append({"dati_al": "2026-11-09", "specie": {"vecchia": {}}})
+    history = build_news.merge_history(old, week)
+    assert len(history) == build_news.MAX_WEEKS
+    assert history[0] is week                               # la stessa data viene sostituita
+    assert [w["dati_al"] for w in history] == sorted((w["dati_al"] for w in history), reverse=True)
+
+
+def test_confini_semplificati_per_l_app():
+    big = [[10, 40], [11, 40], [11, 41], [10.5, 41.0001], [10, 41], [10, 40]]
+    tiny = [[12, 40], [12.001, 40], [12.001, 40.001], [12, 40]]
+    rings = build_region_shapes.simplify_region({"poligoni": [{"esterno": big, "buchi": []},
+                                                              {"esterno": tiny, "buchi": []}]})
+    assert len(rings) == 1                      # isolotto scartato
+    assert rings[0][0] == rings[0][-1]          # anello chiuso
+    assert [10.5, 41.0001] not in rings[0]      # vertice quasi allineato rimosso
+
+
+def test_aggiornamento_reale_solo_dopo_un_giorno():
+    assert build_news.is_real_update("2026-11-02T04:00:00+00:00", "2026-11-09T04:00:00+00:00")
+    assert not build_news.is_real_update("2026-11-06T15:24:30+00:00", "2026-11-06T20:40:38+00:00")

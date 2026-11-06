@@ -13,6 +13,26 @@ export const APPROXIMATE_M = 1000;
  */
 export const DEFAULT_FILTERS = { includeAutomatic: false, minYear: null, maxUncertainty: null };
 
+/** Pagina del record su GBIF (i dati delle versioni precedenti non hanno l'identificativo). */
+export function gbifUrl(gbifId) {
+  return gbifId != null ? `https://www.gbif.org/occurrence/${gbifId}` : null;
+}
+
+/** Pagina del dato nella banca dati di origine (iNaturalist, Pl@ntNet…), se nota. */
+export function originalUrl(source, originalId) {
+  return source?.link && originalId != null ? `${source.link}${originalId}` : null;
+}
+
+/** Nome leggibile della banca dati di origine a partire dall'indirizzo. */
+export function originalSiteName(url) {
+  const host = /^https?:\/\/([^/]+)/.exec(url ?? '')?.[1]?.replace(/^www\./, '');
+  if (!host) return null;
+  if (host.endsWith('inaturalist.org')) return 'iNaturalist';
+  if (host.endsWith('plantnet.org')) return 'Pl@ntNet';
+  if (host.endsWith('observation.org')) return 'Observation.org';
+  return host;
+}
+
 /** Il record passa i filtri? */
 export function passesFilters({ year, automatic, uncertainty }, filters) {
   if (!filters.includeAutomatic && automatic) return false;
@@ -40,15 +60,18 @@ export function groupDatasets(datasets, filters) {
   let count = 0;
   for (const { species, data } of datasets) {
     const speciesInfo = { slug: species.slug, commonName: species.commonName, scientificName: species.scientificName };
-    data.punti.forEach(([lon, lat, year, sourceIdx, automatic, uncertainty], i) => {
+    data.punti.forEach(([lon, lat, year, sourceIdx, automatic, uncertainty, , gbifId, originalId], i) => {
+      const source = data.fonti[sourceIdx];
       const record = {
         id: `${species.slug}:${i}`,
         species: speciesInfo,
         year,
-        source: data.fonti[sourceIdx].nome,
-        license: data.fonti[sourceIdx].licenza,
+        source: source.nome,
+        license: source.licenza,
         automatic: automatic === 1,
         uncertainty: uncertainty ?? null,
+        gbifUrl: gbifUrl(gbifId),
+        originalUrl: originalUrl(source, originalId),
       };
       if (!passesFilters(record, filters)) return;
       const key = `${lon},${lat}`;

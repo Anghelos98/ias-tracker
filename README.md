@@ -18,7 +18,8 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 - Vista "Tutte le specie": tutte le segnalazioni insieme sulla mappa, con la specie di ogni punto
 - Mappa a schermo intero con la posizione dell'utente
 - Raggruppamento delle segnalazioni vicine (cluster numerati) per una mappa fluida
-- Scheda della segnalazione: anno, fonte, coordinate e incertezza della posizione
+- Scheda della segnalazione: anno, fonte, coordinate e incertezza della posizione, con i
+  collegamenti al dato originale ("Vedi su GBIF", "Vedi su iNaturalist" o "Vedi su Pl@ntNet")
 - Esportazione delle segnalazioni mostrate (area visibile o tutta Italia) in CSV, GeoJSON o KML,
   con fonte e licenza di ogni dato
 - Filtri per periodo, precisione della posizione e identificazioni automatiche (Pl@ntNet),
@@ -30,13 +31,18 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
   confondere, dati europei EASIN (diffusione, vie di introduzione, impatti), cosa dice la legge
   (D.Lgs. 230/2017), cosa fare se la trovi, approfondimenti e mappa di distribuzione ISPRA
 - Segnalazioni: specie, posizione GPS automatica e foto in pochi tocchi; invio per email al
-  Ministero dell'Ambiente (casella prevista dall'art. 18 del D.Lgs. 230/2017) o condivisione
-  con qualsiasi app
+  Ministero dell'Ambiente (casella prevista dall'art. 18 del D.Lgs. 230/2017), all'ufficio della
+  Regione in cui ci si trova (riconosciuta dalla posizione) o condivisione con qualsiasi app
 - Taccuino di campo: presenze e interventi di gestione (taglio, sfalcio, eradicazione,
   cercinatura, trattamento, smaltimento, controllo) salvati solo sul telefono, con foto e note,
   esportabili in CSV, GeoJSON o KML
 - Rapporto per regione (confini ISTAT): segnalazioni e specie di ogni regione, andamento negli
-  ultimi 15 anni, tabella esportabile in CSV; rispetta i filtri attivi
+  ultimi 15 anni, rapporto in PDF (grafico, tabella, fonti) o tabella in CSV, uffici regionali
+  a cui segnalare; rispetta i filtri attivi
+- Novità della settimana: segnalazioni comparse su GBIF dall'aggiornamento precedente e prime
+  segnalazioni di una specie in una regione
+- Specie e regioni seguite: le loro novità in evidenza all'apertura, con avviso facoltativo
+  (notifica locale dopo l'aggiornamento settimanale, senza posizione e senza server)
 - Modalità scura automatica (segue le impostazioni del telefono) e accessibilità: etichette per
   VoiceOver e TalkBack, testo che si ingrandisce con le impostazioni di sistema, colori con
   contrasto di almeno 4,5:1 (WCAG AA)
@@ -60,6 +66,11 @@ src/data/regions.js         regioni ISTAT: nomi e riquadri (generato)
 src/theme.js                colori del tema chiaro e scuro
 src/data/species.js         catalogo specie (generato)
 src/data/legal.js           sintesi della normativa (D.Lgs. 230/2017)
+src/data/contacts.js        uffici regionali per le specie esotiche invasive (fonte: Ministero)
+src/data/news.js            novità della settimana, specie e regioni seguite
+src/components/NewsScreen.js  schermata delle novità e delle specie/regioni seguite
+src/notifications/          avviso facoltativo sulle novità (attività in background + notifica locale)
+src/reports/regionReportHtml.js  rapporto per regione in HTML, convertito in PDF con expo-print
 assets/data/sheets/         schede delle specie ISPRA (generate)
 assets/data/species/        segnalazioni per specie, formato compatto (generato)
 ias_reference.json          elenco delle specie di rilevanza unionale
@@ -72,6 +83,8 @@ scripts/fetch_easin.py      dati europei dal catalogo EASIN
 scripts/fetch_ispra_grids.py  griglia ISPRA 10×10 km (shapefile → aree in WGS84)
 scripts/fetch_istat_regions.py  confini delle regioni ISTAT (si esegue a mano, di rado)
 scripts/data/regioni.json   confini semplificati usati per assegnare la regione ai punti
+scripts/build_news.py       novità della settimana (confronto con i dati pubblicati)
+scripts/build_region_shapes.py  confini semplificati per riconoscere la regione dalla posizione
 scripts/build_site.py       prepara il sito GitHub Pages con i dati per l'app
 site/privacy.html           informativa sulla privacy (pubblicata su GitHub Pages)
 app.config.js               aggiunge account Expo, progetto EAS e chiave Google Maps da variabili d'ambiente
@@ -117,11 +130,12 @@ python3 -m venv .venv
 .venv/bin/python scripts/fetch_ispra_grids.py    # griglia ISPRA 10×10 km
 .venv/bin/python scripts/fetch_species_photos.py # raccoglie le foto da iNaturalist
 .venv/bin/python scripts/build_app_data.py       # rigenera assets/data e src/data/species.js
+.venv/bin/python scripts/build_news.py           # novità rispetto ai dati pubblicati su GitHub Pages
 ```
 
 I confini delle regioni cambiano di rado e sono già nel repository; per aggiornarli (per esempio
 a un nuovo anno ISTAT): `.venv/bin/python scripts/fetch_istat_regions.py 2027`, poi
-`build_app_data.py`.
+`build_app_data.py` e `build_region_shapes.py`.
 
 ## Build per gli store (EAS)
 

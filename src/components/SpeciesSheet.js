@@ -27,7 +27,7 @@ function openUrl(url) {
 }
 
 /** Scheda completa di una specie: riconoscimento, legge, cosa fare, schede ISPRA. */
-export default function SpeciesSheet({ species, manifest, visible, onClose, onOpenSpecies }) {
+export default function SpeciesSheet({ species, manifest, visible, onClose, onOpenSpecies, followed, onToggleFollow }) {
   const insets = useSafeAreaInsets();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
@@ -92,6 +92,20 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
             <Badge color={colors.neutral} label={sheet?.famiglia || species.family} />
           )}
         </View>
+        {onToggleFollow && (
+          <Pressable
+            onPress={() => onToggleFollow(species.slug)}
+            style={[styles.follow, followed && styles.followOn]}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: !!followed }}
+            accessibilityLabel={`Segui ${species.commonName}`}
+            accessibilityHint="Mostra nelle Novità le nuove segnalazioni di questa specie"
+          >
+            <Text style={[styles.followText, followed && styles.followTextOn]}>
+              {followed ? '★ Segui questa specie' : '☆ Segui questa specie'}
+            </Text>
+          </Pressable>
+        )}
         <Text style={styles.meta}>
           {species.total > 0
             ? `${species.total.toLocaleString('it-IT')} segnalazioni in Italia su GBIF`
@@ -403,6 +417,18 @@ const createStyles = (c) =>
       backgroundColor: c.background,
     },
     headerText: { flex: 1, paddingRight: 12 },
+    follow: {
+      alignSelf: 'flex-start',
+      borderWidth: 1.5,
+      borderColor: c.primary,
+      borderRadius: 16,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      marginBottom: 8,
+    },
+    followOn: { backgroundColor: c.primaryFill, borderColor: c.primaryFill },
+    followText: { color: c.primary, fontWeight: '600', fontSize: 14 },
+    followTextOn: { color: c.onPrimary },
     title: { fontSize: 22, fontWeight: '700', color: c.text },
     scientific: { fontSize: 15, fontStyle: 'italic', color: c.textSecondary, marginTop: 2 },
     close: { fontSize: 16, color: c.primary, fontWeight: '600', paddingTop: 4 },

@@ -214,7 +214,18 @@ def clean_record(raw: dict[str, Any], client: GBIFClient) -> dict[str, Any] | No
         "incertezza_m": raw.get("coordinateUncertaintyInMeters"),
         "identificazione_automatica": bool(dataset and "automatically identified" in dataset.lower()),
         "problemi_gbif": raw.get("issues", []),
+        "riferimento": original_link(raw),
     }
+
+
+def original_link(raw: dict[str, Any]) -> str | None:
+    """Indirizzo del dato nella banca dati di origine (es. la pagina dell'osservazione su
+    iNaturalist o Pl@ntNet), se il record ne riporta uno."""
+    for key in ("references", "occurrenceID"):
+        value = raw.get(key)
+        if isinstance(value, str) and value.startswith(("https://", "http://")):
+            return value
+    return None
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:

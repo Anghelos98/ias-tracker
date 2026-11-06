@@ -1,7 +1,7 @@
 // Esportazione delle segnalazioni mostrate in CSV, GeoJSON e KML. Funzioni pure, testate.
 // Ogni riga riporta fonte e licenza del dato, necessarie per citarlo correttamente.
 
-import { passesFilters } from './points';
+import { gbifUrl, originalUrl, passesFilters } from './points';
 import { REGIONS } from './regions';
 
 const REGION_NAMES = new Map(REGIONS.map((r) => [r.code, r.name]));
@@ -28,7 +28,7 @@ export const ATTRIBUTION =
 export function exportRows(datasets, filters, bbox = null) {
   const rows = [];
   for (const { species, data } of datasets) {
-    for (const [lon, lat, year, sourceIdx, automatic, uncertainty, region] of data.punti) {
+    for (const [lon, lat, year, sourceIdx, automatic, uncertainty, region, gbifId, originalId] of data.punti) {
       if (bbox && (lon < bbox[0] || lat < bbox[1] || lon > bbox[2] || lat > bbox[3])) continue;
       const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null };
       if (!passesFilters(record, filters)) continue;
@@ -43,6 +43,8 @@ export function exportRows(datasets, filters, bbox = null) {
         licenza: data.fonti[sourceIdx].licenza,
         identificazione_automatica: automatic === 1,
         regione: REGION_NAMES.get(region) ?? null,
+        gbif: gbifUrl(gbifId),
+        dato_originale: originalUrl(data.fonti[sourceIdx], originalId),
       });
     }
   }
@@ -60,6 +62,8 @@ const COLUMNS = [
   'licenza',
   'identificazione_automatica',
   'regione',
+  'gbif',
+  'dato_originale',
 ];
 
 function csvCell(value) {
@@ -106,6 +110,8 @@ export function toKML(rows, title = 'IAS Tracker') {
       `Licenza: ${r.licenza ?? 'non indicata'}`,
       r.incertezza_m != null ? `Incertezza: ± ${r.incertezza_m} m` : null,
       r.identificazione_automatica ? 'Identificazione automatica' : null,
+      r.dato_originale ? `Dato originale: ${r.dato_originale}` : null,
+      r.gbif ? `GBIF: ${r.gbif}` : null,
     ]
       .filter(Boolean)
       .join('\n');

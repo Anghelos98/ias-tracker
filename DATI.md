@@ -37,6 +37,23 @@ scheda di ciascuna segnalazione insieme alla fonte. Distribuzione al 6 novembre 
 
 Il conteggio per specie è in `data/index.json` (campo `licenze`) dopo la sincronizzazione.
 
+### Collegamento al dato originale
+
+Per ogni segnalazione sono salvati l'identificativo GBIF (pagina `https://www.gbif.org/occurrence/<id>`)
+e, quando il record lo riporta (campi `references` o `occurrenceID`), l'indirizzo del dato nella banca
+dati di origine, per esempio l'osservazione su iNaturalist o Pl@ntNet, dove si vedono le foto e si può
+contribuire all'identificazione. Nel formato compatto dell'app l'indirizzo è diviso in un prefisso
+comune, salvato con la fonte (`link`), e un numero per segnalazione (vedi `scripts/build_app_data.py`).
+Gli stessi collegamenti sono nelle esportazioni (colonne `gbif` e `dato_originale`).
+
+### Novità della settimana
+
+Ogni lunedì `scripts/build_news.py` confronta i dati appena scaricati con quelli pubblicati la
+settimana prima su GitHub Pages e salva in `assets/data/news.json` le segnalazioni comparse su GBIF,
+per specie e regione, e le *prime segnalazioni* di una specie in una regione (ultime 12 settimane).
+Le identificazioni solo automatiche non sono contate. Una segnalazione "nuova" può riguardare un
+avvistamento di anni prima, pubblicato solo ora.
+
 ## Schede delle specie (ISPRA)
 
 I testi delle schede (descrizione, areale, distribuzione, biologia, vettori, impatti,
@@ -72,6 +89,20 @@ al 1° gennaio 2026, versione generalizzata, licenza **CC BY 4.0**
 
 Le segnalazioni appena fuori dalla costa (entro 3 km) sono assegnate alla regione più vicina; quelle
 in mare aperto o oltre confine restano senza regione (16 su 24.095 a novembre 2026).
+
+Per proporre l'ufficio regionale a cui inviare una segnalazione, l'app individua la regione della
+posizione con una versione più semplificata degli stessi confini (circa 500 m, solo gli anelli esterni:
+`scripts/build_region_shapes.py` → `assets/data/region_shapes.json`).
+
+## A chi segnalare (uffici regionali)
+
+Gli indirizzi degli uffici regionali responsabili per le specie esotiche invasive (`src/data/contacts.js`)
+sono presi dalla nota del Ministero dell'Ambiente prot. 0149728 del 9 agosto 2024,
+[pubblicata da ISPRA](https://specieinvasive.isprambiente.it/images/rendicontazione_2025/MASEREGISTRO_UFFICIALE20240149728.pdf).
+Sono caselle PEC. Per il Piemonte l'app usa la casella tematica `specie.invasive@regione.piemonte.it`
+indicata nella [pagina regionale](https://www.regione.piemonte.it/web/temi/ambiente-territorio/biodiversita-aree-naturali/salvaguardia-ambientale/specie-vegetali-esotiche-invasive);
+per Lombardia, Veneto, Friuli-Venezia Giulia e Lazio è indicata anche la pagina regionale sulle specie
+esotiche invasive. Verificati il 6 novembre 2026. Gli enti parco non sono ancora inclusi.
 
 ## Specie simili
 

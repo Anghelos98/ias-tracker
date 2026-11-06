@@ -6,28 +6,30 @@ import { reportBody, reportSubject } from './format';
 import { markSent } from './storage';
 
 /**
- * Email al Ministero dell'Ambiente (casella per le segnalazioni, art. 18 c. 8 D.Lgs. 230/2017).
- * Con l'app Mail configurata le foto vengono allegate; altrimenti si apre il programma di
- * posta predefinito con il solo testo.
+ * Email al Ministero dell'Ambiente (casella per le segnalazioni, art. 18 c. 8 D.Lgs. 230/2017)
+ * o all'ufficio regionale indicato. Con l'app Mail configurata le foto vengono allegate;
+ * altrimenti si apre il programma di posta predefinito con il solo testo.
+ * @param {object} report
+ * @param {{address: string, channel: string}} [to]  destinatario e voce per il taccuino
  * @returns {Promise<boolean>} true se l'email risulta inviata (o salvata in bozza)
  */
-export async function sendByEmail(report) {
+export async function sendByEmail(report, to = { address: REPORT_EMAIL, channel: 'email' }) {
   const subject = reportSubject(report);
   const body = reportBody(report);
 
   if (await MailComposer.isAvailableAsync()) {
     const { status } = await MailComposer.composeAsync({
-      recipients: [REPORT_EMAIL],
+      recipients: [to.address],
       subject,
       body,
       attachments: report.photos,
     });
     const ok = status === MailComposer.MailComposerStatus.SENT || status === MailComposer.MailComposerStatus.SAVED;
-    if (ok) await markSent(report.id, 'email');
+    if (ok) await markSent(report.id, to.channel);
     return ok;
   }
 
-  const url = `mailto:${REPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const url = `mailto:${to.address}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   if (await Linking.canOpenURL(url)) {
     if (report.photos.length) {
       Alert.alert(
@@ -37,13 +39,13 @@ export async function sendByEmail(report) {
       );
     }
     await Linking.openURL(url);
-    await markSent(report.id, 'email');
+    await markSent(report.id, to.channel);
     return true;
   }
 
   Alert.alert(
     'Email non disponibile',
-    `Nessun programma di posta configurato. Puoi usare "Condividi" oppure scrivere a ${REPORT_EMAIL}.`,
+    `Nessun programma di posta configurato. Puoi usare "Condividi" oppure scrivere a ${to.address}.`,
   );
   return false;
 }

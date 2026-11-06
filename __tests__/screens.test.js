@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useColorScheme } from 'react-native';
 
 import FiltersPanel from '../src/components/FiltersPanel';
+import NewsScreen from '../src/components/NewsScreen';
 import Notebook from '../src/components/Notebook';
 import NearbyPanel from '../src/components/NearbyPanel';
 import PointCard from '../src/components/PointCard';
@@ -31,6 +32,7 @@ jest.mock('expo-image-picker', () => ({}));
 jest.mock('expo-file-system', () => ({ Paths: {}, File: jest.fn(), Directory: jest.fn() }));
 jest.mock('expo-sharing', () => ({}));
 jest.mock('expo-mail-composer', () => ({}));
+jest.mock('expo-print', () => ({}));
 
 const NOTE = {
   id: 'x',
@@ -90,8 +92,19 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
   });
 
   test('scheda della specie, segnalazione sulla mappa, benvenuto', async () => {
-    await render(<SpeciesSheet species={ailanto} manifest={null} visible onClose={noop} onOpenSpecies={noop} />);
+    await render(
+      <SpeciesSheet
+        species={ailanto}
+        manifest={null}
+        visible
+        onClose={noop}
+        onOpenSpecies={noop}
+        followed
+        onToggleFollow={noop}
+      />,
+    );
     expect(await screen.findByText('Cosa dice la legge')).toBeTruthy();
+    expect(screen.getByText('★ Segui questa specie')).toBeTruthy();
     await render(
       <PointCard
         points={[
@@ -103,6 +116,8 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
             license: 'CC BY 4.0',
             automatic: false,
             uncertainty: 12,
+            gbifUrl: 'https://www.gbif.org/occurrence/1',
+            originalUrl: 'https://www.inaturalist.org/observations/2',
           },
         ]}
         coordinate={{ latitude: 41.9, longitude: 12.5 }}
@@ -112,6 +127,8 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
       />,
     );
     expect(screen.getByText('± 12 m')).toBeTruthy();
+    expect(screen.getByText('Vedi su iNaturalist ↗')).toBeTruthy();
+    expect(screen.getByText('Vedi su GBIF ↗')).toBeTruthy();
     await render(<WelcomeScreen visible onDone={noop} />);
     expect(screen.getByText('Informativa sulla privacy ↗')).toBeTruthy();
   });
@@ -142,11 +159,15 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
         onShowSpecies={noop}
         onInfo={noop}
         onClose={noop}
+        followedRegions={[12]}
+        onToggleFollowRegion={noop}
       />,
     );
     expect(await screen.findByText('Lazio')).toBeTruthy();
     await fireEvent.press(screen.getByText('Lazio'));
     expect(await screen.findByText('Andamento negli anni')).toBeTruthy();
+    expect(screen.getByText('Rapporto in PDF')).toBeTruthy();
+    expect(screen.getByText('★ Segui questa regione')).toBeTruthy();
     expect(screen.getByText('Ailanto')).toBeTruthy();
     await render(
       <NearbyPanel
@@ -160,5 +181,51 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
       />,
     );
     expect(await screen.findByText(/permesso di accesso alla posizione/)).toBeTruthy();
+  });
+
+  test('novità e specie seguite', async () => {
+    const news = {
+      settimane: [
+        {
+          dati_al: '2026-11-16T04:00:00Z',
+          precedenti_al: '2026-11-09T04:00:00Z',
+          nuove: 3,
+          specie: {
+            'ailanthus-altissima': { nuove: 3, regioni: { 9: 2, 10: 1 }, prime_regioni: [10], prima_in_italia: false },
+          },
+        },
+      ],
+    };
+    const props = {
+      visible: true,
+      news,
+      seenAtOpen: null,
+      speciesList: SPECIES,
+      notify: false,
+      onToggleNotify: noop,
+      onToggleFollow: noop,
+      onShowSpecies: noop,
+      onInfo: noop,
+      onClose: noop,
+    };
+    await render(<NewsScreen {...props} follows={{ species: [], regions: [] }} />);
+    expect(screen.getByText('3 segnalazioni nuove di 1 specie')).toBeTruthy();
+    expect(screen.getByText('Prima segnalazione in Umbria')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Seguite'));
+    expect(screen.getByText('Scegli specie e regioni')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Scegli specie e regioni'));
+    expect(screen.getByText('Specie e regioni seguite')).toBeTruthy();
+
+    await render(<NewsScreen {...props} follows={{ species: [], regions: [10] }} />);
+    await fireEvent.press(screen.getByText('Seguite'));
+    expect(screen.getByText('1 segnalazione nuova nell’ultima settimana')).toBeTruthy();
+    await render(
+      <NewsScreen {...props} seenAtOpen="2026-11-09T04:00:00Z" follows={{ species: [], regions: [10] }} />,
+    );
+    await fireEvent.press(screen.getByText('Seguite'));
+    expect(screen.getByText('1 segnalazione nuova dalla tua ultima visita')).toBeTruthy();
+    expect(screen.getByText('Avvisami delle novità')).toBeTruthy();
+    await render(<NewsScreen {...props} news={{ settimane: [] }} follows={{ species: [], regions: [] }} />);
+    expect(screen.getByText(/prossimo aggiornamento settimanale/)).toBeTruthy();
   });
 });

@@ -14,7 +14,9 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { PEC_NOTE, REGIONAL_OFFICES, locateRegion, officeAddress } from '../data/contacts';
 import { REPORT_EMAIL } from '../data/legal';
+import { REGIONS } from '../data/regions';
 import { SPECIES } from '../data/species';
 import { gpsFromExif } from '../reports/format';
 import { INTERVENTIONS } from '../reports/notebook';
@@ -22,6 +24,8 @@ import { sendByEmail, shareReport } from '../reports/send';
 import { addReport, newReportId, persistPhotos } from '../reports/storage';
 import { useColors, useThemedStyles } from '../theme';
 import { readGpsPosition } from '../utils/location';
+
+const REGION_SHAPES = require('../../assets/data/region_shapes.json');
 
 const MAX_PHOTOS = 3;
 const POOR_ACCURACY_M = 50; // oltre questa incertezza suggeriamo di riprovare all'aperto
@@ -159,7 +163,10 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
           Alert.alert('Salvato nel taccuino', 'Puoi esportare le voci del taccuino in CSV, GeoJSON o KML.');
           return;
         }
-        const done = channel === 'email' ? await sendByEmail(report) : await shareReport(report);
+        let done;
+        if (channel === 'email') done = await sendByEmail(report);
+        else if (channel?.office) done = await sendByEmail(report, { address: officeAddress(channel.office), channel: 'regione' });
+        else done = await shareReport(report);
         onClose();
         if (!done) {
           Alert.alert('Salvato nel taccuino', 'Non è stato inviato: lo trovi nel taccuino di campo.');
@@ -174,6 +181,12 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
   );
 
   const widespread = presence?.toLowerCase().startsWith('diffusa');
+  // Ufficio regionale competente per il luogo della segnalazione
+  const offices = useMemo(() => {
+    if (!position) return [];
+    const code = locateRegion(position.latitude, position.longitude, REGION_SHAPES, REGIONS);
+    return code ? (REGIONAL_OFFICES[code] ?? []) : [];
+  }, [position]);
   let missing = null;
   if (species === null) missing = 'Scegli la specie';
   else if (isIntervention && intervention === null) missing = 'Scegli il tipo di intervento';
@@ -406,7 +419,7 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
           {!isIntervention && species?.slug && presence && (
             <Text style={[styles.hint, widespread ? styles.hintNeutral : styles.hintImportant]}>
               {widespread
-                ? 'Specie già diffusa in Italia: la casella del Ministero è pensata soprattutto per le nuove comparse. Puoi condividere la segnalazione con la tua Regione o l’ente parco.'
+                ? 'Specie già diffusa in Italia: la casella del Ministero è pensata soprattutto per le nuove comparse. Puoi inviare la segnalazione alla Regione o condividerla con l’ente parco.'
                 : `Specie ${presence.toLowerCase()} in Italia secondo ISPRA: la tua segnalazione è preziosa per intervenire presto. Inviala al Ministero.`}
             </Text>
           )}
@@ -432,6 +445,27 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
               <Text style={styles.primaryText}>{sending ? 'Salvataggio…' : 'Invia al Ministero dell’Ambiente'}</Text>
               <Text style={styles.primarySub}>email a {REPORT_EMAIL}</Text>
             </Pressable>
+          )}
+          {!isIntervention &&
+            offices.map((office) => (
+              <Pressable
+                key={office.name}
+                style={[styles.secondary, !ready && styles.disabled]}
+                onPress={() => send({ office })}
+                disabled={!ready}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: !ready }}
+                accessibilityLabel={`Invia a ${office.name}, email a ${officeAddress(office)}`}
+              >
+                <Text style={styles.secondaryText}>Invia a {office.name}</Text>
+                <Text style={styles.secondarySub}>
+                  {office.email ? `${office.emailLabel}: ${office.email}` : `PEC ${office.pec}`}
+                </Text>
+              </Pressable>
+            ))}
+          {!isIntervention && offices.some((o) => !o.email) && <Text style={styles.small}>{PEC_NOTE}</Text>}
+          {!isIntervention && offices.length > 1 && (
+            <Text style={styles.small}>Scegli la Provincia autonoma in cui hai trovato la pianta.</Text>
           )}
           <Pressable
             style={[styles.secondary, !ready && styles.disabled]}
@@ -574,6 +608,7 @@ const createStyles = (c) =>
       borderColor: c.primary,
     },
     secondaryText: { color: c.primary, fontSize: 16, fontWeight: '700' },
+    secondarySub: { color: c.textSecondary, fontSize: 12, marginTop: 2, paddingHorizontal: 8, textAlign: 'center' },
     tertiary: { marginTop: 6, paddingVertical: 10, alignItems: 'center' },
     tertiaryText: { color: c.primary, fontSize: 15, fontWeight: '600' },
     disabled: { opacity: 0.4 },

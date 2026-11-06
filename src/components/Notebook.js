@@ -15,7 +15,7 @@ import { deleteReport, loadReports } from '../reports/storage';
 import { useColors, useThemedStyles } from '../theme';
 import { shareTextFile } from '../utils/shareFile';
 
-const CHANNEL_LABEL = { email: 'email al Ministero', condivisione: 'condivisa' };
+const CHANNEL_LABEL = { email: 'email al Ministero', regione: 'email alla Regione', condivisione: 'condivisa' };
 const KIND_FILTERS = [
   { value: 'tutte', label: 'Tutte' },
   { value: 'presenza', label: 'Presenze' },

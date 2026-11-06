@@ -16,6 +16,8 @@ export default function SpeciesPanel({
   onAbout,
   onRegions,
   onNotebook,
+  onNews,
+  newsBadge,
   onClose,
 }) {
   const insets = useSafeAreaInsets();
@@ -58,6 +60,18 @@ export default function SpeciesPanel({
           <Pressable style={styles.tool} onPress={onNotebook} accessibilityRole="button">
             <Text style={styles.toolText}>Taccuino di campo</Text>
           </Pressable>
+          {onNews && (
+            <Pressable
+              style={styles.tool}
+              onPress={onNews}
+              accessibilityRole="button"
+              accessibilityLabel={newsBadge ? `Novità: ${newsBadge}` : 'Novità e specie seguite'}
+            >
+              <Text style={styles.toolText}>
+                Novità{newsBadge ? <Text style={styles.toolBadge}> ●</Text> : null}
+              </Text>
+            </Pressable>
+          )}
         </View>
         <TextInput
           style={styles.search}
@@ -165,6 +179,7 @@ const createStyles = (c) =>
       alignItems: 'center',
     },
     toolText: { fontSize: 14, fontWeight: '600', color: c.primary, textAlign: 'center' },
+    toolBadge: { color: c.orange },
     search: {
       color: c.text,
       backgroundColor: c.surfaceAlt,

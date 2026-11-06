@@ -64,6 +64,11 @@ jobs:
       - name: Prepara i dati per l'app
         run: python scripts/build_app_data.py
 
+      - name: Calcola le novità della settimana
+        # Confronta i dati nuovi con quelli pubblicati la volta precedente su GitHub Pages.
+        # Se il sito non risponde si tengono le novità già note.
+        run: python scripts/build_news.py || echo "::warning::Novità della settimana non aggiornate"
+
       - name: Prepara il sito
         run: python scripts/build_site.py _site
 

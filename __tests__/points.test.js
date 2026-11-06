@@ -3,6 +3,7 @@ import {
   DEFAULT_FILTERS,
   activeFilterCount,
   groupDatasets,
+  originalSiteName,
   passesFilters,
   speciesOfRecords,
 } from '../src/data/points';
@@ -90,5 +91,37 @@ describe('più specie insieme', () => {
     expect(shared.properties.records[0].species.slug).toBe('b'); // il più recente (2022)
     expect(speciesOfRecords(shared.properties.records).map((s) => s.slug)).toEqual(['b', 'a']);
     expect(new Set(shared.properties.records.map((r) => r.id)).size).toBe(3); // id unici tra specie
+  });
+});
+
+describe('collegamento al dato originale', () => {
+  const data = {
+    fonti: [
+      { nome: 'iNaturalist', licenza: 'CC BY-NC 4.0', link: 'https://www.inaturalist.org/observations/' },
+      { nome: 'Wikiplantbase', licenza: 'CC BY 4.0' },
+    ],
+    punti: [
+      [12.5, 41.9, 2020, 0, 0, 10, 12, 6131154472, 333966041],
+      [12.6, 41.8, 2021, 1, 0, 5, 12, 42, null],
+      [12.7, 41.7, 2022, 0, 0, 5], // dati di una versione precedente, senza identificativi
+    ],
+  };
+  const records = groupByLocation(data, DEFAULT_FILTERS).features.map((f) => f.properties.records[0]);
+
+  test('pagina GBIF e pagina della fonte di origine', () => {
+    expect(records[0].gbifUrl).toBe('https://www.gbif.org/occurrence/6131154472');
+    expect(records[0].originalUrl).toBe('https://www.inaturalist.org/observations/333966041');
+    expect(records[1].gbifUrl).toBe('https://www.gbif.org/occurrence/42');
+    expect(records[1].originalUrl).toBeNull();
+    expect(records[2].gbifUrl).toBeNull();
+    expect(records[2].originalUrl).toBeNull();
+  });
+
+  test('nome leggibile della banca dati di origine', () => {
+    expect(originalSiteName('https://www.inaturalist.org/observations/1')).toBe('iNaturalist');
+    expect(originalSiteName('https://identify.plantnet.org/k-world/observations/7')).toBe('Pl@ntNet');
+    expect(originalSiteName('https://observation.org/observation/3')).toBe('Observation.org');
+    expect(originalSiteName('https://example.it/x/3')).toBe('example.it');
+    expect(originalSiteName(null)).toBeNull();
   });
 });
