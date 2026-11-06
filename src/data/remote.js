@@ -16,6 +16,7 @@ const MANIFEST_KEY = 'ias-tracker/remote-manifest/v1';
 const LAST_CHECK_KEY = 'ias-tracker/remote-last-check/v1';
 const CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000; // al massimo un controllo ogni 12 ore
 const TIMEOUT_MS = 15000;
+const GLOBAL_FILES = ['foto', 'simili']; // file del manifest comuni a tutte le specie
 
 function cacheFile(relPath) {
   // relPath: "species/<slug>.json", "sheets/<slug>.json" o "root/photos.json"
@@ -75,18 +76,21 @@ export async function checkForUpdates({ force = false } = {}) {
     let downloaded = 0;
     const saved = { ...remote, specie: {} };
 
-    // Foto (un solo file per tutte le specie)
-    if (remote.foto && (stored?.foto?.sha !== remote.foto.sha || !cacheFile(`root/${remote.foto.file}`).exists)) {
+    // File comuni a tutte le specie (foto, specie simili)
+    for (const key of GLOBAL_FILES) {
+      const file = remote[key];
+      if (!file) continue;
+      const local = cacheFile(`root/${file.file}`);
+      if (stored?.[key]?.sha === file.sha && local.exists) continue;
       try {
-        const text = await fetchWithTimeout(`${DATA_BASE_URL}/${remote.foto.file}`);
+        const text = await fetchWithTimeout(`${DATA_BASE_URL}/${file.file}`);
         JSON.parse(text);
-        const local = cacheFile(`root/${remote.foto.file}`);
         if (local.exists) local.delete();
         local.create();
         await local.write(text);
         downloaded += 1;
       } catch {
-        saved.foto = stored?.foto ?? null;
+        saved[key] = stored?.[key] ?? null;
       }
     }
 
@@ -150,17 +154,26 @@ export async function readSpeciesSheet(species, manifest) {
   return species.sheet ? species.sheet() : null;
 }
 
-/** Foto delle specie: scaricate se più recenti, altrimenti quelle incluse nell'app. */
-export async function readPhotos(manifest) {
-  if (remoteIsNewer(manifest) && manifest.foto) {
+async function readGlobal(manifest, key) {
+  if (remoteIsNewer(manifest) && manifest[key]) {
     try {
-      const file = cacheFile(`root/${manifest.foto.file}`);
+      const file = cacheFile(`root/${manifest[key].file}`);
       if (file.exists) return JSON.parse(await file.text());
     } catch {
-      // si usano quelle incluse nell'app
+      // si usa il file incluso nell'app
     }
   }
-  return require('../../assets/data/photos.json');
+  return null;
+}
+
+/** Foto delle specie (iNaturalist): scaricate se più recenti, altrimenti quelle incluse nell'app. */
+export async function readPhotos(manifest) {
+  return (await readGlobal(manifest, 'foto')) ?? require('../../assets/data/photos.json');
+}
+
+/** Specie simili (citazioni ISPRA): scaricate se più recenti, altrimenti quelle incluse nell'app. */
+export async function readLookalikes(manifest) {
+  return (await readGlobal(manifest, 'simili')) ?? require('../../assets/data/lookalikes.json');
 }
 
 /** Statistiche della specie (totale, anni, area) aggiornate con i dati scaricati. */

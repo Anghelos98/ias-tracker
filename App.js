@@ -529,6 +529,7 @@ function IASTracker() {
         manifest={manifest}
         visible={!!sheetSpecies}
         onClose={() => setSheetSpecies(null)}
+        onOpenSpecies={(slug) => setSheetSpecies(speciesList.find((s) => s.slug === slug) ?? null)}
       />
       <ReportScreen
         key={reportKey}

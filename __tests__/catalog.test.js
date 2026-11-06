@@ -2,6 +2,7 @@ import { formatDateIt, POSSESSION_DEADLINES } from '../src/data/legal';
 import { SPECIES } from '../src/data/species';
 import reference from '../ias_reference.json';
 import photos from '../assets/data/photos.json';
+import lookalikes from '../assets/data/lookalikes.json';
 
 describe('catalogo delle specie', () => {
   test('contiene tutte le specie di rilevanza unionale, una volta sola', () => {
@@ -26,6 +27,18 @@ describe('catalogo delle specie', () => {
         expect(['CC0', 'CC BY']).toContain(p.licenza);
         expect(p.url).toMatch(/^https:\/\//);
       }
+    }
+  });
+
+  test('specie simili: citazioni ISPRA e collegamenti a specie esistenti', () => {
+    const slugs = new Set(SPECIES.map((s) => s.slug));
+    for (const [slug, entry] of Object.entries(lookalikes.specie)) {
+      expect(slugs.has(slug)).toBe(true);
+      for (const v of entry.voci ?? []) {
+        expect(v.simili.length).toBeGreaterThan(0);
+        expect(v.citazione.length).toBeGreaterThan(10);
+      }
+      for (const other of entry.correlate ?? []) expect(slugs.has(other)).toBe(true);
     }
   });
 

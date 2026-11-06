@@ -1,0 +1,253 @@
+{
+ "fonte": "Citazioni dalle schede ISPRA (specieinvasive.isprambiente.it), licenza CC BY 4.0",
+ "specie": {
+  "acacia-mearnsii": {
+   "voci": [
+    {
+     "simili": [
+      "Acacia dealbata (mimosa)"
+     ],
+     "citazione": "…questa specie è facilmente confondibile con A. dealbata",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/8-home/172-acacia-mearnsii"
+    }
+   ]
+  },
+  "asclepias-syriaca": {
+   "voci": [
+    {
+     "simili": [
+      "Asclepias speciosa"
+     ],
+     "citazione": "Può essere confusa con Asclepias speciosa, che però ha foglie arrotondate o cuoriformi, fusti densamente lanosi e fiori più lunghi e meno numerosi.",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/23-specie-2"
+    }
+   ]
+  },
+  "cabomba-caroliniana": {
+   "voci": [
+    {
+     "simili": [
+      "Cabomba furcata",
+      "Ceratophyllum",
+      "Myriophyllum"
+     ],
+     "citazione": "Può essere confusa con altre specie aquatiche come Cabomba furcata e i generi Ceratophyllum e Myriophyllum",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/28-specie-5"
+    }
+   ]
+  },
+  "cortaderia-jubata": {
+   "voci": [
+    {
+     "simili": [
+      "Cortaderia selloana (erba della pampa)"
+     ],
+     "citazione": "Salvo l'utilizzo di tecniche di DNA barcoding, Cortaderia jubata non è facilmente distinguibile da C. selloana a causa anche di un'alta variabilità fenotipica di entrambe.",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/12-ias-ita/112-cortaderia-jubata"
+    },
+    {
+     "simili": [
+      "Cortaderia selloana (erba della pampa)"
+     ],
+     "citazione": "Gli elementi che maggiormente contribuiscono a distinguere C. jubata dalla congenere sono le guaine peloso-ispide e l'infiorescenza svettante ben al di sopra del fogliame (culmo lungo 4-5 volte la pannocchia).",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/12-ias-ita/112-cortaderia-jubata"
+    }
+   ]
+  },
+  "delairea-odorata": {
+   "voci": [
+    {
+     "simili": [
+      "Senecio angulatus"
+     ],
+     "citazione": "Questa specie è facilmente confondibile con altre congeneri (es. Senecio angulatus )",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/8-home/176-delairea-odorata"
+    }
+   ]
+  },
+  "gunnera-tinctoria": {
+   "voci": [
+    {
+     "simili": [
+      "Gunnera manicata",
+      "rabarbaro (Rheum rhabarbarum)"
+     ],
+     "citazione": "E’ molto simile alla congenere Gunnera manicata e può essere confusa con il rabarbaro ( Rheum rhabarbarum ), più piccolo e privo di spine.",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/77-rabarbaro-gigante"
+    }
+   ]
+  },
+  "heracleum-mantegazzianum": {
+   "correlate": [
+    "heracleum-persicum",
+    "heracleum-sosnowskyi"
+   ]
+  },
+  "heracleum-persicum": {
+   "voci": [
+    {
+     "simili": [
+      "Heracleum mantegazzianum",
+      "Heracleum sosnowskyi"
+     ],
+     "citazione": "Si distingue dalle altre specie simili ( H. mantegazzianum e H. sosnowskyi ) poiché è perenne, si moltiplica anche vegetativamente e per il forte odore di anice.",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/29-specie-6"
+    }
+   ],
+   "correlate": [
+    "heracleum-mantegazzianum",
+    "heracleum-sosnowskyi"
+   ]
+  },
+  "heracleum-sosnowskyi": {
+   "voci": [
+    {
+     "simili": [
+      "Heracleum mantegazzianum",
+      "Heracleum persicum"
+     ],
+     "citazione": "E’ simile a H. mantegazzianum Sommier & Levier e a H. persicum Desf. e per questo motivo spesso nelle liste di esotiche invasive questa specie non compare in quanto “compresa” in H. mantegazzianum",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/30-specie-7"
+    }
+   ],
+   "correlate": [
+    "heracleum-mantegazzianum",
+    "heracleum-persicum"
+   ]
+  },
+  "ludwigia-grandiflora": {
+   "voci": [
+    {
+     "simili": [
+      "Ludwigia peploides"
+     ],
+     "citazione": "La specie è facilmente confondibile con L. peploides , nativa della California, dalla quale si distingue solo al momento della fioritura.",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/34-specie-11"
+    }
+   ],
+   "correlate": [
+    "ludwigia-peploides"
+   ]
+  },
+  "ludwigia-peploides": {
+   "voci": [
+    {
+     "simili": [
+      "Ludwigia grandiflora"
+     ],
+     "citazione": "…facilmente confondibile con Ludwigia grandiflora , dalla quale si distingue solo al momento della fioritura.",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/35-specie-12"
+    }
+   ],
+   "correlate": [
+    "ludwigia-grandiflora"
+   ]
+  },
+  "lysichiton-americanus": {
+   "voci": [
+    {
+     "simili": [
+      "Arum maculatum (gigaro)"
+     ],
+     "citazione": "Può essere confusa con Arum maculatum , di dimensioni inferiori, che si trova in habitat simili.",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/36-specie-13"
+    }
+   ]
+  },
+  "myriophyllum-heterophyllum": {
+   "voci": [
+    {
+     "simili": [
+      "Myriophyllum spicatum",
+      "Myriophyllum verticillatum"
+     ],
+     "citazione": "Può essere confusa con altre specie di Myriophyllum (ad es. M. spicatum L. e M. verticillatum L.)",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/80-millefoglio"
+    }
+   ]
+  },
+  "parthenium-hysterophorus": {
+   "voci": [
+    {
+     "simili": [
+      "Ambrosia",
+      "Artemisia"
+     ],
+     "citazione": "La lobatura delle foglie rende P. hysterophorus facilmente confondibile allo stadio vegetativo con altre specie del genere Ambrosia e Artemisia , distinguibili per la presenza di foglie alterne già nelle prime fasi dello sviluppo.",
+     "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/38-specie-15"
+    }
+   ]
+  },
+  "prosopis-juliflora": {
+   "voci": [
+    {
+     "simili": [
+      "Prosopis chilensis",
+      "Prosopis glandulosa",
+      "Prosopis pallida"
+     ],
+     "citazione": "I caratteri di P. juliflora possono essere molto variabili e inoltre si presta a confusioni identificative con specie congeneri quali P. chilensis (Mol.) Stunz., P. glandulosa Torr. e P. pallida (Humb. & Bonpl.ex Willd.) Kunth.",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/12-ias-ita/116-prosopis-juliflora"
+    }
+   ]
+  },
+  "reynoutria-japonica": {
+   "correlate": [
+    "reynoutria-sachalinensis",
+    "reynoutria-x-bohemica"
+   ]
+  },
+  "reynoutria-sachalinensis": {
+   "correlate": [
+    "reynoutria-japonica",
+    "reynoutria-x-bohemica"
+   ]
+  },
+  "reynoutria-x-bohemica": {
+   "voci": [
+    {
+     "simili": [
+      "Reynoutria japonica",
+      "Reynoutria sachalinensis"
+     ],
+     "citazione": "In quanto ibrido, è stato spesso confuso con le specie parentali",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/8-home/179-reynoutria-x-bohemica"
+    }
+   ],
+   "correlate": [
+    "reynoutria-japonica",
+    "reynoutria-sachalinensis"
+   ]
+  },
+  "rugulopteryx-okamurae": {
+   "voci": [
+    {
+     "simili": [
+      "Dictyota",
+      "Taonia atomaria"
+     ],
+     "citazione": "Può essere confusa con alghe native appartenenti ai generi Dictyota (es. D. dichotoma , D . dichotoma v. intricata , D . fasciola , D . spiralis o D . cyanoloma ) e Taonia (es.: Taonia atomaria ).",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/12-ias-ita/128-rugulopteryx-okamurae"
+    },
+    {
+     "simili": [
+      "posidonia (Posidonia oceanica)"
+     ],
+     "citazione": "Le biomasse spiaggiate possono essere confuse con quelle di posidonia ( P. oceanica ).",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/12-ias-ita/128-rugulopteryx-okamurae"
+    }
+   ]
+  },
+  "salvinia-molesta": {
+   "voci": [
+    {
+     "simili": [
+      "Salvinia natans"
+     ],
+     "citazione": "I peli della pagina superiore formano una sorta di gabbia oviforme (a forma di \"sbattiuova\"), carattere che permette di distinguere S. molesta dalla nativa S. natans .",
+     "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/12-ias-ita/111-salvinia-molesta"
+    }
+   ]
+  }
+ }
+}

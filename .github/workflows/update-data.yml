@@ -45,6 +45,10 @@ jobs:
         # Se ISPRA non risponde si tengono le schede già presenti nel repository.
         run: python scripts/fetch_ispra_sheets.py || echo "::warning::Schede ISPRA non aggiornate"
 
+      - name: Aggiorna le specie simili (citazioni ISPRA)
+        # Se una frase ISPRA è cambiata la voce viene omessa e compare un avviso.
+        run: python scripts/build_lookalikes.py || echo "::warning::Alcune specie simili non trovate nelle schede ISPRA"
+
       - name: Raccogli le foto da iNaturalist
         # Se iNaturalist non risponde si tengono le foto già presenti nel repository.
         run: python scripts/fetch_species_photos.py || echo "::warning::Foto non aggiornate"

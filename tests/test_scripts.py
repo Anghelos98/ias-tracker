@@ -5,6 +5,7 @@ import json
 from bs4 import BeautifulSoup
 
 import build_app_data
+import build_lookalikes
 import build_site
 import fetch_ispra_sheets as ispra
 import fetch_species_photos as photos
@@ -150,6 +151,9 @@ def test_build_site(tmp_path, monkeypatch):
     photos_file = tmp_path / "photos.json"
     photos_file.write_text('{"specie": {}}')
     monkeypatch.setattr(build_site, "PHOTOS", photos_file)
+    lookalikes_file = tmp_path / "lookalikes.json"
+    lookalikes_file.write_text('{"specie": {}}')
+    monkeypatch.setattr(build_site, "LOOKALIKES", lookalikes_file)
 
     site = tmp_path / "site"
     build_site.main(site)
@@ -160,6 +164,7 @@ def test_build_site(tmp_path, monkeypatch):
     assert manifest["specie"]["b"]["punti"] is None
     assert (site / "data" / "v1" / "species" / "a.json").exists()
     assert manifest["foto"]["file"] == "photos.json"
+    assert manifest["simili"]["file"] == "lookalikes.json"
     assert (site / "data" / "v1" / "photos.json").exists()
     assert (site / "index.html").exists() and (site / ".nojekyll").exists()
 
@@ -187,3 +192,20 @@ def test_photo_entry_solo_licenze_libere():
                                "attribution": "(c) Anna, no rights reserved (CC0)"})["autore"] == "Anna"
     for code in (None, "cc-by-nc", "cc-by-sa", "cc-by-nd"):
         assert photos.photo_entry({**base, "license_code": code}) is None
+
+
+# --------------------------------------------------------------------------- specie simili
+
+def test_extract_citazione_letterale():
+    texts = ["Pianta alta. Può essere confusa con X, più piccola. Altro.", "secondo blocco"]
+    assert build_lookalikes.extract(texts, "Può essere confusa", "più piccola.") == \
+        "Può essere confusa con X, più piccola."
+    assert build_lookalikes.extract(texts, "confusa con X", "X") == "…confusa con X"
+    assert build_lookalikes.extract(texts, "inesistente", ".") is None
+
+
+def test_specie_simili_coerenti():
+    slugs = {sync.slugify(n) for n in REFERENCE}
+    assert set(build_lookalikes.CURATED) <= slugs
+    for group in build_lookalikes.RELATED_GROUPS:
+        assert set(group) <= slugs

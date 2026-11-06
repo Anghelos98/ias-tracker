@@ -52,6 +52,14 @@ A novembre 2026 sette schede ISPRA sono incomplete: *Celastrus orbiculatus*, *Cr
 *Hakea sericea* e *Nanozostera japonica* (solo pagina segnaposto) e *Gunnera tinctoria*,
 *Microstegium vimineum*, *Myriophyllum heterophyllum* (solo descrizione; scheda completa in PDF).
 
+## Specie simili
+
+La sezione "Con cosa si può confondere" riporta **citazioni letterali** dalle schede ISPRA
+(CC BY 4.0), scelte a mano tra le frasi che descrivono una possibile confusione
+(`scripts/build_lookalikes.py` → `assets/data/lookalikes.json`). Lo script estrae il testo
+dalla scheda scaricata: se ISPRA cambia una frase, la voce viene omessa e segnalata. Per le
+specie la cui scheda ISPRA non parla di confusioni non viene aggiunto nulla.
+
 ## Foto delle specie (iNaturalist)
 
 Le foto nelle schede vengono da [iNaturalist](https://www.inaturalist.org): solo foto con licenza

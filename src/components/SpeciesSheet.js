@@ -12,7 +12,8 @@ import {
   WHAT_TO_DO,
   formatDateIt,
 } from '../data/legal';
-import { readPhotos, readSpeciesSheet } from '../data/remote';
+import { readLookalikes, readPhotos, readSpeciesSheet } from '../data/remote';
+import { SPECIES } from '../data/species';
 
 const PRESENCE_COLORS = {
   diffusa: '#c62828',
@@ -30,18 +31,26 @@ function openUrl(url) {
 }
 
 /** Scheda completa di una specie: riconoscimento, legge, cosa fare, schede ISPRA. */
-export default function SpeciesSheet({ species, manifest, visible, onClose }) {
+export default function SpeciesSheet({ species, manifest, visible, onClose, onOpenSpecies }) {
   const insets = useSafeAreaInsets();
   // La scheda ISPRA viene caricata solo quando si apre la schermata (scaricata o inclusa nell'app).
-  const [loaded, setLoaded] = useState({ slug: null, sheet: null, photos: [] });
+  const [loaded, setLoaded] = useState({ slug: null, sheet: null, photos: [], lookalikes: null });
   useEffect(() => {
     if (!visible || !species) return undefined;
     let active = true;
-    Promise.all([readSpeciesSheet(species, manifest).catch(() => null), readPhotos(manifest).catch(() => null)]).then(
-      ([s, photos]) => {
-        if (active) setLoaded({ slug: species.slug, sheet: s, photos: photos?.specie?.[species.slug] ?? [] });
-      },
-    );
+    Promise.all([
+      readSpeciesSheet(species, manifest).catch(() => null),
+      readPhotos(manifest).catch(() => null),
+      readLookalikes(manifest).catch(() => null),
+    ]).then(([s, photos, lookalikes]) => {
+      if (!active) return;
+      setLoaded({
+        slug: species.slug,
+        sheet: s,
+        photos: photos?.specie?.[species.slug] ?? [],
+        lookalikes: lookalikes?.specie?.[species.slug] ?? null,
+      });
+    });
     return () => {
       active = false;
     };
@@ -49,6 +58,7 @@ export default function SpeciesSheet({ species, manifest, visible, onClose }) {
   const current = loaded.slug === species?.slug;
   const sheet = current ? loaded.sheet : null;
   const photos = current ? loaded.photos : [];
+  const lookalikes = current ? loaded.lookalikes : null;
 
   if (!species) return null;
   const { listing } = species;
@@ -99,6 +109,33 @@ export default function SpeciesSheet({ species, manifest, visible, onClose }) {
             </Text>
           )}
           {sheet?.sinonimi ? <Text style={styles.small}>Sinonimi: {sheet.sinonimi}</Text> : null}
+        </Section>
+
+        {/* Specie simili */}
+        <Section title="Con cosa si può confondere">
+          {lookalikes?.voci?.map((v) => (
+            <View key={v.citazione} style={styles.lookalike}>
+              <Text style={styles.lookalikeNames}>{v.simili.join(', ')}</Text>
+              <Text style={styles.quote}>«{v.citazione}»</Text>
+            </View>
+          ))}
+          {lookalikes?.correlate?.length ? (
+            <View style={styles.related}>
+              <Text style={styles.subheading}>Specie dell’elenco UE simili</Text>
+              {lookalikes.correlate.map((slug) => (
+                <Pressable key={slug} onPress={() => onOpenSpecies?.(slug)} accessibilityRole="link" hitSlop={6}>
+                  <Text style={styles.link}>{relatedName(slug)} ›</Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+          {lookalikes?.voci?.length ? (
+            <Text style={styles.small}>Citazioni dalla scheda ISPRA (CC BY 4.0).</Text>
+          ) : (
+            !lookalikes?.correlate?.length && (
+              <Text style={styles.muted}>La scheda ISPRA non indica specie con cui si può confondere.</Text>
+            )
+          )}
         </Section>
 
         {/* Cosa dice la legge */}
@@ -230,6 +267,12 @@ function PhotoGallery({ photos }) {
   );
 }
 
+/** "Poligono del Giappone (Reynoutria japonica)" per i collegamenti tra specie. */
+function relatedName(slug) {
+  const s = SPECIES.find((x) => x.slug === slug);
+  return s ? `${s.commonName} (${s.scientificName})` : slug;
+}
+
 function Section({ title, children }) {
   return (
     <View style={styles.section}>
@@ -283,6 +326,10 @@ const styles = StyleSheet.create({
   scientific: { fontSize: 15, fontStyle: 'italic', color: '#555', marginTop: 2 },
   close: { fontSize: 16, color: '#2e7d32', fontWeight: '600', paddingTop: 4 },
   content: { paddingHorizontal: 18, paddingTop: 14, backgroundColor: '#fff' },
+  lookalike: { marginBottom: 10 },
+  lookalikeNames: { fontSize: 15, fontWeight: '700', color: '#1b1b1b' },
+  quote: { fontSize: 14, lineHeight: 21, color: '#444', fontStyle: 'italic', marginTop: 2 },
+  related: { marginTop: 4 },
   gallery: { marginBottom: 14 },
   galleryRow: { gap: 10 },
   photo: { width: 200, height: 150, borderRadius: 10, backgroundColor: '#eee' },
