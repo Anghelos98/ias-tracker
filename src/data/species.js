@@ -1,7 +1,7 @@
 // File generato da scripts/build_app_data.py - non modificare a mano.
-// Dati GBIF aggiornati al 2026-11-05T23:26:53+00:00.
+// Dati GBIF aggiornati al 2026-11-06T08:56:26+00:00.
 
-export const DATA_UPDATED_AT = "2026-11-05T23:26:53+00:00";
+export const DATA_UPDATED_AT = "2026-11-06T08:56:26+00:00";
 
 export const SPECIES = [
   { "slug": "acacia-saligna", "scientificName": "Acacia saligna", "commonName": "Acacia saligna", "family": "Fabaceae", "total": 697, "automatic": 18, "years": {"min": 1972, "max": 2026}, "bbox": [8.160256, 35.513384, 18.504772, 42.78222], load: () => require('../../assets/data/species/acacia-saligna.json') },

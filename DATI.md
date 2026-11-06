@@ -25,8 +25,17 @@ Per citare i dati: *GBIF.org, occurrence search, consultato il <data>*, più i d
 origine. Il nome del dataset di ogni segnalazione è riportato nei file dati e nella scheda
 dell'app.
 
-> **Da completare:** lo script di sincronizzazione non salva ancora la licenza di ogni
-> record. Sarà aggiunta per mostrare in app fonte e licenza di ciascuna segnalazione.
+Lo script salva la licenza di ogni record (campo `licenza`), e l'app la mostra nella
+scheda di ciascuna segnalazione insieme alla fonte. Distribuzione al 6 novembre 2026
+(24.095 segnalazioni):
+
+| Licenza       | Segnalazioni | Quota |
+|---------------|-------------:|------:|
+| CC BY 4.0     | 13.003       | 54%   |
+| CC BY-NC 4.0  |  9.928       | 41%   |
+| CC0 1.0       |  1.164       |  5%   |
+
+Il conteggio per specie è in `data/index.json` (campo `licenze`) dopo la sincronizzazione.
 
 ## Elenco delle specie
 

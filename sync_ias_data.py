@@ -182,6 +182,19 @@ def valid_coordinates(lat: Any, lon: Any) -> bool:
     )
 
 
+def license_label(url: str | None) -> str | None:
+    """'http://creativecommons.org/licenses/by-nc/4.0/legalcode' -> 'CC BY-NC 4.0'."""
+    if not url:
+        return None
+    m = re.search(r"/licenses/([a-z-]+)/([\d.]+)", url)
+    if m:
+        return f"CC {m.group(1).upper()} {m.group(2)}"
+    m = re.search(r"/publicdomain/zero/([\d.]+)", url)
+    if m:
+        return f"CC0 {m.group(1)}"
+    return url
+
+
 def clean_record(raw: dict[str, Any], client: GBIFClient) -> dict[str, Any] | None:
     """Tiene ogni record con coordinate valide; gli issue GBIF vengono riportati, non filtrati."""
     lat, lon = raw.get("decimalLatitude"), raw.get("decimalLongitude")
@@ -196,6 +209,7 @@ def clean_record(raw: dict[str, Any], client: GBIFClient) -> dict[str, Any] | No
         "data": raw.get("eventDate"),
         "dataset": dataset,
         "istituzione": raw.get("institutionCode"),
+        "licenza": license_label(raw.get("license")),
         "nome_registrato": raw.get("scientificName"),
         "incertezza_m": raw.get("coordinateUncertaintyInMeters"),
         "identificazione_automatica": bool(dataset and "automatically identified" in dataset.lower()),
@@ -253,6 +267,7 @@ def species_summary(species: str, slug: str, taxon: dict[str, Any], records: lis
     lats = [r["lat"] for r in records]
     lons = [r["lon"] for r in records]
     sources = Counter(r["dataset"] or "sconosciuto" for r in records)
+    licenses = Counter(r.get("licenza") or "non indicata" for r in records)
     return {
         "nome_scientifico": species,
         "slug": slug,
@@ -265,6 +280,7 @@ def species_summary(species: str, slug: str, taxon: dict[str, Any], records: lis
         "anni": {"min": min(years), "max": max(years)} if years else None,
         "bbox": [min(lons), min(lats), max(lons), max(lats)] if records else None,
         "fonti": dict(sources.most_common()),
+        "licenze": dict(licenses.most_common()),
         "errore": error,
     }
 

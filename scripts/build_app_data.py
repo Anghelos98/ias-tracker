@@ -6,7 +6,7 @@ Scrive:  assets/data/species/<slug>.json   punti in formato compatto
          src/data/species.js                catalogo delle 49 specie + loader lazy
 
 Formato compatto di un file specie:
-    {"fonti": ["iNaturalist ...", ...],
+    {"fonti": [{"nome": "iNaturalist ...", "licenza": "CC BY-NC 4.0"}, ...],
      "punti": [[lon, lat, anno|null, indice_fonte, auto(0/1), incertezza_m|null], ...]}
 
 Metro (il bundler di Expo) accetta solo require() statici: per questo il catalogo
@@ -83,16 +83,16 @@ COMMON_NAMES = {
 
 
 def compact(geojson: dict) -> dict:
-    sources: list[str] = []
-    source_idx: dict[str, int] = {}
+    sources: list[dict] = []
+    source_idx: dict[tuple, int] = {}
     points = []
     for f in geojson["features"]:
         lon, lat = f["geometry"]["coordinates"]
         p = f["properties"]
-        src = p.get("dataset") or "Fonte sconosciuta"
+        src = (p.get("dataset") or "Fonte sconosciuta", p.get("licenza"))
         if src not in source_idx:
             source_idx[src] = len(sources)
-            sources.append(src)
+            sources.append({"nome": src[0], "licenza": src[1]})
         unc = p.get("incertezza_m")
         points.append([round(lon, 5), round(lat, 5), p.get("anno"), source_idx[src],
                        1 if p.get("identificazione_automatica") else 0,

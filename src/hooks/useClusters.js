@@ -23,7 +23,7 @@ const VIEWPORT_MARGIN = 0.15;
  * Raggruppa i punti di una specie con supercluster e restituisce solo ciò che è
  * dentro (o appena fuori) lo schermo: i marker fuori vista non vengono creati.
  *
- * @param {{fonti: string[], punti: Array<[number, number, number|null, number, 0|1, number|null]>} | null} data
+ * @param {{fonti: {nome: string, licenza: string|null}[], punti: Array<[number, number, number|null, number, 0|1, number|null]>} | null} data
  * @param {object} region  regione visibile della mappa
  * @param {boolean} includeAutomatic  includere le identificazioni solo automatiche
  */
@@ -46,7 +46,8 @@ export function useClusters(data, region, includeAutomatic) {
       location.records.push({
         id: i,
         year,
-        source: data.fonti[sourceIdx],
+        source: data.fonti[sourceIdx].nome,
+        license: data.fonti[sourceIdx].licenza,
         automatic: automatic === 1,
         uncertainty: uncertainty ?? null,
       });

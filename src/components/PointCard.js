@@ -44,8 +44,15 @@ export default function PointCard({ points, coordinate, species, onClose, onLayo
                     {item.source}
                     {item.automatic ? '  (automatica)' : ''}
                   </Text>
-                  {item.uncertainty != null && (
-                    <Text style={styles.listMeta}>Incertezza {formatUncertainty(item.uncertainty)}</Text>
+                  {(item.uncertainty != null || item.license) && (
+                    <Text style={styles.listMeta}>
+                      {[
+                        item.uncertainty != null ? `Incertezza ${formatUncertainty(item.uncertainty)}` : null,
+                        item.license ? `Licenza ${item.license}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </Text>
                   )}
                 </View>
               </View>
@@ -84,6 +91,8 @@ function SinglePoint({ point }) {
       <Text style={styles.value}>{point.year ?? 'Non indicato'}</Text>
       <Text style={styles.label}>Fonte del dato</Text>
       <Text style={styles.value}>{point.source}</Text>
+      <Text style={styles.label}>Licenza</Text>
+      <Text style={styles.value}>{point.license ?? 'Non indicata'}</Text>
       {point.automatic && (
         <Text style={styles.warning}>Identificazione solo automatica (non verificata da un esperto)</Text>
       )}
