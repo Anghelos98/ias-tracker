@@ -19,6 +19,8 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 - Scheda della segnalazione: anno, fonte, coordinate e incertezza della posizione
 - Filtri per periodo, precisione della posizione e identificazioni automatiche (Pl@ntNet),
   salvati sul telefono; le posizioni approssimative (oltre 1 km) hanno un pallino vuoto
+- "Vicino a me": specie segnalate entro 1, 5, 10 o 25 km dalla propria posizione, con la
+  distanza della segnalazione più vicina
 - Scheda di ogni specie: come riconoscerla, cosa dice la legge (D.Lgs. 230/2017), cosa fare
   se la trovi, approfondimenti e mappa di distribuzione ISPRA
 - Segnalazioni: specie, posizione GPS automatica e foto in pochi tocchi; invio per email al
@@ -34,6 +36,7 @@ src/hooks/useClusters.js    raggruppamento con supercluster
 src/utils/geo.js            calcoli su zoom, coordinate e proiezione
 src/components/SpeciesSheet.js  scheda della specie
 src/components/FiltersPanel.js  filtri della mappa e legenda
+src/components/NearbyPanel.js   "Vicino a me"
 src/components/ReportScreen.js  nuova segnalazione (GPS, foto, invio)
 src/components/MyReports.js     segnalazioni salvate sul telefono
 src/reports/                    salvataggio e invio delle segnalazioni

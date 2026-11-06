@@ -12,7 +12,6 @@ import {
   View,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { REPORT_EMAIL } from '../data/legal';
@@ -20,25 +19,10 @@ import { SPECIES } from '../data/species';
 import { gpsFromExif } from '../reports/format';
 import { sendByEmail, shareReport } from '../reports/send';
 import { addReport, newReportId, persistPhotos } from '../reports/storage';
+import { readGpsPosition } from '../utils/location';
 
 const MAX_PHOTOS = 3;
 const POOR_ACCURACY_M = 50; // oltre questa incertezza suggeriamo di riprovare all'aperto
-/** Legge la posizione GPS. Restituisce { position } oppure { error } (messaggio per l'utente). */
-async function readGpsPosition() {
-  try {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      return { error: 'Serve il permesso di accesso alla posizione: attivalo nelle impostazioni.' };
-    }
-    const { coords } = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-    return {
-      position: { latitude: coords.latitude, longitude: coords.longitude, accuracy: coords.accuracy, source: 'gps' },
-    };
-  } catch {
-    return { error: 'Posizione non disponibile. Controlla che il GPS sia attivo e riprova.' };
-  }
-}
-
 const UNKNOWN_SPECIES = { slug: null, commonName: 'Specie non identificata', scientificName: 'da identificare' };
 
 /**

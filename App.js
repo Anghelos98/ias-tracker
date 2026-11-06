@@ -8,6 +8,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { ClusterMarker, DOT_HIT_RADIUS, DotMarker, clusterSize } from './src/components/MapMarkers';
 import PointCard from './src/components/PointCard';
 import FiltersPanel, { describeFilters } from './src/components/FiltersPanel';
+import NearbyPanel from './src/components/NearbyPanel';
 import SpeciesPanel from './src/components/SpeciesPanel';
 import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
@@ -62,6 +63,7 @@ function IASTracker() {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [nearbyOpen, setNearbyOpen] = useState(false);
   // { key, coordinate, points: [proprietà delle segnalazioni], pointId? } oppure null
   const [selection, setSelection] = useState(null);
 
@@ -108,8 +110,12 @@ function IASTracker() {
       .catch(() => setHasLocation(false));
   }, []);
 
+  /**
+   * Mostra una specie sulla mappa. Con `focus` ({ center, radiusM }) la mappa inquadra
+   * quell'area invece dell'intera distribuzione della specie (usato da "Vicino a me").
+   */
   const selectSpecies = useCallback(
-    (item) => {
+    (item, focus = null) => {
       setPanelOpen(false);
       setSelection(null);
       setSpecies(item);
@@ -126,7 +132,13 @@ function IASTracker() {
           if (request !== loadRequest.current) return; // nel frattempo è stata scelta un'altra specie
           setData(points);
           setLoading(false);
-          if (points && item.bbox) mapRef.current?.animateToRegion(bboxToRegion(item.bbox), 600);
+          if (!points) return;
+          if (focus) {
+            const delta = (focus.radiusM / 111320) * 2.4;
+            mapRef.current?.animateToRegion({ ...focus.center, latitudeDelta: delta, longitudeDelta: delta }, 600);
+          } else if (item.bbox) {
+            mapRef.current?.animateToRegion(bboxToRegion(item.bbox), 600);
+          }
         });
     },
     [manifest],
@@ -258,6 +270,22 @@ function IASTracker() {
     setTimeout(() => setSheetSpecies(item), 400);
   }, []);
 
+  // "Vicino a me": mostra la specie scelta inquadrando l'area attorno all'utente.
+  const selectNearby = useCallback(
+    (result, position, radiusM) => {
+      setNearbyOpen(false);
+      selectSpecies(result.species, {
+        center: { latitude: position.latitude, longitude: position.longitude },
+        radiusM,
+      });
+    },
+    [selectSpecies],
+  );
+  const openSheetFromNearby = useCallback((item) => {
+    setNearbyOpen(false);
+    setTimeout(() => setSheetSpecies(item), 400);
+  }, []);
+
   // Filtri: ripristinati all'avvio, salvati a ogni modifica.
   useEffect(() => {
     let active = true;
@@ -384,6 +412,9 @@ function IASTracker() {
             {filtersSummary || 'Tutte le segnalazioni verificate'}
           </Text>
         </Pressable>
+        <Pressable style={styles.roundButton} onPress={() => setNearbyOpen(true)} accessibilityLabel="Vicino a me">
+          <Text style={styles.roundButtonEmoji}>📍</Text>
+        </Pressable>
         <Pressable style={styles.roundButton} onPress={() => setPanelOpen(true)} accessibilityLabel="Elenco specie">
           <Text style={styles.roundButtonText}>☰</Text>
         </Pressable>
@@ -391,6 +422,16 @@ function IASTracker() {
           <Text style={styles.roundButtonText}>◎</Text>
         </Pressable>
       </View>
+
+      <NearbyPanel
+        visible={nearbyOpen}
+        speciesList={speciesList}
+        manifest={manifest}
+        filters={filters}
+        onSelect={selectNearby}
+        onInfo={openSheetFromNearby}
+        onClose={() => setNearbyOpen(false)}
+      />
 
       <FiltersPanel
         visible={filtersOpen}
@@ -482,6 +523,7 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   roundButtonText: { fontSize: 22, color: '#2e7d32' },
+  roundButtonEmoji: { fontSize: 20 },
   infoRound: {
     width: 48,
     height: 48,
