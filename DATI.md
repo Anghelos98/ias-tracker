@@ -48,7 +48,7 @@ Ogni scheda riporta il link alla pagina originale e la data di consultazione
 Le foto del sito ISPRA hanno licenze diverse (spesso CC BY-SA, autori di Wikimedia Commons)
 e **non** sono incluse. La mappa di distribuzione è caricata dal sito ISPRA al momento.
 
-A novembre 2026 sette schede ISPRA sono incomplete: *Celastrus orbiculatus*, *Crassula helmsii*,
+A novembre 2026 sette schede ISPRA sono incomplete (per queste l'app mostra comunque foto e dati EASIN): *Celastrus orbiculatus*, *Crassula helmsii*,
 *Hakea sericea* e *Nanozostera japonica* (solo pagina segnaposto) e *Gunnera tinctoria*,
 *Microstegium vimineum*, *Myriophyllum heterophyllum* (solo descrizione; scheda completa in PDF).
 
@@ -59,6 +59,17 @@ La sezione "Con cosa si può confondere" riporta **citazioni letterali** dalle s
 (`scripts/build_lookalikes.py` → `assets/data/lookalikes.json`). Lo script estrae il testo
 dalla scheda scaricata: se ISPRA cambia una frase, la voce viene omessa e segnalata. Per le
 specie la cui scheda ISPRA non parla di confusioni non viene aggiunto nulla.
+
+## Dati europei (EASIN)
+
+La sezione "In Europa" usa il catalogo [EASIN](https://easin.jrc.ec.europa.eu/) della Commissione
+europea (JRC), tramite la sua API pubblica (`scripts/fetch_easin.py` → `assets/data/easin.json`):
+prima introduzione nota in Europa, paesi in cui la specie è presente, vie di introduzione e settori
+con impatti negativi, con le categorie tradotte in italiano. Citazione richiesta da EASIN:
+*European Commission - Joint Research Centre - European Alien Species Information Network (EASIN)*.
+I contenuti della Commissione sono riutilizzabili con licenza CC BY 4.0
+([note legali](https://commission.europa.eu/legal-notice_en)). Questi dati completano anche le
+schede ISPRA ancora incomplete.
 
 ## Foto delle specie (iNaturalist)
 

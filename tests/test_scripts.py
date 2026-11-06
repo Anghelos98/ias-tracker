@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import build_app_data
 import build_lookalikes
 import build_site
+import fetch_easin as easin
 import fetch_ispra_sheets as ispra
 import fetch_species_photos as photos
 import sync_ias_data as sync
@@ -154,6 +155,9 @@ def test_build_site(tmp_path, monkeypatch):
     lookalikes_file = tmp_path / "lookalikes.json"
     lookalikes_file.write_text('{"specie": {}}')
     monkeypatch.setattr(build_site, "LOOKALIKES", lookalikes_file)
+    easin_file = tmp_path / "easin.json"
+    easin_file.write_text('{"specie": {}}')
+    monkeypatch.setattr(build_site, "EASIN", easin_file)
 
     site = tmp_path / "site"
     build_site.main(site)
@@ -165,6 +169,7 @@ def test_build_site(tmp_path, monkeypatch):
     assert (site / "data" / "v1" / "species" / "a.json").exists()
     assert manifest["foto"]["file"] == "photos.json"
     assert manifest["simili"]["file"] == "lookalikes.json"
+    assert manifest["europa"]["file"] == "easin.json"
     assert (site / "data" / "v1" / "photos.json").exists()
     assert (site / "index.html").exists() and (site / ".nojekyll").exists()
 
@@ -209,3 +214,44 @@ def test_specie_simili_coerenti():
     assert set(build_lookalikes.CURATED) <= slugs
     for group in build_lookalikes.RELATED_GROUPS:
         assert set(group) <= slugs
+
+
+# --------------------------------------------------------------------------- EASIN
+
+def test_easin_nomi_e_record():
+    assert easin.query_name("Hakea sericea s.l.") == "Hakea sericea"
+    assert easin.query_name("Pueraria montana var. lobata") == "Pueraria montana"
+    assert easin.query_name("Reynoutria × bohemica") == "Reynoutria x bohemica"
+    assert easin.query_name("Prosopis juliflora") == "Neltuma juliflora"
+    records = [
+        {"Name": "Pueraria montana (Lour.) Merr. var. lobata", "IsEUConcern": True},
+        {"Name": "Pueraria montana", "IsEUConcern": False},
+        {"Name": "Altro", "IsEUConcern": True},
+    ]
+    assert easin.pick_record(records, "Pueraria montana var. lobata")["IsEUConcern"] is True
+    cortaderia = [{"Name": "Cortaderia selloana", "IsEUConcern": False},
+                  {"Name": "Cortaderia selloana subsp. jubata", "IsEUConcern": True}]
+    assert easin.pick_record(cortaderia, "Cortaderia jubata")["Name"].endswith("jubata")
+
+
+def test_easin_riepilogo():
+    record = {
+        "EASINID": "R1", "Name": "X",
+        "PresentInCountries": [{"Country": "IT"}, {"Country": "CH"}, {"Country": "IT"}],
+        "FirstIntroductionsInEU": [{"Country": "IT", "Year": "-   "}, {"Country": "FR", "Year": "1900"},
+                                   {"Country": "UK", "Year": "1850"}],
+        "CBD_Pathways": [{"Name": "ESCAPE FROM CONFINEMENT: Horticulture"},
+                         {"Name": "ESCAPE FROM CONFINEMENT: Botanical garden"},
+                         {"Name": "RELEASE IN NATURE: Other"}],
+        "ImpactOnSectors": [{"SectorName": "Agriculture", "Negative": "LOW"},
+                            {"SectorName": "Agriculture", "Negative": "HIGH"},
+                            {"SectorName": "Soil", "Negative": "MEDIUM"},
+                            {"SectorName": "Forestry", "Negative": None}],
+    }
+    s = easin.summarize(record)
+    assert s["paesi_presenza"] == ["Italia", "Svizzera"]
+    assert s["prima_introduzione_europa"] == {"anno": 1850, "paese": "Regno Unito"}
+    assert s["vie_introduzione"] == ["Fuga da coltivazioni, giardini, acquari o allevamenti",
+                                     "Rilascio intenzionale in natura"]
+    assert s["impatti"] == [{"settore": "Agricoltura", "livello": "alto"}, {"settore": "Suolo", "livello": "medio"}]
+    assert s["url"].endswith("/R1")

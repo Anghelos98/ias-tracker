@@ -26,8 +26,8 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 - "Vicino a me": specie segnalate entro 1, 5, 10 o 25 km dalla propria posizione, con la
   distanza della segnalazione più vicina
 - Scheda di ogni specie: foto (iNaturalist, CC0/CC BY), come riconoscerla, con cosa si può
-  confondere, cosa dice la legge (D.Lgs. 230/2017), cosa fare
-  se la trovi, approfondimenti e mappa di distribuzione ISPRA
+  confondere, dati europei EASIN (diffusione, vie di introduzione, impatti), cosa dice la legge
+  (D.Lgs. 230/2017), cosa fare se la trovi, approfondimenti e mappa di distribuzione ISPRA
 - Segnalazioni: specie, posizione GPS automatica e foto in pochi tocchi; invio per email al
   Ministero dell'Ambiente (casella prevista dall'art. 18 del D.Lgs. 230/2017) o condivisione
   con qualsiasi app; storico "Le mie segnalazioni" salvato solo sul telefono
@@ -55,6 +55,7 @@ scripts/build_app_data.py   converte data/ nei file usati dall'app
 scripts/fetch_ispra_sheets.py  scarica le schede delle specie dal sito ISPRA
 scripts/fetch_species_photos.py  raccoglie le foto delle specie da iNaturalist
 scripts/build_lookalikes.py specie simili (citazioni dalle schede ISPRA)
+scripts/fetch_easin.py      dati europei dal catalogo EASIN
 scripts/build_site.py       prepara il sito GitHub Pages con i dati per l'app
 src/data/remote.js          aggiornamento dei dati nell'app (manifest, download, cache)
 .github/workflows/          aggiornamento settimanale automatico
@@ -92,6 +93,7 @@ python3 -m venv .venv
 .venv/bin/python sync_ias_data.py --all          # scarica/aggiorna le segnalazioni da GBIF
 .venv/bin/python scripts/fetch_ispra_sheets.py   # scarica/aggiorna le schede ISPRA
 .venv/bin/python scripts/build_lookalikes.py     # specie simili dalle schede ISPRA
+.venv/bin/python scripts/fetch_easin.py          # dati europei EASIN
 .venv/bin/python scripts/fetch_species_photos.py # raccoglie le foto da iNaturalist
 .venv/bin/python scripts/build_app_data.py       # rigenera assets/data e src/data/species.js
 ```

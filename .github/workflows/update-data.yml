@@ -49,6 +49,10 @@ jobs:
         # Se una frase ISPRA è cambiata la voce viene omessa e compare un avviso.
         run: python scripts/build_lookalikes.py || echo "::warning::Alcune specie simili non trovate nelle schede ISPRA"
 
+      - name: Scarica i dati europei da EASIN
+        # Se EASIN non risponde si tengono i dati già presenti nel repository.
+        run: python scripts/fetch_easin.py || echo "::warning::Dati EASIN non aggiornati"
+
       - name: Raccogli le foto da iNaturalist
         # Se iNaturalist non risponde si tengono le foto già presenti nel repository.
         run: python scripts/fetch_species_photos.py || echo "::warning::Foto non aggiornate"

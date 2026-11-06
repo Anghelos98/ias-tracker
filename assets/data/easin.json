@@ -1,0 +1,3039 @@
+{
+ "fonte": "European Commission - Joint Research Centre - European Alien Species Information Network (EASIN), https://easin.jrc.ec.europa.eu/",
+ "recuperato_il": "2026-11-06",
+ "specie": {
+  "acacia-mearnsii": {
+   "easin_id": "R00046",
+   "nome_easin": "Acacia mearnsii",
+   "paesi_presenza": [
+    "Algeria",
+    "Belgio",
+    "Francia",
+    "Italia",
+    "Marocco",
+    "Portogallo",
+    "Spagna",
+    "Turchia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1500,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R00046"
+  },
+  "acacia-saligna": {
+   "easin_id": "R00053",
+   "nome_easin": "Acacia saligna",
+   "paesi_presenza": [
+    "Albania",
+    "Algeria",
+    "Bosnia ed Erzegovina",
+    "Cipro",
+    "Croazia",
+    "Danimarca",
+    "Egitto",
+    "Francia",
+    "Gibilterra",
+    "Grecia",
+    "Israele",
+    "Italia",
+    "Libano",
+    "Libia",
+    "Malta",
+    "Marocco",
+    "Palestina",
+    "Portogallo",
+    "Siria",
+    "Spagna",
+    "Tunisia",
+    "Turchia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1800,
+    "paese": "Spagna"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R00053"
+  },
+  "ailanthus-altissima": {
+   "easin_id": "R00460",
+   "nome_easin": "Ailanthus altissima",
+   "paesi_presenza": [
+    "Albania",
+    "Algeria",
+    "Armenia",
+    "Austria",
+    "Azerbaigian",
+    "Belgio",
+    "Bosnia ed Erzegovina",
+    "Bulgaria",
+    "Cechia",
+    "Cipro",
+    "Croazia",
+    "Danimarca",
+    "Egitto",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Gibilterra",
+    "Grecia",
+    "Irlanda",
+    "Israele",
+    "Italia",
+    "Jersey",
+    "Libano",
+    "Libia",
+    "Liechtenstein",
+    "Lussemburgo",
+    "Macedonia del Nord",
+    "Malta",
+    "Marocco",
+    "Moldavia",
+    "Monaco",
+    "Montenegro",
+    "Norvegia",
+    "Paesi Bassi",
+    "Palestina",
+    "Polonia",
+    "Portogallo",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "San Marino",
+    "Serbia",
+    "Siria",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Tunisia",
+    "Turchia",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1749,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Aree urbane",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "alto"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R00460"
+  },
+  "alternanthera-philoxeroides": {
+   "easin_id": "R00669",
+   "nome_easin": "Alternanthera philoxeroides",
+   "paesi_presenza": [
+    "Francia",
+    "Italia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1971,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Pesca",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Emissioni di gas serra",
+     "livello": "medio"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R00669"
+  },
+  "andropogon-virginicus": {
+   "easin_id": "R00994",
+   "nome_easin": "Andropogon virginicus",
+   "paesi_presenza": [
+    "Francia",
+    "Georgia",
+    "Russia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1950,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Emissioni di gas serra",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R00994"
+  },
+  "asclepias-syriaca": {
+   "easin_id": "R01529",
+   "nome_easin": "Asclepias syriaca",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Bielorussia",
+    "Bosnia ed Erzegovina",
+    "Bulgaria",
+    "Cechia",
+    "Croazia",
+    "Danimarca",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Italia",
+    "Lettonia",
+    "Lituania",
+    "Macedonia del Nord",
+    "Moldavia",
+    "Montenegro",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1642,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "medio"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R01529"
+  },
+  "baccharis-halimifolia": {
+   "easin_id": "R01830",
+   "nome_easin": "Baccharis halimifolia",
+   "paesi_presenza": [
+    "Belgio",
+    "Francia",
+    "Georgia",
+    "Italia",
+    "Norvegia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1683,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Piccole e medie imprese",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "medio"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "basso"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R01830"
+  },
+  "broussonetia-papyrifera": {
+   "easin_id": "R02356",
+   "nome_easin": "Broussonetia papyrifera",
+   "paesi_presenza": [
+    "Albania",
+    "Algeria",
+    "Armenia",
+    "Austria",
+    "Belgio",
+    "Bosnia ed Erzegovina",
+    "Bulgaria",
+    "Cechia",
+    "Cipro",
+    "Croazia",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Grecia",
+    "Irlanda",
+    "Italia",
+    "Macedonia del Nord",
+    "Malta",
+    "Montenegro",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svizzera",
+    "Turchia",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1500,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "medio"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "medio"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R02356"
+  },
+  "cabomba-caroliniana": {
+   "easin_id": "R02476",
+   "nome_easin": "Cabomba caroliniana",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Danimarca",
+    "Francia",
+    "Germania",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Serbia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1950,
+    "paese": "Romania"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acquacoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R02476"
+  },
+  "cardiospermum-grandiflorum": {
+   "easin_id": "R02783",
+   "nome_easin": "Cardiospermum grandiflorum",
+   "paesi_presenza": [
+    "Algeria",
+    "Belgio",
+    "Francia",
+    "Italia",
+    "Malta",
+    "Portogallo",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1959,
+    "paese": "Belgio"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R02783"
+  },
+  "celastrus-orbiculatus": {
+   "easin_id": "R02976",
+   "nome_easin": "Celastrus orbiculatus",
+   "paesi_presenza": [
+    "Armenia",
+    "Austria",
+    "Belgio",
+    "Bielorussia",
+    "Bulgaria",
+    "Cechia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Lettonia",
+    "Lituania",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Slovacchia",
+    "Svezia",
+    "Svizzera",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1863,
+    "paese": "Paesi Bassi"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "medio"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "basso"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "basso"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R02976"
+  },
+  "cenchrus-setaceus": {
+   "easin_id": "R03000",
+   "nome_easin": "Cenchrus setaceus",
+   "paesi_presenza": [
+    "Algeria",
+    "Belgio",
+    "Bulgaria",
+    "Cipro",
+    "Egitto",
+    "Francia",
+    "Germania",
+    "Grecia",
+    "Israele",
+    "Italia",
+    "Libano",
+    "Libia",
+    "Lussemburgo",
+    "Malta",
+    "Marocco",
+    "Portogallo",
+    "Siria",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Tunisia",
+    "Turchia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1939,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Aree urbane",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Emissioni di gas serra",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "medio"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R03000"
+  },
+  "cortaderia-jubata": {
+   "easin_id": "R19708",
+   "nome_easin": "Cortaderia selloana subsp. jubata",
+   "paesi_presenza": [
+    "Belgio",
+    "Francia",
+    "Norvegia",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1898,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R19708"
+  },
+  "crassula-helmsii": {
+   "easin_id": "R04306",
+   "nome_easin": "Crassula helmsii",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Danimarca",
+    "Francia",
+    "Germania",
+    "Irlanda",
+    "Isola di Man",
+    "Italia",
+    "Jersey",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Regno Unito",
+    "Spagna",
+    "Svezia",
+    "Svizzera"
+   ],
+   "prima_introduzione_europa": null,
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione lungo corridoi (canali, infrastrutture)",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Acquacoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Pesca",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "medio"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R04306"
+  },
+  "delairea-odorata": {
+   "easin_id": "R04874",
+   "nome_easin": "Delairea odorata",
+   "paesi_presenza": [
+    "Algeria",
+    "Austria",
+    "Croazia",
+    "Danimarca",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Guernsey",
+    "Irlanda",
+    "Italia",
+    "Jersey",
+    "Monaco",
+    "Norvegia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": null,
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "medio"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R04874"
+  },
+  "ehrharta-calycina": {
+   "easin_id": "R05435",
+   "nome_easin": "Ehrharta calycina",
+   "paesi_presenza": [
+    "Egitto",
+    "Portogallo",
+    "Spagna",
+    "Tunisia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1972,
+    "paese": "Regno Unito"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R05435"
+  },
+  "elodea-nuttallii": {
+   "easin_id": "R05501",
+   "nome_easin": "Elodea nuttallii",
+   "paesi_presenza": [
+    "Albania",
+    "Austria",
+    "Belgio",
+    "Bielorussia",
+    "Bulgaria",
+    "Cechia",
+    "Croazia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Irlanda",
+    "Italia",
+    "Liechtenstein",
+    "Lituania",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Turchia",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1836,
+    "paese": "Irlanda"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R05501"
+  },
+  "gunnera-tinctoria": {
+   "easin_id": "R06923",
+   "nome_easin": "Gunnera tinctoria",
+   "paesi_presenza": [
+    "Belgio",
+    "Danimarca",
+    "Francia",
+    "Germania",
+    "Guernsey",
+    "Irlanda",
+    "Isola di Man",
+    "Jersey",
+    "Norvegia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Spagna",
+    "Svezia",
+    "Svizzera"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1839,
+    "paese": "Belgio"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Emissioni di gas serra",
+     "livello": "medio"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "basso"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "basso"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R06923"
+  },
+  "gymnocoronis-spilanthoides": {
+   "easin_id": "R06930",
+   "nome_easin": "Gymnocoronis spilanthoides",
+   "paesi_presenza": [
+    "Francia",
+    "Italia",
+    "Paesi Bassi",
+    "Svezia",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1988,
+    "paese": "Ungheria"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R06930"
+  },
+  "hakea-sericea-s-l": {
+   "easin_id": "R07005",
+   "nome_easin": "Hakea sericea",
+   "paesi_presenza": [
+    "Belgio",
+    "Estonia",
+    "Francia",
+    "Italia",
+    "Portogallo",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1900,
+    "paese": "Spagna"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R07005"
+  },
+  "heracleum-mantegazzianum": {
+   "easin_id": "R07248",
+   "nome_easin": "Heracleum mantegazzianum",
+   "paesi_presenza": [
+    "Austria",
+    "Azerbaigian",
+    "Belgio",
+    "Bielorussia",
+    "Bosnia ed Erzegovina",
+    "Bulgaria",
+    "Cechia",
+    "Croazia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Grecia",
+    "Irlanda",
+    "Islanda",
+    "Isola di Man",
+    "Italia",
+    "Lettonia",
+    "Liechtenstein",
+    "Lituania",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Turchia",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1814,
+    "paese": "Estonia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "basso"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R07248"
+  },
+  "heracleum-persicum": {
+   "easin_id": "R07250",
+   "nome_easin": "Heracleum persicum",
+   "paesi_presenza": [
+    "Cechia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Islanda",
+    "Norvegia",
+    "Paesi Bassi",
+    "Regno Unito",
+    "Russia",
+    "Svezia",
+    "Turchia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1777,
+    "paese": "Estonia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R07250"
+  },
+  "heracleum-sosnowskyi": {
+   "easin_id": "R07252",
+   "nome_easin": "Heracleum sosnowskyi",
+   "paesi_presenza": [
+    "Armenia",
+    "Azerbaigian",
+    "Bielorussia",
+    "Cechia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Georgia",
+    "Germania",
+    "Italia",
+    "Lettonia",
+    "Lituania",
+    "Moldavia",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Portogallo",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Svezia",
+    "Turchia",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1948,
+    "paese": "Lettonia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "basso"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R07252"
+  },
+  "humulus-scandens": {
+   "easin_id": "R18922",
+   "nome_easin": "Humulus scandens",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Cechia",
+    "Croazia",
+    "Danimarca",
+    "Francia",
+    "Germania",
+    "Italia",
+    "Norvegia",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Svezia",
+    "Svizzera",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1815,
+    "paese": "Austria"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R18922"
+  },
+  "hydrocotyle-ranunculoides": {
+   "easin_id": "R07537",
+   "nome_easin": "Hydrocotyle ranunculoides",
+   "paesi_presenza": [
+    "Belgio",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Irlanda",
+    "Israele",
+    "Italia",
+    "Libano",
+    "Norvegia",
+    "Paesi Bassi",
+    "Regno Unito",
+    "Siria",
+    "Spagna",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1899,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R07537"
+  },
+  "impatiens-glandulifera": {
+   "easin_id": "R07719",
+   "nome_easin": "Impatiens glandulifera",
+   "paesi_presenza": [
+    "Armenia",
+    "Austria",
+    "Belgio",
+    "Bielorussia",
+    "Bosnia ed Erzegovina",
+    "Bulgaria",
+    "Cechia",
+    "Croazia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Grecia",
+    "Irlanda",
+    "Isola di Man",
+    "Italia",
+    "Jersey",
+    "Lettonia",
+    "Liechtenstein",
+    "Lituania",
+    "Lussemburgo",
+    "Macedonia del Nord",
+    "Montenegro",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Portogallo",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1839,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "medio"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R07719"
+  },
+  "koenigia-polystachya": {
+   "easin_id": "R11145",
+   "nome_easin": "Koenigia polystachya",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Cechia",
+    "Danimarca",
+    "Francia",
+    "Germania",
+    "Irlanda",
+    "Isola di Man",
+    "Italia",
+    "Liechtenstein",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Slovenia",
+    "Svezia",
+    "Svizzera"
+   ],
+   "prima_introduzione_europa": null,
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R11145"
+  },
+  "lagarosiphon-major": {
+   "easin_id": "R08062",
+   "nome_easin": "Lagarosiphon major",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Irlanda",
+    "Isola di Man",
+    "Italia",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1914,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R08062"
+  },
+  "lespedeza-cuneata": {
+   "easin_id": "R19709",
+   "nome_easin": "Lespedeza cuneata",
+   "paesi_presenza": [
+    "Belgio",
+    "Norvegia",
+    "Russia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1903,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R19709"
+  },
+  "ludwigia-grandiflora": {
+   "easin_id": "R17663",
+   "nome_easin": "Ludwigia grandiflora",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Francia",
+    "Germania",
+    "Grecia",
+    "Irlanda",
+    "Italia",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Spagna",
+    "Svizzera",
+    "Turchia",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1823,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R17663"
+  },
+  "ludwigia-peploides": {
+   "easin_id": "R08830",
+   "nome_easin": "Ludwigia peploides",
+   "paesi_presenza": [
+    "Belgio",
+    "Croazia",
+    "Francia",
+    "Germania",
+    "Grecia",
+    "Italia",
+    "Norvegia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Romania",
+    "Spagna",
+    "Turchia",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1830,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R08830"
+  },
+  "lygodium-japonicum": {
+   "easin_id": "R19710",
+   "nome_easin": "Lygodium japonicum",
+   "paesi_presenza": [
+    "Svezia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1845,
+    "paese": "Belgio"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Commercio",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R19710"
+  },
+  "lysichiton-americanus": {
+   "easin_id": "R08915",
+   "nome_easin": "Lysichiton americanus",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Cechia",
+    "Danimarca",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Irlanda",
+    "Isola di Man",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Slovenia",
+    "Svezia",
+    "Svizzera"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1901,
+    "paese": "Regno Unito"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R08915"
+  },
+  "microstegium-vimineum": {
+   "easin_id": "R09459",
+   "nome_easin": "Microstegium vimineum",
+   "paesi_presenza": [
+    "Azerbaigian",
+    "Belgio",
+    "Georgia",
+    "Russia",
+    "Turchia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 2021,
+    "paese": "Belgio"
+   },
+   "vie_introduzione": [
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R09459"
+  },
+  "myriophyllum-aquaticum": {
+   "easin_id": "R18934",
+   "nome_easin": "Myriophyllum aquaticum",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Cechia",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Gibilterra",
+    "Irlanda",
+    "Israele",
+    "Italia",
+    "Jersey",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Portogallo",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Turchia",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1880,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Diffusione spontanea da aree vicine",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Acquacoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Energie rinnovabili",
+     "livello": "alto"
+    },
+    {
+     "settore": "Pesca",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Energia",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R18934"
+  },
+  "myriophyllum-heterophyllum": {
+   "easin_id": "R09747",
+   "nome_easin": "Myriophyllum heterophyllum",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Croazia",
+    "Francia",
+    "Germania",
+    "Norvegia",
+    "Paesi Bassi",
+    "Regno Unito",
+    "Romania",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1945,
+    "paese": "Austria"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R09747"
+  },
+  "nanozostera-japonica": {
+   "easin_id": "R19622",
+   "nome_easin": "Nanozostera japonica",
+   "paesi_presenza": [
+    "Norvegia",
+    "Russia"
+   ],
+   "prima_introduzione_europa": null,
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione spontanea da aree vicine"
+   ],
+   "impatti": [
+    {
+     "settore": "Acquacoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Ambiente marino",
+     "livello": "medio"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R19622"
+  },
+  "parthenium-hysterophorus": {
+   "easin_id": "R10890",
+   "nome_easin": "Parthenium hysterophorus",
+   "paesi_presenza": [
+    "Belgio",
+    "Egitto",
+    "Francia",
+    "Israele",
+    "Polonia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1785,
+    "paese": "Spagna"
+   },
+   "vie_introduzione": [
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Commercio",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R10890"
+  },
+  "persicaria-perfoliata": {
+   "easin_id": "R19287",
+   "nome_easin": "Persicaria perfoliata",
+   "paesi_presenza": [
+    "Belgio",
+    "Georgia",
+    "Paesi Bassi",
+    "Russia",
+    "Turchia"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1980,
+    "paese": "Regno Unito"
+   },
+   "vie_introduzione": [
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R19287"
+  },
+  "pistia-stratiotes": {
+   "easin_id": "R11671",
+   "nome_easin": "Pistia stratiotes",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Cechia",
+    "Croazia",
+    "Egitto",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Israele",
+    "Italia",
+    "Marocco",
+    "Moldavia",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Portogallo",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Siria",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Turchia",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1500,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "basso"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R11671"
+  },
+  "pontederia-crassipes": {
+   "easin_id": "R05440",
+   "nome_easin": "Pontederia crassipes",
+   "paesi_presenza": [
+    "Belgio",
+    "Cechia",
+    "Danimarca",
+    "Egitto",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Israele",
+    "Italia",
+    "Libano",
+    "Malta",
+    "Marocco",
+    "Paesi Bassi",
+    "Palestina",
+    "Polonia",
+    "Portogallo",
+    "Regno Unito",
+    "Siria",
+    "Slovacchia",
+    "Spagna",
+    "Svezia",
+    "Turchia",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1823,
+    "paese": "Regno Unito"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci"
+   ],
+   "impatti": [
+    {
+     "settore": "Acquacoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Energia",
+     "livello": "alto"
+    },
+    {
+     "settore": "Pesca",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R05440"
+  },
+  "prosopis-juliflora": {
+   "easin_id": "R12278",
+   "nome_easin": "Neltuma juliflora",
+   "paesi_presenza": [
+    "Algeria",
+    "Egitto",
+    "Francia",
+    "Israele",
+    "Libia",
+    "Marocco",
+    "Palestina",
+    "Spagna",
+    "Tunisia",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1845,
+    "paese": "Francia"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R12278"
+  },
+  "pueraria-montana-var-lobata": {
+   "easin_id": "R12644",
+   "nome_easin": "Pueraria montana (Lour.) Merr. var. lobata",
+   "paesi_presenza": [
+    "Bosnia ed Erzegovina",
+    "Croazia",
+    "Georgia",
+    "Italia",
+    "Norvegia",
+    "Russia",
+    "Slovenia",
+    "Svizzera"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1916,
+    "paese": "Austria"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "medio"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R12644"
+  },
+  "reynoutria-japonica": {
+   "easin_id": "R18201",
+   "nome_easin": "Reynoutria japonica",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Bielorussia",
+    "Bosnia ed Erzegovina",
+    "Bulgaria",
+    "Cechia",
+    "Cipro",
+    "Croazia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Grecia",
+    "Guernsey",
+    "Irlanda",
+    "Isola di Man",
+    "Isole Fær Øer",
+    "Italia",
+    "Jersey",
+    "Lettonia",
+    "Liechtenstein",
+    "Lituania",
+    "Lussemburgo",
+    "Macedonia del Nord",
+    "Montenegro",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Portogallo",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1500,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione lungo corridoi (canali, infrastrutture)"
+   ],
+   "impatti": [
+    {
+     "settore": "Acque interne",
+     "livello": "alto"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "alto"
+    },
+    {
+     "settore": "Commercio",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "medio"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R18201"
+  },
+  "reynoutria-sachalinensis": {
+   "easin_id": "R18205",
+   "nome_easin": "Reynoutria sachalinensis",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Bielorussia",
+    "Bulgaria",
+    "Cechia",
+    "Cipro",
+    "Croazia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Grecia",
+    "Irlanda",
+    "Islanda",
+    "Italia",
+    "Lettonia",
+    "Lituania",
+    "Lussemburgo",
+    "Montenegro",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1500,
+    "paese": "Italia"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Trasporto involontario con mezzi e merci",
+    "Diffusione lungo corridoi (canali, infrastrutture)"
+   ],
+   "impatti": [
+    {
+     "settore": "Aree urbane",
+     "livello": "alto"
+    },
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "medio"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "basso"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R18205"
+  },
+  "reynoutria-x-bohemica": {
+   "easin_id": "R18189",
+   "nome_easin": "Reynoutria x bohemica",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Cechia",
+    "Cipro",
+    "Croazia",
+    "Danimarca",
+    "Estonia",
+    "Finlandia",
+    "Francia",
+    "Germania",
+    "Irlanda",
+    "Italia",
+    "Lussemburgo",
+    "Norvegia",
+    "Paesi Bassi",
+    "Polonia",
+    "Regno Unito",
+    "Romania",
+    "Russia",
+    "Serbia",
+    "Slovacchia",
+    "Slovenia",
+    "Spagna",
+    "Svezia",
+    "Svizzera",
+    "Ucraina",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1870,
+    "paese": "Regno Unito"
+   },
+   "vie_introduzione": [
+    "Rilascio intenzionale in natura",
+    "Fuga da coltivazioni, giardini, acquari o allevamenti",
+    "Trasporto involontario come contaminante",
+    "Diffusione lungo corridoi (canali, infrastrutture)"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "medio"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "medio"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Aree urbane",
+     "livello": "basso"
+    },
+    {
+     "settore": "Energie rinnovabili",
+     "livello": "basso"
+    },
+    {
+     "settore": "Infrastrutture (strade, ferrovie)",
+     "livello": "basso"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "basso"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R18189"
+  },
+  "rugulopteryx-okamurae": {
+   "easin_id": "R13229",
+   "nome_easin": "Rugulopteryx okamurae",
+   "paesi_presenza": [
+    "Algeria",
+    "Egitto",
+    "Francia",
+    "Gibilterra",
+    "Italia",
+    "Marocco",
+    "Portogallo",
+    "Regno Unito",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1900,
+    "paese": "Portogallo"
+   },
+   "vie_introduzione": [
+    "Trasporto involontario come contaminante"
+   ],
+   "impatti": [
+    {
+     "settore": "Ambiente marino",
+     "livello": "alto"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Pesca",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R13229"
+  },
+  "salvinia-molesta": {
+   "easin_id": "R13499",
+   "nome_easin": "Salvinia molesta",
+   "paesi_presenza": [
+    "Austria",
+    "Belgio",
+    "Danimarca",
+    "Francia",
+    "Germania",
+    "Israele",
+    "Italia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Spagna",
+    "Ungheria"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1988,
+    "paese": "Danimarca"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Agricoltura",
+     "livello": "basso"
+    },
+    {
+     "settore": "Selvicoltura",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R13499"
+  },
+  "triadica-sebifera": {
+   "easin_id": "R15336",
+   "nome_easin": "Triadica sebifera",
+   "paesi_presenza": [
+    "Algeria",
+    "Francia",
+    "Georgia",
+    "Germania",
+    "Israele",
+    "Italia",
+    "Paesi Bassi",
+    "Portogallo",
+    "Regno Unito",
+    "Spagna"
+   ],
+   "prima_introduzione_europa": {
+    "anno": 1703,
+    "paese": "Regno Unito"
+   },
+   "vie_introduzione": [
+    "Fuga da coltivazioni, giardini, acquari o allevamenti"
+   ],
+   "impatti": [
+    {
+     "settore": "Conservazione della natura",
+     "livello": "alto"
+    },
+    {
+     "settore": "Qualità dell'acqua",
+     "livello": "alto"
+    },
+    {
+     "settore": "Salute delle piante",
+     "livello": "alto"
+    },
+    {
+     "settore": "Suolo",
+     "livello": "alto"
+    },
+    {
+     "settore": "Acque interne",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute animale",
+     "livello": "medio"
+    },
+    {
+     "settore": "Salute umana",
+     "livello": "medio"
+    },
+    {
+     "settore": "Sicurezza",
+     "livello": "basso"
+    },
+    {
+     "settore": "Turismo",
+     "livello": "basso"
+    }
+   ],
+   "url": "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/R15336"
+  }
+ }
+}

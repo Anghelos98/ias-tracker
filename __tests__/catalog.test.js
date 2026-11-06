@@ -3,6 +3,7 @@ import { SPECIES } from '../src/data/species';
 import reference from '../ias_reference.json';
 import photos from '../assets/data/photos.json';
 import lookalikes from '../assets/data/lookalikes.json';
+import easin from '../assets/data/easin.json';
 
 describe('catalogo delle specie', () => {
   test('contiene tutte le specie di rilevanza unionale, una volta sola', () => {
@@ -39,6 +40,15 @@ describe('catalogo delle specie', () => {
         expect(v.citazione.length).toBeGreaterThan(10);
       }
       for (const other of entry.correlate ?? []) expect(slugs.has(other)).toBe(true);
+    }
+  });
+
+  test('dati europei EASIN per ogni specie', () => {
+    for (const s of SPECIES) {
+      const e = easin.specie[s.slug];
+      expect(e).toBeDefined();
+      expect(e.easin_id).toMatch(/^R\d+$/);
+      for (const i of e.impatti) expect(['alto', 'medio', 'basso']).toContain(i.livello);
     }
   });
 

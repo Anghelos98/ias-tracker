@@ -12,7 +12,7 @@ import {
   WHAT_TO_DO,
   formatDateIt,
 } from '../data/legal';
-import { readLookalikes, readPhotos, readSpeciesSheet } from '../data/remote';
+import { readEasin, readLookalikes, readPhotos, readSpeciesSheet } from '../data/remote';
 import { SPECIES } from '../data/species';
 
 const PRESENCE_COLORS = {
@@ -34,7 +34,7 @@ function openUrl(url) {
 export default function SpeciesSheet({ species, manifest, visible, onClose, onOpenSpecies }) {
   const insets = useSafeAreaInsets();
   // La scheda ISPRA viene caricata solo quando si apre la schermata (scaricata o inclusa nell'app).
-  const [loaded, setLoaded] = useState({ slug: null, sheet: null, photos: [], lookalikes: null });
+  const [loaded, setLoaded] = useState({ slug: null, sheet: null, photos: [], lookalikes: null, europe: null });
   useEffect(() => {
     if (!visible || !species) return undefined;
     let active = true;
@@ -42,13 +42,15 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
       readSpeciesSheet(species, manifest).catch(() => null),
       readPhotos(manifest).catch(() => null),
       readLookalikes(manifest).catch(() => null),
-    ]).then(([s, photos, lookalikes]) => {
+      readEasin(manifest).catch(() => null),
+    ]).then(([s, photos, lookalikes, easin]) => {
       if (!active) return;
       setLoaded({
         slug: species.slug,
         sheet: s,
         photos: photos?.specie?.[species.slug] ?? [],
         lookalikes: lookalikes?.specie?.[species.slug] ?? null,
+        europe: easin?.specie?.[species.slug] ?? null,
       });
     });
     return () => {
@@ -59,6 +61,7 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
   const sheet = current ? loaded.sheet : null;
   const photos = current ? loaded.photos : [];
   const lookalikes = current ? loaded.lookalikes : null;
+  const europe = current ? loaded.europe : null;
 
   if (!species) return null;
   const { listing } = species;
@@ -105,7 +108,8 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
           ) : (
             <Text style={styles.muted}>
               ISPRA non ha ancora pubblicato la descrizione di questa specie, inserita nell’elenco
-              dell’Unione nel {listing.regulation.slice(0, 4)}.
+              dell’Unione nel {listing.regulation.slice(0, 4)}. Più sotto trovi i dati europei EASIN e le
+              foto.
             </Text>
           )}
           {sheet?.sinonimi ? <Text style={styles.small}>Sinonimi: {sheet.sinonimi}</Text> : null}
@@ -209,6 +213,8 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
           </Section>
         ) : null}
 
+        {europe && <EuropeSection europe={europe} />}
+
         {sheet?.mappa_distribuzione && (
           <Section title="Distribuzione in Italia (ISPRA)">
             <Image
@@ -245,6 +251,55 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
         </Section>
       </ScrollView>
     </Modal>
+  );
+}
+
+const IMPACT_COLORS = { alto: '#c62828', medio: '#ef6c00', basso: '#9e9d24' };
+
+/** Dati europei EASIN: prima introduzione, diffusione, vie di introduzione, impatti. */
+function EuropeSection({ europe }) {
+  const intro = europe.prima_introduzione_europa;
+  return (
+    <Section title="In Europa (EASIN)">
+      {intro && (
+        <Text style={styles.paragraph}>
+          Prima introduzione nota in Europa: {intro.anno}, {intro.paese}.
+        </Text>
+      )}
+      {europe.paesi_presenza.length > 0 && (
+        <Collapsible title={`Presente in ${europe.paesi_presenza.length} paesi europei e del Mediterraneo`}>
+          <Text style={styles.paragraph}>{europe.paesi_presenza.join(', ')}.</Text>
+        </Collapsible>
+      )}
+      {europe.vie_introduzione.length > 0 && (
+        <>
+          <Text style={styles.subheading}>Come arriva e si diffonde</Text>
+          {europe.vie_introduzione.map((v) => (
+            <Text key={v} style={styles.bullet}>
+              • {v}
+            </Text>
+          ))}
+        </>
+      )}
+      {europe.impatti.length > 0 && (
+        <>
+          <Text style={styles.subheading}>Impatti negativi</Text>
+          <View style={styles.impacts}>
+            {europe.impatti.map((i) => (
+              <View key={i.settore} style={[styles.impact, { borderColor: IMPACT_COLORS[i.livello] }]}>
+                <Text style={[styles.impactText, { color: IMPACT_COLORS[i.livello] }]}>
+                  {i.settore} · {i.livello}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </>
+      )}
+      <Text style={styles.small}>
+        Fonte: European Commission – JRC – European Alien Species Information Network (EASIN).
+      </Text>
+      <Link label="Scheda EASIN della specie" url={europe.url} />
+    </Section>
   );
 }
 
@@ -326,6 +381,9 @@ const styles = StyleSheet.create({
   scientific: { fontSize: 15, fontStyle: 'italic', color: '#555', marginTop: 2 },
   close: { fontSize: 16, color: '#2e7d32', fontWeight: '600', paddingTop: 4 },
   content: { paddingHorizontal: 18, paddingTop: 14, backgroundColor: '#fff' },
+  impacts: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 2 },
+  impact: { borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 },
+  impactText: { fontSize: 12, fontWeight: '600' },
   lookalike: { marginBottom: 10 },
   lookalikeNames: { fontSize: 15, fontWeight: '700', color: '#1b1b1b' },
   quote: { fontSize: 14, lineHeight: 21, color: '#444', fontStyle: 'italic', marginTop: 2 },

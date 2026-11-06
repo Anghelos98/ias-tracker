@@ -6,6 +6,7 @@ Legge:   data/index.json               statistiche per specie (da sync_ias_data.
          assets/data/sheets/*.json     schede ISPRA (da fetch_ispra_sheets.py)
          assets/data/photos.json       foto iNaturalist (da fetch_species_photos.py)
          assets/data/lookalikes.json   specie simili (da build_lookalikes.py)
+         assets/data/easin.json        dati europei EASIN (da fetch_easin.py)
 Scrive:  <site>/data/v1/manifest.json  indice: statistiche e impronta (sha256) di ogni file
          <site>/data/v1/species/*.json
          <site>/data/v1/sheets/*.json
@@ -34,6 +35,7 @@ SPECIES_DIR = ROOT / "assets" / "data" / "species"
 SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
 PHOTOS = ROOT / "assets" / "data" / "photos.json"
 LOOKALIKES = ROOT / "assets" / "data" / "lookalikes.json"
+EASIN = ROOT / "assets" / "data" / "easin.json"
 SCHEMA = 1
 
 
@@ -74,6 +76,7 @@ def main(site: Path) -> None:
         "totale_segnalazioni": index["totale_segnalazioni"],
         "foto": copy_entry(PHOTOS, out, PHOTOS.name),
         "simili": copy_entry(LOOKALIKES, out, LOOKALIKES.name),
+        "europa": copy_entry(EASIN, out, EASIN.name),
         "specie": species,
     }
     (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")
