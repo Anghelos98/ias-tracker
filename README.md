@@ -13,6 +13,7 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 
 ## Funzioni
 
+- Presentazione al primo avvio (cos'è l'app, da dove vengono i dati, come si usa)
 - Elenco delle 49 specie di rilevanza unionale, con nome comune e scientifico
 - Vista "Tutte le specie": tutte le segnalazioni insieme sulla mappa, con la specie di ogni punto
 - Mappa a schermo intero con la posizione dell'utente

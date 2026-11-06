@@ -12,6 +12,7 @@ export default function SpeciesPanel({
   selectedSlug,
   onSelect,
   onInfo,
+  onAbout,
   onClose,
 }) {
   const insets = useSafeAreaInsets();
@@ -30,7 +31,12 @@ export default function SpeciesPanel({
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Chiudi elenco" />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 8 }]}>
         <View style={styles.handle} />
-        <Text style={styles.title}>Specie di rilevanza unionale ({species.length})</Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>Specie di rilevanza unionale ({species.length})</Text>
+          <Pressable onPress={onAbout} hitSlop={10} accessibilityRole="button">
+            <Text style={styles.about}>Informazioni</Text>
+          </Pressable>
+        </View>
         <Text style={styles.updated}>
           Dati GBIF aggiornati al{' '}
           {new Date(dataUpdatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -111,7 +117,9 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: '#ccc', marginBottom: 12 },
-  title: { fontSize: 17, fontWeight: '600' },
+  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  title: { fontSize: 17, fontWeight: '600', flexShrink: 1 },
+  about: { fontSize: 14, color: '#2e7d32', fontWeight: '600', paddingLeft: 8 },
   updated: { fontSize: 12, color: '#777', marginTop: 2, marginBottom: 10 },
   search: {
     backgroundColor: '#f1f3f4',

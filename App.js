@@ -10,6 +10,7 @@ import PointCard from './src/components/PointCard';
 import FiltersPanel, { describeFilters } from './src/components/FiltersPanel';
 import NearbyPanel from './src/components/NearbyPanel';
 import ExportSection from './src/components/ExportSection';
+import WelcomeScreen from './src/components/WelcomeScreen';
 import SpeciesPanel from './src/components/SpeciesPanel';
 import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
@@ -19,7 +20,7 @@ import { checkForUpdates, dataDate, loadStoredManifest, readSpeciesPoints, withR
 import { SPECIES } from './src/data/species';
 import { loadAllDatasets } from './src/data/allSpecies';
 import { DEFAULT_FILTERS, activeFilterCount } from './src/data/points';
-import { loadFilters, saveFilters } from './src/data/preferences';
+import { hasSeenWelcome, loadFilters, markWelcomeSeen, saveFilters } from './src/data/preferences';
 import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
 
 // Colore di fondo mostrato mentre le tile della mappa si caricano: un tono vicino a
@@ -55,7 +56,8 @@ function IASTracker() {
 
   const [region, setRegion] = useState(ITALY_REGION);
   const [hasLocation, setHasLocation] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
   // specie di cui è aperta la scheda (può essere diversa da quella mostrata sulla mappa)
   const [sheetSpecies, setSheetSpecies] = useState(null);
   const [reportOpen, setReportOpen] = useState(false);
@@ -307,6 +309,30 @@ function IASTracker() {
     setTimeout(() => setSheetSpecies(item), 400);
   }, []);
 
+  // Primo avvio: presentazione, poi l'elenco delle specie. Negli avvii successivi subito l'elenco.
+  useEffect(() => {
+    let active = true;
+    hasSeenWelcome().then((seen) => {
+      if (!active) return;
+      if (seen) setPanelOpen(true);
+      else setWelcomeOpen(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const finishWelcome = useCallback(() => {
+    markWelcomeSeen();
+    setWelcomeOpen(false);
+    if (!species) setTimeout(() => setPanelOpen(true), 400);
+  }, [species]);
+
+  const openWelcomeFromPanel = useCallback(() => {
+    setPanelOpen(false);
+    setTimeout(() => setWelcomeOpen(true), 400);
+  }, []);
+
   // Filtri: ripristinati all'avvio, salvati a ogni modifica.
   useEffect(() => {
     let active = true;
@@ -477,8 +503,11 @@ function IASTracker() {
         selectedSlug={species?.slug}
         onSelect={selectSpecies}
         onInfo={openSheetFromPanel}
+        onAbout={openWelcomeFromPanel}
         onClose={() => setPanelOpen(false)}
       />
+
+      <WelcomeScreen visible={welcomeOpen} onDone={finishWelcome} />
 
       {/* Pulsante per una nuova segnalazione (nascosto mentre è aperta la scheda di un punto) */}
       {!selection && (
