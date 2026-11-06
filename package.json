@@ -25,7 +25,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "eas": "sh -c 'set -a; [ -f .env.local ] && . ./.env.local; set +a; exec npx -y eas-cli@latest \"$@\"' eas"
   },
   "private": true,
   "devDependencies": {

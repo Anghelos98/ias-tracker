@@ -74,7 +74,7 @@ scripts/fetch_istat_regions.py  confini delle regioni ISTAT (si esegue a mano, d
 scripts/data/regioni.json   confini semplificati usati per assegnare la regione ai punti
 scripts/build_site.py       prepara il sito GitHub Pages con i dati per l'app
 site/privacy.html           informativa sulla privacy (pubblicata su GitHub Pages)
-app.config.js               aggiunge la chiave Google Maps per Android da variabile d'ambiente
+app.config.js               aggiunge account Expo, progetto EAS e chiave Google Maps da variabili d'ambiente
 eas.json                    profili di build EAS (preview e production)
 scripts/make_icons.py       icona dell'app, icone Android e schermata di avvio
 src/data/remote.js          aggiornamento dei dati nell'app (manifest, download, cache)
@@ -125,12 +125,24 @@ a un nuovo anno ISTAT): `.venv/bin/python scripts/fetch_istat_regions.py 2027`, 
 
 ## Build per gli store (EAS)
 
+Account Expo e ID del progetto EAS non sono nel repository: vanno in un file `.env.local`
+(escluso da git) nella cartella del progetto:
+
 ```bash
-npx eas-cli@latest login
-npx eas-cli@latest init                              # collega il progetto a expo.dev (una volta)
-npx eas-cli@latest build --profile preview -p ios    # build di prova da installare sul telefono
-npx eas-cli@latest build --profile production        # build per App Store e Google Play
+EXPO_OWNER=<il-tuo-account-expo>
+EAS_PROJECT_ID=<id-del-progetto-su-expo.dev>
 ```
+
+Per un nuovo progetto: `npx eas-cli@latest init`, poi spostare `owner` ed `extra.eas.projectId`
+che il comando scrive in `app.json` nel file `.env.local`. I comandi EAS si avviano con
+`npm run eas --`, che legge `.env.local`:
+
+```bash
+npm run eas -- build --profile preview -p ios    # build di prova da installare sul telefono
+npm run eas -- build --profile production        # build per App Store e Google Play
+```
+
+`.easignore` replica `.gitignore` ma include `.env.local`, così la build su EAS riceve gli stessi valori.
 
 Il numero di build lo gestisce EAS (`appVersionSource: remote`, `autoIncrement`). Per Android serve
 una chiave Google Maps: crearla nella console Google Cloud, limitarla al pacchetto

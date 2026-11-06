@@ -1,0 +1,56 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files: .env.local NON è escluso qui, perché EAS deve riceverlo (vedi app.config.js)
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Playwright
+.browser-profile/
+timeout_screenshot.png
+
+# Dati scaricati da GBIF (rigenerabili con sync_ias_data.py; l'app usa assets/data/)
+/data/
+
+# Test
+.pytest_cache/
+coverage/
