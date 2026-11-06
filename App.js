@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,6 +9,8 @@ import { ClusterMarker, DOT_HIT_RADIUS, DotMarker, clusterSize } from './src/com
 import PointCard from './src/components/PointCard';
 import SpeciesPanel from './src/components/SpeciesPanel';
 import SpeciesSheet from './src/components/SpeciesSheet';
+import ReportScreen from './src/components/ReportScreen';
+import MyReports from './src/components/MyReports';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import {
   ITALY_REGION,
@@ -51,6 +53,11 @@ function IASTracker() {
   const [panelOpen, setPanelOpen] = useState(true);
   // specie di cui è aperta la scheda (può essere diversa da quella mostrata sulla mappa)
   const [sheetSpecies, setSheetSpecies] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportKey, setReportKey] = useState(0); // nuova chiave = modulo di segnalazione vuoto
+  const [myReportsOpen, setMyReportsOpen] = useState(false);
+  // segnalazione dell'utente mostrata sulla mappa da "Le mie segnalazioni"
+  const [reportPin, setReportPin] = useState(null);
   const [species, setSpecies] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -223,6 +230,21 @@ function IASTracker() {
 
   // Dal pannello (anch'esso una Modal): si chiude il pannello e si apre la scheda quando
   // l'animazione di chiusura è finita, perché iOS non mostra due Modal insieme.
+  // Da "Nuova segnalazione" a "Le mie segnalazioni" (due Modal: una alla volta su iOS).
+  const openMyReportsFromReport = useCallback(() => {
+    setReportOpen(false);
+    setTimeout(() => setMyReportsOpen(true), 400);
+  }, []);
+
+  const showReportOnMap = useCallback((report) => {
+    setMyReportsOpen(false);
+    setReportPin(report);
+    mapRef.current?.animateToRegion(
+      { latitude: report.latitude, longitude: report.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 },
+      600,
+    );
+  }, []);
+
   const openSheetFromPanel = useCallback((item) => {
     setPanelOpen(false);
     setTimeout(() => setSheetSpecies(item), 400);
@@ -270,6 +292,14 @@ function IASTracker() {
             />
           );
         })}
+        {reportPin && (
+          <Marker
+            coordinate={{ latitude: reportPin.latitude, longitude: reportPin.longitude }}
+            pinColor="blue"
+            title={`La tua segnalazione: ${reportPin.commonName}`}
+            description={new Date(reportPin.createdAt).toLocaleDateString('it-IT')}
+          />
+        )}
       </MapView>
 
       {/* Barra superiore: specie selezionata e apertura dell'elenco */}
@@ -339,7 +369,30 @@ function IASTracker() {
         onClose={() => setPanelOpen(false)}
       />
 
+      {/* Pulsante per una nuova segnalazione (nascosto mentre è aperta la scheda di un punto) */}
+      {!selection && (
+        <Pressable
+          style={[styles.reportButton, { bottom: insets.bottom + 84 }]}
+          onPress={() => {
+            setReportKey((k) => k + 1);
+            setReportOpen(true);
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Nuova segnalazione"
+        >
+          <Text style={styles.reportButtonText}>＋ Segnala</Text>
+        </Pressable>
+      )}
+
       <SpeciesSheet species={sheetSpecies} visible={!!sheetSpecies} onClose={() => setSheetSpecies(null)} />
+      <ReportScreen
+        key={reportKey}
+        visible={reportOpen}
+        initialSpecies={species}
+        onClose={() => setReportOpen(false)}
+        onOpenMyReports={openMyReportsFromReport}
+      />
+      <MyReports visible={myReportsOpen} onClose={() => setMyReportsOpen(false)} onShowOnMap={showReportOnMap} />
     </View>
   );
 }
@@ -395,4 +448,14 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   infoRoundText: { fontSize: 24, color: '#1565c0' },
+  reportButton: {
+    position: 'absolute',
+    right: 12,
+    backgroundColor: '#2e7d32',
+    borderRadius: 26,
+    paddingHorizontal: 18,
+    paddingVertical: 13,
+    ...shadow,
+  },
+  reportButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

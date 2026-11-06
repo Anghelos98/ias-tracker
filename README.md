@@ -20,6 +20,9 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 - Filtro per escludere le identificazioni solo automatiche (Pl@ntNet)
 - Scheda di ogni specie: come riconoscerla, cosa dice la legge (D.Lgs. 230/2017), cosa fare
   se la trovi, approfondimenti e mappa di distribuzione ISPRA
+- Segnalazioni: specie, posizione GPS automatica e foto in pochi tocchi; invio per email al
+  Ministero dell'Ambiente (casella prevista dall'art. 18 del D.Lgs. 230/2017) o condivisione
+  con qualsiasi app; storico "Le mie segnalazioni" salvato solo sul telefono
 
 ## Struttura del progetto
 
@@ -29,6 +32,9 @@ src/components/             pannello specie, scheda segnalazione, marker
 src/hooks/useClusters.js    raggruppamento con supercluster
 src/utils/geo.js            calcoli su zoom, coordinate e proiezione
 src/components/SpeciesSheet.js  scheda della specie
+src/components/ReportScreen.js  nuova segnalazione (GPS, foto, invio)
+src/components/MyReports.js     segnalazioni salvate sul telefono
+src/reports/                    salvataggio e invio delle segnalazioni
 src/data/species.js         catalogo specie (generato)
 src/data/legal.js           sintesi della normativa (D.Lgs. 230/2017)
 assets/data/sheets/         schede delle specie ISPRA (generate)

@@ -24,9 +24,18 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "IAS Tracker usa la tua posizione per mostrarti sulla mappa delle specie invasive."
+          "locationWhenInUsePermission": "IAS Tracker usa la tua posizione per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni."
         }
-      ]
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "IAS Tracker usa la fotocamera per fotografare le piante che vuoi segnalare.",
+          "photosPermission": "IAS Tracker accede alle foto per allegarle alle tue segnalazioni.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-mail-composer"
     ]
   }
 }
