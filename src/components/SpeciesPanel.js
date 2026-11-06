@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SPECIES } from '../data/species';
 
 /** Pannello a scomparsa dal basso con l'elenco ricercabile delle 49 specie. */
-export default function SpeciesPanel({ visible, selectedSlug, onSelect, onClose }) {
+export default function SpeciesPanel({ visible, selectedSlug, onSelect, onInfo, onClose }) {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
 
@@ -50,6 +50,14 @@ export default function SpeciesPanel({ visible, selectedSlug, onSelect, onClose 
                 <Text style={[styles.count, empty && styles.muted]}>
                   {empty ? 'nessuna\nsegnalazione' : item.total.toLocaleString('it-IT')}
                 </Text>
+                <Pressable
+                  onPress={() => onInfo(item)}
+                  hitSlop={10}
+                  style={styles.infoButton}
+                  accessibilityLabel={`Scheda di ${item.commonName}`}
+                >
+                  <Text style={styles.infoText}>ⓘ</Text>
+                </Pressable>
               </Pressable>
             );
           }}
@@ -89,6 +97,8 @@ const styles = StyleSheet.create({
   scientific: { fontSize: 13, fontStyle: 'italic', color: '#555', marginTop: 2 },
   count: { fontSize: 13, color: '#2e7d32', fontWeight: '600', textAlign: 'right' },
   muted: { color: '#9e9e9e', fontWeight: '400' },
+  infoButton: { paddingLeft: 12, paddingVertical: 4 },
+  infoText: { fontSize: 22, color: '#1565c0' },
   separator: { height: StyleSheet.hairlineWidth, backgroundColor: '#e0e0e0' },
   empty: { textAlign: 'center', color: '#777', padding: 20 },
 });

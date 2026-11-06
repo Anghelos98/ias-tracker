@@ -1,0 +1,98 @@
+{
+ "titolo": "Pianta dei pappagalli",
+ "nome_scientifico_autore": "Asclepias syriaca L.",
+ "descrizione": [
+  "Erbacea perenne alta fino a 2 m, legnosa alla base, contenente un lattice bianco. Fusti eretti, robusti, con peli lanuginosi. Radici che penetrano fino a 3.8 m di profondità e lunghi rizomi tuberosi, che arrivano a 40 cm di profondità. Foglie opposte, grandi (10-20 x 5-11 cm), ovato-lanceolate, con densi peli bianchi sulla pagina inferiore. Infiorescenze in cime a ombrella, con 10-130 piccoli fiori, rosati, rossi o bianchi superiormente, profumati e ricchi di nettare. Follicoli fusiformi contenenti numerosi piccoli semi, con un ciuffo apicale di lunghi peli sericei. Può essere confusa con Asclepias speciosa, che però ha foglie arrotondate o cuoriformi, fusti densamente lanosi e fiori più lunghi e meno numerosi."
+ ],
+ "famiglia": "Apocinaceae",
+ "sinonimi": "Asclepias cornuti Decne. (nom. illeg.)",
+ "nome_inglese": "Common milkweed",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "America settentrionale (grandi pianure degli Stati Uniti centrali e orientali e aree adiacenti del Canada)."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Europa, Giappone, Iraq e altre parti dell’America settentrionale.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "Spagna, Francia, Italia, Belgio, Paesi Bassi, Svezia, Germania, Danimarca, Polonia, Lituania, Ucraina, Russia, Svizzera, Austria, Slovenia, Croazia, Serbia, Bosnia, Montenegro, Repubblica Ceca, Slovacchia, Ungheria, Romania, Moldova, Bulgaria.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Casuale o naturalizzata nelle regioni dell'arco alpino, in Emilia Romagna, Toscana e Basilicata."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "La riproduzione è sia di tipo sessuale che vegetativo. Ha un ampio spettro di impollinatori grazie alla produzione di nettare diurna e notturna, ma l’efficacia dell’impollinazione è bassa: fruttificano solo 4-6 fiori per infiorescenza, tuttavia ogni follicolo contiene 150-425 semi, che possono essere trasportati a grande distanza dal vento. I semi rimangono vitali fino a cinque anni e possono germinare molto velocemente. Le plantule arrivano a fioritura nel secondo anno di vita. Possiede un’elevata capacità di propagazione mediante i rizomi sotterranei, che hanno numerose gemme e in un anno si possono espandere in un raggio di 3 m, dando origine a fitte colonie di cloni."
+    },
+    {
+     "testo": "Si trova in habitat semi-naturali o antropizzati, come incolti e seminativi, frutteti e vigneti abbandonati, bordi stradali e aree ferroviarie, ma anche vicino ai corpi idrici, in prati mesofili, aree umide e margini dei boschi. Cresce su suoli asciutti o ben drenati, leggeri o sabbiosi, mediamente ricchi in nutrienti, in piena luce o leggera ombra. Tuttavia si adatta sia a pH acidi che basici e sopporta siccità, salinità del suolo, forte insolazione e temperature elevate."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Si fanno risalire le prime introduzioni al 1629. E’ stata coltivata intensivamente nella seconda metà del XIX secolo, come pianta mellifera, ornamentale, da fibra tessile e da carta, mentre i peli dei semi sono stati usati come imballaggio, per fare corde e per imbottire giubbotti di salvataggio; la sua coltivazione è stata abbandonata intorno al 1950. I primi dati di spontaneizzazione sono del 1736, ma solo nel XX secolo sembra essere entrata in una fase di espansione. E’ venduta come pianta mellifera e ornamentale, ma la sua coltivazione potrebbe incrementare per i molti possibili utilizzi (ad es. olio, gomma, fibre tessili, biocarburante). Si può diffondere a partire dai luoghi di coltivazione attraverso il vento, ma soprattutto per mezzo dell’uomo, diffondendosi lungo strade e ferrovie, con la movimentazione di terreni contenenti semi o rizomi e con lo smaltimento in natura dei residui vegetali."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "Può avere impatti sulla salute dovuti alla tossicità del suo lattice (irritazione della pelle e, se ingerita, avvelenamenti). Può avere impatti significativi sulle attività agricole per la sua capacità di stabilirsi permanentemente, in densi popolamenti, nelle aree coltivate, e come vettore di malattie virali e fungine. Può danneggiare l’allevamento, riducendo la produttività dei pascoli ed essendo tossica per pecore, bovini, cavalli e pollame.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Il suo nettare può essere fonte di cibo per vari gruppi di insetti. Popolamenti estesi e densi possono entrare in forte concorrenza con la vegetazione nativa; si sono riscontrati effetti negativi sulla copertura delle specie dei pascoli (soprattutto quelle con foglie piccole, bassa produzione di semi e assenza di riproduzione vegetativa).",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Può essere una minaccia per gli habitat di prateria steppica e di prateria sabbiosa, alcuni dei quali habitat prioritari della rete Natura 2000; il suo effetto è maggiore negli ambienti già alterati dall’azione antropica.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "Si ritiene che a questo stadio in Europa possa ancora essere eradicata. E’ importante la rapida individuazione delle nuove infestazioni. Per prevenirne la diffusione è necessario evitare lo spostamento di suolo contaminato da rizomi e da semi e smaltire correttamente i residui delle coltivazioni. A causa della profondità del sistema radicale sia il controllo meccanico che quello chimico sono problematici. Il metodo migliore è la rimozione manuale dell’intera pianta; oppure il taglio, almeno 3 volte l’anno, delle parti aeree e sotterranee (se solo danneggiata riesce a produrre una biomassa ancora maggiore e dai frammenti di radice non asportati si rigenerano nuove piante). L’aratura è efficace entro 2-3 settimane dalla germinazione, quando la formazione di gemme sotterraneee non è ancora iniziata. Manti erbosi fitti o dense coperture arboree ne ostacolano la permanenza. Gli erbicidi non sono del tutto efficaci, ad esclusione di Glyphosate, e sono sconsigliati in ambienti naturali. Non sono noti agenti per il controllo biologico; numerosi insetti e altri gruppi animali ne danneggiano le varie parti, ma senza effetti avversi; non è appetita dal bestiame per il suo lattice di gusto amaro e tossico."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Asclepias_syriaca-Pianta_dei_pappagalli.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Asclepias_syriaca.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Asclepias_syriaca_2025.jpg",
+ "nome_scientifico": "Asclepias syriaca",
+ "nome_comune_ispra": "Pianta dei pappagalli",
+ "presenza_italia": "Diffusa",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/23-specie-2",
+  "recuperato_il": "2026-11-06"
+ }
+}

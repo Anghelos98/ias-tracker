@@ -1,0 +1,101 @@
+{
+ "titolo": "Penniseto setaceo",
+ "nome_scientifico_autore": "Cenchrus setaceus (Forssk.) Morrone (Pennisetum setaceum (Forssk.) Chiov.)",
+ "descrizione": [
+  "Il penniseto setaceo è una pianta erbacea, perenne, che forma robusti cespi. Le foglie lineari, sono lunghe 30-50 cm e disposte in densi ciuffi a partire dal suolo; i fusti fiorali sono sottili e alti anche più di 1 m. Foglie e fusti tendono ad incurvarsi all’apice, dando così alla pianta l’aspetto di uno “spruzzo” d’acqua ricadente (di qui il nome popolare inglese). Le infiorescenze sono dense pannocchie cilindriche, lunghe 10-30 cm, di aspetto piumoso che conferiscono alla pianta il particolare pregio ornamentale."
+ ],
+ "famiglia": "Poaceae",
+ "sinonimi": "Pennisetum setaceum (Forssk.) Chiov. Pennisetum ruppellii Steud.",
+ "nome_inglese": "Crimson fountain grass",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "L’areale nativo è localizzato tra l’Africa settentrionale e orientale, il Vicino Oriente e la Penisola Arabica."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Introdotta e diffusa nelle regioni a clima caldo e arido di Sudafrica, Indonesia, America settentrionale e centrale, Oceania, Europa.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "Presente in Francia, Grecia, Italia, Malta, Portogallo, Slovenia, Spagna e nelle regioni insulari del Mediterraneo e delle Macaronesia. Sebbene abbia già mostrato forte capacità invasiva negli altri continenti, risulta ancora localizzata nell’Europa continentale.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "In Sicilia e Sardegna la specie mostra già comportamento da invasiva per rapidità di diffusione e capacità di insediamento in ambienti semi-naturali; è ancora sporadica in Calabria e Puglia. Attualmente è presente anche in Campania, Lazio, Toscana e Provincia Autonoma di Bolzano."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "Il penniseto, per diverse caratteristiche biologiche, è una specie potenzialmente molto invasiva. I semi, prodotti in notevole quantità (fino a 100 semi per pianta all’anno) sono accompagnati da strutture filamentose (reste e ciglia), che ne facilitano la dispersione su lunghe distanze ad opera del vento e dell’acqua, ma anche dell’uomo, del bestiame e dei veicoli. Possono rimanere a terra, vitali per 6 anni o più, in condizioni avverse, ma germinano facilmente se sono soddisfatte le condizioni di umidità. È favorita nell’accrescimento rispetto alle specie native grazie ad un particolare metabolismo fotosintetico (pianta C4); fiorisce e produce semi già a partire dal primo anno di vita e, nonostante la fioritura sia prevalentemente estiva, riesce a sfruttare ogni momento climaticamente favorevole nel corso dell’anno, con una produzione pressoché continua di seme. Anche se le popolazioni di penniseto sono caratterizzate da variabilità genetica bassa o assente, la specie si mostra molto plastica rispetto alle caratteristiche ecologiche. Predilige posizioni assolate e suoli asciutti, ma può tollerare un parziale ombreggiamento e crescere su tutti i tipi di suolo (da sabbiosi ad argillosi, da acidi a leggermente basici). È sensibile alle gelate e perde di competitività sui suoli più umidi. Una caratteristica particolarmente importante per l’ambiente mediterraneo è la grande capacità di P. setaceum di affermarsi dopo gli incendi."
+    },
+    {
+     "testo": "P. setaceum predilige ambienti disturbati dall’uomo come cave dismesse, marciapiedi, massicciate ferroviarie, bordi e scarpate stradali. Da questi ambienti marginali, si può spingere anche in contesti semi-naturali, come praterie aride a bassa copertura vegetale o naturali come colate laviche."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "In Europa è stata introdotta a scopo ornamentale, per arredo paesaggistico e per consolidare i suoli di scarpate, in diverse tappe nel corso del ‘900. Per l’Italia è esemplare il caso della Sicilia, in cui la specie è stata coltivata, per valutarne le potenzialità come pianta da foraggio, nell’Orto Botanico di Palermo a partire dal 1938, da semi provenienti dall’Etiopia. Da qui è iniziato un rapido processo di naturalizzazione ed invasione probabilmente per dispersione spontanea dei semi ad opera del vento. In altri casi, anche il bestiame, le auto, i macchinari agricoli e l’uomo sono importanti vettori di diffusione dei semi di penniseto."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "Poco appetita dal bestiame, il penniseto degrada le praterie da pascolo con impatti negativi sulle attività pastorali. Strettamente legata agli incendi: resiliente al fuoco, facilita a sua volta innesco e diffusione degli incendi in quanto estremamente infiammabile, soprattutto durante la stagione più secca.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Specie fortemente invasiva in praterie aride dove, favorita da fuoco e pascolamento, forma popolamenti monospecifici che escludono le specie native, sottraendo spazio, nutrienti ed acqua. La stabilità dei popolamenti di penniseto tende a bloccare l’evoluzione della prateria verso formazioni forestali. In ambienti rupestri e sub-rupestri può minacciare specie rare ed endemiche.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "L’aumento di frequenza degli incendi nelle aree invase dal penniseto è l’aspetto che più incide sugli ecosistemi: ha ricadute negative sugli uccelli nidificanti al suolo e su altri animali; inoltre altera le caratteristiche del suolo e i servizi ecosistemici ad esso legati, come la suscettibilità all’erosione e la fertilità.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "La gestione del penniseto risulta difficile, soprattutto a causa della longevità dei semi nel suolo. I piccoli nuclei possono essere eliminati attraverso lo sradicamento manuale, facile da realizzare soprattutto nelle prime fasi di insediamento e negli individui giovani con successiva distruzione delle infiorescenze per prevenire la dispersione dei semi. Nei popolamenti più estesi può essere efficace lo sfalcio, da realizzare più volte nel corso dell’anno, per contenere la fioritura e la disseminazione. Il controllo chimico, con erbicidi sistemici, può essere utilizzato in combinazione con i trattamenti meccanici o su infestazioni più estese, in ambienti poco sensibili e con le dovute cautele, come bordi di strada, cave e massicciate ferroviarie."
+    },
+    {
+     "testo": "Per ulteriori approfondimenti si rimanda al Database EPPO"
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Pennisetum_setaceum-Penniseto_setaceo.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Pennisetum_setaceum.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Pennisetum_setaceum_2025.jpg",
+ "nome_scientifico": "Cenchrus setaceus",
+ "nome_comune_ispra": "Penniseto setaceo",
+ "presenza_italia": "Diffusa",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/73-specie-45",
+  "recuperato_il": "2026-11-06"
+ }
+}

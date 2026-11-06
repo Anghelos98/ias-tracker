@@ -18,6 +18,8 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 - Raggruppamento delle segnalazioni vicine (cluster numerati) per una mappa fluida
 - Scheda della segnalazione: anno, fonte, coordinate e incertezza della posizione
 - Filtro per escludere le identificazioni solo automatiche (Pl@ntNet)
+- Scheda di ogni specie: come riconoscerla, cosa dice la legge (D.Lgs. 230/2017), cosa fare
+  se la trovi, approfondimenti e mappa di distribuzione ISPRA
 
 ## Struttura del progetto
 
@@ -26,11 +28,15 @@ App.js                      schermata principale (mappa)
 src/components/             pannello specie, scheda segnalazione, marker
 src/hooks/useClusters.js    raggruppamento con supercluster
 src/utils/geo.js            calcoli su zoom, coordinate e proiezione
+src/components/SpeciesSheet.js  scheda della specie
 src/data/species.js         catalogo specie (generato)
+src/data/legal.js           sintesi della normativa (D.Lgs. 230/2017)
+assets/data/sheets/         schede delle specie ISPRA (generate)
 assets/data/species/        segnalazioni per specie, formato compatto (generato)
 ias_reference.json          elenco delle specie di rilevanza unionale
 sync_ias_data.py            scarica le segnalazioni da GBIF in data/ (non versionata)
 scripts/build_app_data.py   converte data/ nei file usati dall'app
+scripts/fetch_ispra_sheets.py  scarica le schede delle specie dal sito ISPRA
 ```
 
 ## Avviare l'app
@@ -57,9 +63,10 @@ Requisiti: Python 3.10+.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install requests
-.venv/bin/python sync_ias_data.py --all        # scarica/aggiorna da GBIF (riprende se interrotto)
-.venv/bin/python scripts/build_app_data.py     # rigenera assets/data e src/data/species.js
+.venv/bin/pip install requests beautifulsoup4
+.venv/bin/python sync_ias_data.py --all          # scarica/aggiorna le segnalazioni da GBIF
+.venv/bin/python scripts/fetch_ispra_sheets.py   # scarica/aggiorna le schede ISPRA
+.venv/bin/python scripts/build_app_data.py       # rigenera assets/data e src/data/species.js
 ```
 
 ## Dati e licenze

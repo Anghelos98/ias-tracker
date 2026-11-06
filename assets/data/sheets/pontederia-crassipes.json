@@ -1,0 +1,101 @@
+{
+ "titolo": "Giacinto d'acqua",
+ "nome_scientifico_autore": "Pontederia crassipes Mart",
+ "descrizione": [
+  "Il giacinto d’acqua è una pianta acquatica perenne, capace di formare estesi tappeti di piante galleggianti non ancorate al fondo. È infatti caratterizzata dalla presenza di una moltitudine di stoloni, ovvero di rami lunghi e sottili che crescono alla base della pianta, su ciascuno dei quali crescono fino a una decina di foglie. Le radici si sviluppano alla base di ogni foglia per una lunghezza di circa 20-60 cm, a volte fino a 3 metri, dando origine ad una densa massa vegetale (costituiscono fino al 60% della biomassa)."
+ ],
+ "famiglia": "Pontederiaceae",
+ "sinonimi": "Eichhornia crassipes (Martius) Solms",
+ "nome_inglese": "Water hyacinth",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "È una pianta originaria del Sudamerica, dove è diffusa nel bacino dell’Amazzonia."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Questa pianta è stata introdotta in oltre 50 paesi in tutti i continenti, soprattutto nelle regioni tropicali e subtropicali.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "In Europa è segnalata in Francia (Corsica inclusa), Italia, Portogallo (incluse le Azzorre), Spagna e Romania. Ci sono segnalazioni anche in Belgio, Repubblica Ceca, Olanda e Ungheria.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Molto localizzata in numerose regioni italiane: è stata infatti segnalata in Sicilia, Sardegna, Campania, Lazio, Toscana, Friuli Venezia Giulia, Veneto, Lombardia. Viene ritenuta invasiva in alcune di queste regioni e in Sardegna sono stati effettuati interventi di controllo che tuttavia non ne hanno ancora consentito la eradicazione."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "Ogni fiore può produrre circa 250 semi molto longevi (fino a 20 anni) capaci di resistere a lungo alle variazioni del livello d’acqua e persino all’essiccamento dei bacini d’acqua in cui vivono, per poi germogliare e quindi accrescersi rapidamente (anche per propagazione vegetativa) non appena le condizioni legate alla presenza d’acqua lo permettono. Tuttavia le popolazioni di E. crassipes presenti in Europa non sempre producono semi in abbondanza e si riproducono soprattutto per via vegetativa. La popolazione presente in un sito può raddoppiare in 6-18 giorni, in condizioni idonee. La temperatura ottimale per la crescita è di 28-30 C°, mentre sotto i 10 C° la pianta cessa del tutto di crescere. È molto sensibile al gelo e alla salinità."
+    },
+    {
+     "testo": "Generalmente cresce sulla superficie dei corpi d’acqua naturali e artificiali, tra cui fiumi, canali, laghi e altri bacini. In Europa è spesso presente in stagni e vasche in giardini e parchi pubblici e privati, e nei giardini botanici. Può tollerare un’ampia variabilità di ambienti. I fattori che notoriamente possono contribuire alla diffusione di questa specie sono l’aumento di nutrienti nell’acqua legati all’agricoltura e agli scarichi urbani e industriali, nonché l’alterazione del regime idrologico naturale attraverso dighe e canali."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Questa specie è stata introdotta a causa del commercio come pianta ornamentale (ma viene utilizzata anche a scopo agricolo, energetico, per il trattamento delle acque reflue, e per la ricerca). Si può diffondere rapidamente sia per dispersione naturale (attraverso semi e frammenti trasportati dall'acqua, dal vento e dagli uccelli), sia a causa delle attività dell’uomo (anche come contaminante, ad esempio attraverso barche e attrezzature)."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "L’impatto sull’agricoltura a causa dei danni agli impianti di irrigazione e alla gestione dei canali irrigui può essere significativo, così come quello alle coltivazioni (ad esempio alle risaie) a causa delle elevate perdite d’acqua e dei danni che può provocare ai macchinari per la raccolta. Può inoltre incidere sulla qualità delle acque, interferendo in tal modo con la navigazione, la pesca e il turismo, e causare danni agli impianti di depurazione e quelli idroelettrici. Infine può facilitare un aumento dell’incidenza di malattie, rendendo più problematico il controllo delle zanzare. I costi legati al controllo sono elevati.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "È considerata una delle specie di piante acquatiche più invasive al mondo. In Asia e Africa costituisce una minaccia per molte specie. In Europa si ritiene che possa competere con diverse altre specie di piante acquatiche indigene, incluse quelle semiacquatiche. Inoltre potrebbe favorire alcune specie aliene, come la testuggine americana, che si nutre di questa pianta acquatica.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Le dense popolazioni di questa pianta possono causare l’alterazione della struttura e della funzione degli ecosistemi, portando allo stravolgimento della catena alimentare e del normale ciclo dei nutrienti. I tappeti galleggianti di giacinto d’acqua possono rallentare il flusso della corrente, ridurre il passaggio di luce e la produzione di ossigeno da parte delle altre piante acquatiche, innescando in tal modo condizioni di anossia che possono interferire con la produzione di fitoplancton e in ultima analisi con la presenza di pesci. La presenza di questi tappeti galleggianti può altresì aumentare la biomassa di detriti e di conseguenza il tasso di sedimentazione causando un cambiamento radicale degli ecosistemi interessati.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "È una pianta molto invasiva, che si riproduce con rapidità ed è molto difficile da eliminare una volta insediatasi su estese superfici Il controllo può essere effettuato anche solo meccanicamente, ma richiede tempi lunghi e risorse ingenti: in un tratto di 75 km del fiume Guadiana, in Spagna, il controllo delle sue popolazioni tra il 2005 e il 2008 è costato oltre 14 milioni di euro. L’utilizzo di erbicidi o di fitofagi per il controllo biologico non sempre è possibile. Per questo motivo si ritiene che la principale forma di gestione debba essere la prevenzione (divieto di vendita, trasporto e possesso, mantenimento di un buon livello qualitativo delle acque interne) soprattutto nella regione Biogeografica Mediterranea."
+    },
+    {
+     "testo": "Per ulteriori approfondimenti sul controllo si rimanda allo standard EPPO (PM 9/8(1): Eichhornia crassipes, DOI: 10.1111/j.1365-2338.2009.02330.x)."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Eichhornia_crassipes-Giacinto_d_acqua.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Eichhornia_crassipes_RA.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Eichhornia_crassipes_2025.jpg",
+ "nome_scientifico": "Pontederia crassipes",
+ "nome_comune_ispra": "Giacinto d'acqua",
+ "presenza_italia": "Localizzata",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2/12-ias-ita/71-pontederia-crassipes",
+  "recuperato_il": "2026-11-06"
+ }
+}

@@ -1,0 +1,98 @@
+{
+ "titolo": "Ludwigia a fiori grandi",
+ "nome_scientifico_autore": "Ludwigia grandiflora (Michx.) Greuter & Burdet",
+ "descrizione": [
+  "La Ludwigia a fiori grandi è una pianta acquatica perenne, che può raggiungere i 6 m di lunghezza e formare densi tappeti. Il portamento è prostrato nella fase giovanile, dopodiché segue una fase di crescita rapida e verticale, con fusti lunghi fino a 1 m; da ogni singolo nodo vengono emessi nuovi getti. La specie è facilmente confondibile con L. peploides , nativa della California, dalla quale si distingue solo al momento della fioritura."
+ ],
+ "famiglia": "Onagraceae",
+ "sinonimi": "Jussiaea grandiflora Michx.",
+ "nome_inglese": "Large-flower primrose-willow",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "Nativa dell’America centrale e meridionale, e parti degli USA."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Specie introdotta in Europa e in Africa (Kenya). In America risulta invasiva nell’areale secondario situato nella parte orientale degli USA.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "In Europa la specie è presente in Irlanda, Germania, Regno Unito e Spagna; è particolarmente diffusa in Belgio, Francia e Olanda, mentre in Svizzera non è più segnalata.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Ludwigia grandiflora non è presente in Italia allo stato spontaneo, ma in passato è stata segnalata erroneamente per Lombardia, Veneto ed Emilia-Romagna, perchè identificata come L. grandiflora subsp. hexapetala (taxon oggi elevato al rango di specie: L. hexapetala ) o L. peploides subsp. montevidensis ."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "La specie si diffonde perlopiù per via vegetativa. I frammenti, generati e diffusi da animali, attività antropiche e correnti d’acqua, danno origine nuovi individui che formano rapidamente densi tappeti. La Ludwigia a fiori grandi ha un elevato potenziale di produzione di semi (10.000 semi per m2) che la rende adatta a colonizzare facilmente ambienti già disturbati. I frutti possono essere ingeriti dall’avifauna o galleggiare sulla superficie dell’acqua, rimanendo vitali fino a 11 settimane, permettendo così la diffusione della specie su lunghe distanze."
+    },
+    {
+     "testo": "Resistente al gelo, cresce in zone umide di acqua dolce, temporanee e permanenti. In Europa è invasiva negli stagni, nei corsi d’acqua e nei prati umidi, su substrati di fango, sabbia, ghiaia, argilla e torba. Colonizza le rive dei laghi, tollera fluttuazioni dei livelli dell’acqua e differenti concentrazioni di nutrienti e livelli di pH; spesso presente in luoghi soleggiati e siti ombreggiati. È limitata dalla competizione con elofite ( Glyceria ssp., Phalaris ssp.), da livelli elevati di salinità e da correnti veloci."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Specie introdotta in Europa come pianta ornamentale. la specie si può diffondere rapidamente sia per dispersione naturale (semi e frammenti trasportati dalle acqua e dagli uccelli), sia come risultato dall’attività antropica (contaminante delle sementi e tramite frammenti)."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "Densi popolamenti possono rallentare il flusso idrico, interferire con la navigazione, l’irrigazione e il drenaggio di laghi, stagni e fossi, nonché ostacolare diverse attività ricreative, tra cui caccia e pesca, e ridurre il valore estetico dei corpi idrici. In alcuni ambienti, la Ludwigia può impattare parzialmente anche i pascoli riducendo la capacità di pascolamento per il bestiame.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Il rilascio di sostanze allelopatiche compromettono la flora nativa, riducendo la vitalità dei giovani individui e pregiudicandone lo sviluppo. Studi europei mettono in evidenza una riduzione della flora autoctona nei siti invasi fino al 70%. In alcuni casi, la presenza di L. grandiflora è stata associata alla riduzione di macroinvertebrati e pesci. La Ludwigia può anche facilitare l’insediamento di altre specie esotiche vegetali e animali (es. il Gambero rosso della Luisiana).",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Dove forma densi tappeti, la specie è in grado di alterare l’ambiente in termini sia ecologici sia strutturali, rallentando il flusso delle acque, bloccando i raggi solari e impedendo il riscaldamento dell’acqua, e interferendo con i regimi idrici e le correnti. La pianta può determinare un aumento di sedimentazione, con conseguente incremento del rischio di allagamento. In acque ferme, la lenta decomposizione provoca una diminuzione di profondità e un’alterazione della vegetazione, con possibile colonizzazione di altre specie (carici, graminacee e, in stadio avanzato, da arbusti e alberi) che alterano la struttura dell'ecosistema. La specie risulta dominante come frequenza di visite da parte degli impollinatori, a scapito della flora nativa.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "La Ludwigia è attualmente sotto controllo in diversi stati europei. La principale forma di gestione è la prevenzione, tramite divieto di commercio, possesso, ed efficaci campagne di informazione sulle buone pratiche nel maneggiamento delle piante. La rimozione manuale è efficace nel controllo di piccole popolazioni, purché si eviti la frammentazione degli esemplari, fonte di diffusione della specie per via vegetativa. Ciascun trattamento dovrebbe essere effettuato prima che la specie compia il suo ciclo riproduttivo, per ridurre le probabilità di dispersione tramite seme e prevenire la ricolonizzazione. L’utilizzo di erbicidi è sconsigliato in ambienti acquatici, mentre l’uso di agenti per il controllo biologico è ancora in fase di sperimentazione."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Ludwigia_grandiflora-Ludwigia_a_fiori_grandi.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Ludwigia_grandiflora_GBNNRA.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Ludwigia_grandiflora_2025.jpg",
+ "nome_scientifico": "Ludwigia grandiflora",
+ "nome_comune_ispra": "Ludwigia a fiori grandi",
+ "presenza_italia": "Diffusa",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/34-specie-11",
+  "recuperato_il": "2026-11-06"
+ }
+}

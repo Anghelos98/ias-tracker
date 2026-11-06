@@ -8,6 +8,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import { ClusterMarker, DOT_HIT_RADIUS, DotMarker, clusterSize } from './src/components/MapMarkers';
 import PointCard from './src/components/PointCard';
 import SpeciesPanel from './src/components/SpeciesPanel';
+import SpeciesSheet from './src/components/SpeciesSheet';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import {
   ITALY_REGION,
@@ -48,6 +49,8 @@ function IASTracker() {
   const [region, setRegion] = useState(ITALY_REGION);
   const [hasLocation, setHasLocation] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
+  // specie di cui è aperta la scheda (può essere diversa da quella mostrata sulla mappa)
+  const [sheetSpecies, setSheetSpecies] = useState(null);
   const [species, setSpecies] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -218,6 +221,13 @@ function IASTracker() {
     [selection],
   );
 
+  // Dal pannello (anch'esso una Modal): si chiude il pannello e si apre la scheda quando
+  // l'animazione di chiusura è finita, perché iOS non mostra due Modal insieme.
+  const openSheetFromPanel = useCallback((item) => {
+    setPanelOpen(false);
+    setTimeout(() => setSheetSpecies(item), 400);
+  }, []);
+
   const toggleAutomatic = useCallback((value) => {
     setSelection(null);
     setIncludeAutomatic(value);
@@ -285,6 +295,15 @@ function IASTracker() {
           )}
         </Pressable>
         {loading && <ActivityIndicator style={styles.spinner} />}
+        {species && (
+          <Pressable
+            style={styles.infoRound}
+            onPress={() => setSheetSpecies(species)}
+            accessibilityLabel={`Scheda di ${species.commonName}`}
+          >
+            <Text style={styles.infoRoundText}>ⓘ</Text>
+          </Pressable>
+        )}
       </View>
 
       <PointCard
@@ -295,6 +314,7 @@ function IASTracker() {
         species={species}
         bottomInset={insets.bottom}
         onClose={clearSelection}
+        onOpenSheet={() => setSheetSpecies(species)}
       />
 
       {/* Barra inferiore: filtro identificazioni automatiche, elenco, posizione */}
@@ -315,8 +335,11 @@ function IASTracker() {
         visible={panelOpen}
         selectedSlug={species?.slug}
         onSelect={selectSpecies}
+        onInfo={openSheetFromPanel}
         onClose={() => setPanelOpen(false)}
       />
+
+      <SpeciesSheet species={sheetSpecies} visible={!!sheetSpecies} onClose={() => setSheetSpecies(null)} />
     </View>
   );
 }
@@ -361,4 +384,15 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   roundButtonText: { fontSize: 22, color: '#2e7d32' },
+  infoRound: {
+    width: 48,
+    height: 48,
+    marginLeft: 8,
+    borderRadius: 24,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow,
+  },
+  infoRoundText: { fontSize: 24, color: '#1565c0' },
 });

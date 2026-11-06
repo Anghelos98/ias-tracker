@@ -1,0 +1,101 @@
+{
+ "titolo": "Erba degli alligatori",
+ "nome_scientifico_autore": "Alternanthera philoxeroides (Mart.) Griseb.",
+ "descrizione": [
+  "A. philoxeroides è una pianta acquatica erbacea perenne, emergente. Fusto prostrato-ascendente (talora reptante), 20-100 cm, cilindrico, tubuloso, ramoso, glabro, radicante ai nodi. Foglie ovate o lanceolate, lunghe 2-10 cm, larghe 0.5-2 cm, subsessili, le superiori brevemente picciolate, intere, con apice acuto od ottuso, mucronato, sparsamente pubescenti sulla pagina superiore. Fiori bianchi, in glomeruli ascellari subsferici od ovoidali (diametro 1-1.6 cm), peduncolati, tepali 5, glabri, lanceolati, con apice acuto o arrotondato. Frutto indeiscente, ovoidale, bruno, contenente un solo seme lenticolare. Frutti e semi non stati ancora osservati in Italia. Sono stati descritti due diversi biotipi per la Florida, con una morfologia differente delle foglie: A. philoxeroides f. philoxeroides e A. philoxeroides f. angustifolia . Queste due entità hanno un diverso numero cromosomico."
+ ],
+ "famiglia": "Amaranthaceae",
+ "sinonimi": "Bucholzia philoxeroides Mart. Achyranthes paludosa Bunbury Celosia amphibia Salzm. ex Moq. Telanthera philoxeroides (Mart.) Moq.",
+ "nome_inglese": "Alligator weed",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "A. philoxeroides è considerata nativa del Sud America (Argentina, Brasile, Paraguay)."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Introdotta in America Settentrionale e Centrale, Caraibi, Asia tropicale, Oceania ed Europa.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "In Europa è presente in Francia e Italia. La prima segnalazione per l’Europa è stata fatta proprio in Italia, presso Pisa nel 2001.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Molto localizzata, segnalata in Toscana ed in Lazio."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "A. philoxeroides si riproduce prevalentemente per propagazione vegetativa, attraverso la frammentazione del fusto e molto raramente da seme. Si può trattare di auto-frammentazione (cladoptosi) o di frammentazione meccanica dovuta ad agenti esterni. Nell’ambito dell’areale invaso la produzione di semi è stata osservata solo in Cina. La temperatura ottimale per la crescita e per la propagazione vegetativa è di 30 °C; la crescita si blocca a 7 °C, tuttavia A. philoxeroides tollera temperature medie annuali comprese tra i 10 e 20 °C. Tollera valori di pH compresi tra 4.8 e 7.7. Il gelo ed il ghiaccio distruggono le parti esposte, tuttavia i fusti che permangono in micro-siti parzialmente protetti consentono il superamento della stagione fredda."
+    },
+    {
+     "testo": "A. philoxeroides cresce in ambienti acquatici, ripariali e terrestri sia nelle zone di origine che nell’areale invaso. Preferisce acque non profonde e a lento scorrimento. Cresce anche in terreni disturbati, aree agricole e campi coltivati, ambienti urbani e antropizzati."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Non riveste alcun interesse applicativo od ornamentale. La sua introduzione in Europa ed in Italia è molto probabilmente di tipo accidentale, legata alla possibile confusione con altre specie ed al trasporto come contaminante di mangimi per uccelli di origine extra-europea e nei vasi di piante da bonsai. In Australia e Nuova Zelanda è stata osservata la sua presenza accidentale nelle acque di zavorra. Una volta insediata, può essere diffusa nel sistema dei corpi idrici dalle attività dell’uomo, dalle imbarcazioni e dagli attrezzi utilizzati per la pesca, come anche da organismi acquatici."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "Non ci sono rischi diretti o indiretti per la salute dell’uomo. Non sono stati ancora documentati impatti di tipo socio-economico in Italia ed Europa, tuttavia si tratta di una specie che potrebbe divenire infestante nelle risaie. La presenza di dense comunità interferisce negativamente con le attività di pesca e con le attività ricreative nelle acque dolci.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "A. philoxeroides forma dense comunità monospecifiche che riducono quindi in modo molto marcato la diversità di specie native nelle zone invase, anche se non ci sono informazioni dirette per quanto riguarda l’Europa.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Diversi studi hanno messo in evidenza che le dense comunità monospecifiche di questa specie invasiva, così come nel caso di altre specie invasive simili, determinano significative modifiche chimico-fisiche e del ciclo dei nutrienti nelle acque invase.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "La principale forma di gestione è la prevenzione (controllo dei possibili vettori accidentali di introduzione e diffusione secondaria) ed il rapido intervento di eradicazione nelle zone invase. La lotta per il controllo dello sviluppo delle specie acquatiche è sempre molto difficile. Il controllo meccanico deve prevedere appositi strumenti (ad. es. barriere galleggianti) per ridurre il rischio di diffusione accidentale di frammenti."
+    },
+    {
+     "testo": "Per ulteriori approfondimenti sul controllo si rimanda allo standard EPPO (PM 9/19(1): Invasive alien aquatic plants, DOI: 10.1111/epp.12165)."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Alternanthera_philoxeroides-Erba_degli_alligatori.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Alternanthera_philoxeroides.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Alternanthera_philoxeroides_2025.jpg",
+ "nome_scientifico": "Alternanthera philoxeroides",
+ "nome_comune_ispra": "Erba degli alligatori",
+ "presenza_italia": "Localizzata",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/69-specie-41",
+  "recuperato_il": "2026-11-06"
+ }
+}

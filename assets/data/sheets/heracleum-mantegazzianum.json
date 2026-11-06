@@ -1,0 +1,98 @@
+{
+ "titolo": "Panace di Mantegazza",
+ "nome_scientifico_autore": "Heracleum mantegazzianum (Sommier & Levier)",
+ "descrizione": [
+  "Pianta erbacea di taglia imponente: alta fino a 5 m, con fusto cavo e robusto, irsuto e con macchie violacee. Ha foglie lunghe fino a 3 m, profondamente divise e con margine a denti acuminati, disposte in rosetta basale. Quando fiorisce, tra giugno e agosto, produce maestose ombrelle di fiori bianchi, ampie 50-80 cm. I frutti, appiattiti e di forma ellittica, alati ai margini, vengono prodotti in numero elevatissimo. Dopo la disseminazione (a circa 3-5 anni di vita), la pianta muore."
+ ],
+ "famiglia": "Apiaceae",
+ "sinonimi": null,
+ "nome_inglese": "Giant hogweed",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "Originaria del Caucaso."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Introdotta in Europa, Nord America, Australia e Nuova Zelanda.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "Diffusa in particolare negli stati del Centro-Nord Europa; ancora assente dall’Europa mediterranea.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Presente con popolamenti localizzati in Valle d’Aosta, Piemonte, Lombardia, Trentino Alto-Adige, Veneto e Friuli Venezia Giulia."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "H. mantegazzianum si riproduce solo da seme. Ogni pianta produce fino a 50.000 semi dispersi dal vento, dall’acqua e dalle attività umane. I semi germinano a inizio primavera, stimolati dalle basse temperature invernali. Dopo la germinazione, durante i primi 3-4 anni di vita, si sviluppa una robusta radice a fittone e un’ampia rosetta di foglie. Dopo aver accumulato sufficienti riserve nella radice, la pianta fiorisce nell’estate del quarto/quinto anno e muore dopo aver rilasciato i semi. La fioritura può risultare ritardata di diversi anni, se la pianta è sottoposta a condizioni sfavorevoli come pascolamento, sfalcio, carenza di nutrienti e di acqua. La distribuzione della specie in Europa è legata a climi temperati con inverni freddi e assenza di aridità estiva. Preferisce suoli ricchi e umidi. Tollera condizioni di parziale ombreggiamento."
+    },
+    {
+     "testo": "Nell’areale nativo cresce in zone montuose fino a 2200 m, ai margini dei boschi, nelle radure, spesso lungo i corsi d’acqua. Nell’areale d’invasione forma densi popolamenti in ambienti disturbati dall’uomo con vegetazione rada o assente, come margini di fiumi, bordi di strade e ferrovie, scarpate, aree di discarica o di cantiere. In ambiente rurale, l’abbandono dei coltivi e l’assenza di una gestione regolare delle praterie favoriscono l’insediamento della specie."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "E’ stata introdotta ripetutamente in Europa a partire dalla prima metà del XIX secolo, per essere coltivata come ornamentale negli orti botanici e nei giardini, grazie al portamento maestoso che assume a fioritura. La resistenza alle basse temperature ne ha favorito la coltivazione nei giardini alpini. E’ sfuggita a coltura sia per disseminazione spontanea, soprattutto lungo i corsi d’acqua, sia per attività umane, come l’abbandono di rifiuti verdi e lo spostamento di volumi di suolo, che hanno accidentalmente diffuso la specie anche su lunghe distanze. La diffusione deliberata da parte dell’uomo come pianta ornamentale è una pratica ancora incontrollata a causa del commercio di semi via Internet."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "H. mantegazzianum costituisce un pericolo per la salute dell’uomo, spesso ignorato o sottovalutato. Infatti produce composti fototossici che, in seguito a contatto con la pelle ed esposizione ai raggi solari, provocano dermatiti con danni talvolta permanenti. Poiché i sintomi si manifestano 24-48 ore dopo l’esposizione, spesso è difficile risalire alla causa e formulare la diagnosi corretta.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Dove può formare densi popolamenti monospecifici, causa una riduzione fino al 50-60% della ricchezza e della densità delle piante native. L’impatto maggiore viene esercitato lungo i fiumi, dove può sostituire quasi completamente la vegetazione naturale.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Densi popolamenti di H. mantegazzianum alterano le caratteristiche chimiche, fisiche e biotiche del suolo, con eutrofizzazione, aumento del pH e della conducibilità elettrica e con alterazione della composizione delle comunità di funghi e batteri. Inoltre, il terreno denudato durante l’inverno per la morte delle parti epigee della pianta è maggiormente soggetto ad erosione.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "La principale forma di gestione su cui agire è la prevenzione (divieto di vendita, trasporto e possesso), ma poiché in Italia la specie è presente con popolamenti molto localizzati è realisticamente perseguibile l’obiettivo dell’eradicazione. Gli interventi di tipo meccanico sono efficaci: il pascolamento ovino e l’estirpazione manuale con l’uso di forche o con il taglio della radice sono stati sperimentati rispettivamente in N-Europa e in Valle d’Aosta e hanno permesso di eliminare in 2-5 anni i popolamenti trattati. L’applicazione di diserbanti è efficace se condotta ad inizio stagione, ma da evitare in aree sensibili."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Heracleum_mantegazzianum-Panace_di_Mantegazza.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Heracleum_mantegazzianum.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Heracleum_mantegazzianum_2025.jpg",
+ "nome_scientifico": "Heracleum mantegazzianum",
+ "nome_comune_ispra": "Panace di Mantegazza",
+ "presenza_italia": "Localizzata",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/31-specie-8",
+  "recuperato_il": "2026-11-06"
+ }
+}

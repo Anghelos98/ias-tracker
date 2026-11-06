@@ -1,0 +1,98 @@
+{
+ "titolo": "Panace della Persia",
+ "nome_scientifico_autore": "Heracleum persicum (Desf. ex Fisch., C.A.Mey. & Avé-Lall.)",
+ "descrizione": [
+  "Il panace della Persia è un pianta erbacea perenne, che può raggiungere 1,5-2,5 m di altezza. Si distingue dalle altre specie simili ( H. mantegazzianum e H. sosnowskyi ) poiché è perenne, si moltiplica anche vegetativamente e per il forte odore di anice. Le foglie sono molto grandi, densamente pubescenti nella pagina inferiore e glabre in quella superiore. Le infiorescenze sono ombrelle di circa 40-50 cm di diametro, con fiori bianchi. La somiglianza con le altre due specie del genere Heracleum prima citate è sia morfologica sia genetica ma vi sono molti dubbi sulla presenza in Europa settentrionale di entità ibride tra H. persicum e H. sphondilium ."
+ ],
+ "famiglia": "Apiaceae",
+ "sinonimi": null,
+ "nome_inglese": "Persian hogweed",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "E’ nativa di Iran, Iraq e Turchia."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Heracleum persicum è stato segnalato come specie esotica in Europa.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "La specie è stata segnalata per la prima volta in Europa nelle liste dei semi di Royal Botanic Gardens nel 1836 essendo stata introdotta dall’Iran, probabilmente come specie ornamentale. Nello stesso anno la specie è stata seminata nella Norvegia settentrionale e da qui si è diffusa in Scandinavia ove è ampiamente presente. Attualmente H. persicum è presente in Cecoslovacchia, Danimarca, Estonia, Finlandia, Ungheria, Norvegia, Islanda e Regno Unito.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Assente."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "I semi vengono dispersi dal vento o dall’acqua quando la specie si trova in prossimità di fiumi o canali ma è anche possibile la moltiplicazione vegetativa. Poiché la specie è caratterizzata da un fittone che accumula molte riserve, ogni pianta a primavera produce in breve tempo numerose foglie basali di grandi dimensioni e questo le permette di sviluppare successivamente grandi infiorescenze. H. persicum è adattato a condizioni termiche di bassa temperatura d’inverno, con neve persistente, e quindi può diffondersi facilmente in aree di montagna e nelle aree del Nord Europa."
+    },
+    {
+     "testo": "La specie si trova principalmente in habitat disturbati come bordi stradali, campi coltivati, pascoli abbandonati e giardini poco curati o in habitat semi-disturbati come pascoli, prati e frutteti. Si trova anche lungo fiumi e torrenti, nelle zone di greto. Nel Nord Europa si diffonde anche lungo i margini dei boschi."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Questa specie è stata introdotta come ornamentale, in quanto specie appariscente e di grandi dimensioni."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "In Iran i semi della specie vengono utilizzati nella cucina tradizionale per ottenere un aroma simile a quello di anice. Inoltre viene anche utilizzata come pianta medicinale. La pianta contiene furanocumarine fototossiche per l’uomo; l’esposizione alla luce dopo aver toccato le piante può provocare irritazioni e dermatiti, a seconda della sensibilità individuale. In alcuni casi i danni sono simili a ustioni e possono provocare alterazioni durature della pigmentazione della pelle.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "La grande dimensione e la velocità di sviluppo di questa specie la rendono estremamente invasiva in habitat ruderali e ripariali, a bassa copertura vegetale, ma anche in habitat erbacei come prati e pascoli o zone periurbane. In questi habitat la specie intercetta la luce e riduce la copertura vegetale delle native. L’ibridazione con H. sphondilum in Norvegia ha provocato una riduzione notevole della presenza di questa specie e la diffusione di forme differenti di ibridi.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Le dense popolazioni di questa pianta possono causare l’alterazione della struttura e della funzione degli ecosistemi, portando allo stravolgimento della catena alimentare e del normale ciclo dei nutrienti.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "Il controllo può essere effettuato meccanicamente, ma richiede risorse ingenti: è consigliata l’estirpazione delle piante dalla base, con strumenti meccanici estirpando il fittone o tagliandolo a circa 10 cm di profondità. L’utilizzo di erbicidi per il controllo non sempre è possibile, ad esempio lungo i fiumi, per ragioni normative e di sicurezza. Per questo motivo si ritiene che la principale forma di gestione debba essere la prevenzione (divieto di vendita, trasporto e possesso) e che ormai, nei paesi scandinavi, sia impossibile un’eradicazione definitiva della specie."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Heracleum_persicum-Panace_della_Persia.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Heracleum_persicum_RA.pdf",
+ "mappa_distribuzione": null,
+ "nome_scientifico": "Heracleum persicum",
+ "nome_comune_ispra": "Panace della Persia",
+ "presenza_italia": "Assente",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/29-specie-6",
+  "recuperato_il": "2026-11-06"
+ }
+}

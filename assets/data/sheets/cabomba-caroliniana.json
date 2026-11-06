@@ -1,0 +1,101 @@
+{
+ "titolo": "Cabomba della Carolina",
+ "nome_scientifico_autore": "Cabomba caroliniana A. Gray",
+ "descrizione": [
+  "Pianta acquatica erbacea perenne, che forma densi popolamenti sommersi, con corti rizomi e radicante sui fondali. I fusti possono arrivare a 10 m di lunghezza e occasionalmente raggiungere la superficie, con fiori e foglie che possono sopravvivere per 6-8 settimane. Le foglie sommerse (circa 5 cm di diametro) sono divise in lacinie sottili e hanno forma a ventaglio. Le foglie galleggianti sono piccole e intere. Può essere confusa con altre specie aquatiche come Cabomba furcata e i generi Ceratophyllum e Myriophyllum ."
+ ],
+ "famiglia": "Cabombaceae",
+ "sinonimi": "Cabomba aquatica DC., Cabomba australis Speg.",
+ "nome_inglese": "Carolina fanwort",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "Zone subtropicali temperate dell’America nordorientale e sudorientale."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Introdotta in altre aree dell’America settentrionale e meridionale, Asia, Oceania ed Europa.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "Segnalata nei Paesi Bassi, Regno Unito, Belgio, Ungheria, Danimarca, Svezia, Francia, Austria, Germania, Serbia e Polonia.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Assente."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "Specie competitiva e a crescita rapida (fino a 5 cm al giorno). Nelle aree temperate il massimo di crescita e la fioritura si hanno in estate; in inverno i fusti defogliano, diventano fragili e si spezzano generando frammenti che sedimentano sul fondale e danno origine a nuovi individui nella stagione successiva. Nell’areale secondario può riprodursi sessualmente attraverso autoimpollinazione, ma con tassi di germinazione ridotti. Si riproduce abbondantemente per via vegetativa, attraverso i rizomi o per frammentazione del fusto, a condizione che i frammenti possiedano almeno un paio di foglie."
+    },
+    {
+     "testo": "Vive nei corsi d’acqua a corrente lenta (torrenti, fiumi, canali, fossati) e in acque stagnanti (pozze, stagni, paludi, bacini idrici e laghi). Riesce a colonizzare l’intero corpo idrico, fino alle sponde. Sopporta ampie fluttuazioni della profondità dell’acqua (può sopravvivere in 10 m di acqua), anche se necessita di una profondità di almeno 0.4 m e non sopravvive al prosciugamento. Predilige substrati morbidi e limosi. Cresce meglio in acque ricche di nutrienti e di CO2, con bassi valori di pH e basse concentrazioni di calcio. Necessita di illuminazione diretta, ma tollera acque torbide e condizioni di anaerobiosi. Sopravvive sia in acque fredde che calde e può svernare sotto la superficie dell’acqua ghiacciata o la neve."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Specie introdotta come pianta ornamentale da acquario, ampiamente esportata dagli USA e coltivata in Asia ed Europa per l’esportazione nel resto del mondo. Si è diffusa in ambienti naturali principalmente a causa della sua coltivazione nei corpi idrici, a scopo commerciale ma anche ornamentale e, secondariamente, per il rilascio in natura dei residui della pulizia degli acquari. I frammenti possono essere trasportati a distanza dalla corrente e da uccelli acquatici, ma anche dispersi accidentalmente dalle attività umane (attrezzi da pesca o imbarcazioni)."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "I suoi densi popolamenti possono ostruire il deflusso dell’acqua e ostacolare la navigazione e le attività ricreative (nautiche, alieutiche e balneari). Può ridurre la capacità dei bacini di accumulo per l’utilizzo agricolo o idropotabile (aumentando i costi per la manutenzione). Produce sostanze allelopatiche che possono inibire la germinazione dei semi di alcune piante coltivate (es. grano, lattuga).",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Può occupare tutto il corpo idrico, determinando ombreggiamento e soffocamento delle altre piante acquatiche, cui si aggiunge l’effetto delle sostanze allelopatiche rilasciate, che possono inibire la crescita di alcune specie. Può arrecare disturbo alle popolazioni animali a seguito della modificazione dell’habitat.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Può determinare il rallentamento della corrente idrica che, insieme all’aumento del consumo di ossigeno per la decomposizione della sua necromassa, possono causare riduzione nei livelli di ossigeno dell’acqua, con conseguenti danni agli altri organismi acquatici, riduzione della capacità di autodepurazione, cattivi odori. L’accumulo di biomassa può ridurre la profondità dell’acqua, con alterazione dell’habitat e della struttura dell’ecosistema.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "E’ fondamentale la prevenzione attraverso il divieto di coltivazione e della pulizia degli acquari in corpi idrici naturali e l’orientamento delle scelte dei proprietari di acquari verso specie native. Per evitarne la diffusione in nuovi siti è necessaria un’accurata pulizia delle imbarcazioni e degli equipaggiamenti contaminati. La rimozione può essere di tipo meccanico (taglio o estirpazione delle piante) evitando la dispersione dei frammenti. L’ombreggiamento attraverso la rivegetazione delle sponde o il prosciugamento totale del corpo idrico sono interventi efficaci, anche sull’eventuale presenza di semi, anche se quest’ultimo comporta danni pergli altri organismi acquatici. Il controllo chimico non è consigliabile o è vietato negli ecosistemi acquatici. Non sono ancora noti agenti per il controllo biologico."
+    },
+    {
+     "testo": "Per ulteriori approfondimenti sul controllo si rimanda allo standard EPPO (PM 9/19(1): Invasive alien aquatic plants, DOI: 10.1111/epp.12165)."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Cabomba_caroliniana.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Cabomba_caroliniana_RA.pdf",
+ "mappa_distribuzione": null,
+ "nome_scientifico": "Cabomba caroliniana",
+ "nome_comune_ispra": "Cabomba della Carolina",
+ "presenza_italia": "Assente",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/28-specie-5",
+  "recuperato_il": "2026-11-06"
+ }
+}

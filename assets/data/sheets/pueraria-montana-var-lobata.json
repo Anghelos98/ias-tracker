@@ -1,0 +1,98 @@
+{
+ "titolo": "Kudzu",
+ "nome_scientifico_autore": "Pueraria montana var. lobata (Willd.) Sanjappa & Pradeep",
+ "descrizione": [
+  "Nota in tutto il mondo con il nome giapponese kudzu , pueraria è una pianta perenne lianosa, con fusti striscianti e rampicanti, dotata di una straordinaria rapidità di crescita (fino a 26 cm al giorno). Ha grosse foglie trifogliate-lobate e fiori rosa. Dove si insedia, pueraria forma una densa coltre che si estende su due livelli: al suolo, dove forma strati spessi di rami intrecciati, e a livello delle chiome degli alberi, dove si arrampica fino a 20-30 m di altezza. L’apparato radicale può svilupparsi fino a 5 m di profondità e costituisce più del 50% della biomassa; le radici svolgono la funzione di organo di riserva e di arricchimento di sostanze azotate, grazie alla simbiosi con batteri azotofissatori."
+ ],
+ "famiglia": "Fabaceae",
+ "sinonimi": "Dolichos lobatus Willdenow Pueraria lobata subsp. montana (Willd.) Maesen & S.M. Almeida",
+ "nome_inglese": "Kudzu vine",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "Originaria dell’Asia orientale (Cina, Giappone, Corea)."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Introdotta in tutti i continenti: Stati Uniti, Sud America, Oceania, Africa ed Europa.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "In Europa è segnalata in Italia e in Svizzera.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Molto localizzata, in alcune regioni del nord d’Italia."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "La specie privilegia la moltiplicazione vegetativa, attraverso frammentazione dei fusti, rispetto alla riproduzione sessuale. I semi hanno germinabilità molto bassa (7-17%) e spesso deperiscono per attacchi fungini prima della germinazione. E’ sensibile alle basse temperature e all’aridità climatica. Le maggiori infestazioni di pueraria corrispondono a territori con precipitazioni medie annue superiori a 1000 mm e temperature medie estive superiori a 27 °C; la sua presenza è invece limitata quando le precipitazioni annue sono inferiori a 800 mm e le temperature medie annue prossime alla soglia di 2.5 °C. Le stazioni italiane e svizzere sono caratterizzate da temperature del mese più freddo (gennaio) relativamente miti (0-4 °C)."
+    },
+    {
+     "testo": "Cresce meglio in piena luce, ai margini dei boschi dove trova sostegni su cui arrampicarsi ed è favorita dal disturbo, che ne facilita la moltiplicazione. Si diffonde perlopiù sui bordi dellestrade e sulle massicciate ferroviarie oppure sulle sponde dei fiumi. Le stazioni italiane si trovano in genere nei pressi di strade e case."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "In Europa, pueraria è stata introdotta come pianta ornamentale nei giardini di case e ville private. Di qui si è diffusa a causa dell’incuria dei giardini delle ville non più abitate o per l’abbandono di rifiuti verdi. A partire dalle popolazioni localizzate nella regione insubrica (Svizzera, Piemonte, Lombardia), dove il clima è più favorevole, la specie non avrebbe limitazioni climatiche ad espandersi e moltiplicarsi su circa il 60% del Nord Italia. In ogni caso, anche con condizioni ambientali favorevoli l’intervento volontario o accidentale dell’uomo, attraverso coltivazione, movimenti di terra o deposito di rifiuti verdi, rimane il fattore principale per la diffusione della specie."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "Pueraria produce metaboliti secondari utilizzati nella farmacopea cinese. In passato è stata anche coltivata come foraggera e a scopo anti-erosivo, pratica abbandonata non appena si è constatata l’invasività della specie. La specie ha impatti negativi su agricoltura e gestione forestale. Negli USA più di 3 milioni di ettari di suolo fertile sono ricoperti da una coltre di pueraria, con un danno economico stimato intorno a 75-380 milioni di euro all’anno. I costi di contenimento sono ugualmente elevati. Inoltre, pueraria è pianta ospite di patogeni delle colture (ruggine asiatica della soia) e funghi che causano marciumi.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Attraverso l’ombreggiamento, il diretto soffocamento degli alberi più giovani su cui si arrampica stritolandoli e l’attività allelopatica, pueraria interferisce con le popolazioni di piante autoctone determinandone spesso l’estinzione locale e provocando l’arresto del dinamismo naturale della vegetazione.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Oltre ad un forte impoverimento della diversità vegetale, nei popolamenti ad elevata densità si riscontra la riduzione della diversità di numerosi gruppi animali. A causa della simbiosi con batteri azotofissatori, anche il ciclo dei nutrienti viene alterato tramite la produzione di uno spesso strato di lettiera ricca di composti azotati, che si concentrano nello stato di suolo più superficiale.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "La principale forma di gestione è la prevenzione (divieto di vendita, trasporto e possesso) poiché il rischio principale di diffusione della specie è legato all’incuria dei giardini dove viene coltivata come ornamentale. Il controllo e l’eradicazione sono possibili attraverso lo sfalcio e, in aree non sensibili, attraverso l’applicazione di diserbanti, ma richiedono interventi frequenti nell’anno, per periodi di 4-10 anni, al fine di ridurre la vitalità degli organi sotterranei. La lotta biologica è promettente, ma ancora ad uno stadio sperimentale e non sempre applicabile."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Kudzu-Pueraria_montana.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Pueraria_lobata_EPPORA.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Pueraria_montana_2025.jpg",
+ "nome_scientifico": "Pueraria montana var. lobata",
+ "nome_comune_ispra": "Kudzu",
+ "presenza_italia": "Localizzata",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/40-specie-17",
+  "recuperato_il": "2026-11-06"
+ }
+}

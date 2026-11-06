@@ -5,7 +5,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
  * `points` contiene una sola segnalazione oppure tutte quelle che cadono nello stesso
  * punto (record con coordinate identiche, che nessuno zoom può separare).
  */
-export default function PointCard({ points, coordinate, species, onClose, onLayout, bottomInset }) {
+export default function PointCard({ points, coordinate, species, onClose, onOpenSheet, onLayout, bottomInset }) {
   if (!points?.length || !species) return null;
   const multiple = points.length > 1;
   return (
@@ -18,7 +18,14 @@ export default function PointCard({ points, coordinate, species, onClose, onLayo
           <Text style={styles.close}>✕</Text>
         </Pressable>
       </View>
-      <Text style={styles.scientific}>{species.scientificName}</Text>
+      <View style={styles.subheader}>
+        <Text style={styles.scientific}>{species.scientificName}</Text>
+        {onOpenSheet && (
+          <Pressable onPress={onOpenSheet} hitSlop={8} accessibilityRole="button">
+            <Text style={styles.sheetLink}>Scheda della specie ›</Text>
+          </Pressable>
+        )}
+      </View>
 
       {coordinate && (
         <>
@@ -117,7 +124,9 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { flex: 1, fontSize: 16, fontWeight: '600' },
   close: { fontSize: 18, color: '#666', paddingLeft: 12 },
-  scientific: { fontSize: 13, fontStyle: 'italic', color: '#555', marginBottom: 8 },
+  subheader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  scientific: { flex: 1, fontSize: 13, fontStyle: 'italic', color: '#555' },
+  sheetLink: { fontSize: 13, color: '#1565c0', fontWeight: '600', paddingLeft: 8 },
   label: { fontSize: 12, color: '#777', marginTop: 6 },
   value: { fontSize: 15, color: '#1b1b1b' },
   warning: { marginTop: 8, fontSize: 12, color: '#b26a00' },

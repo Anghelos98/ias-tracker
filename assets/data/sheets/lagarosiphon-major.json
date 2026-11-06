@@ -1,0 +1,101 @@
+{
+ "titolo": "Peste d’acqua arcuata",
+ "nome_scientifico_autore": "Lagarosiphon major (Ridl.) Moss",
+ "descrizione": [
+  "Specie acquatica perenne, sommersa, con radici avventizie e rizomi che ancorano la pianta al substrato. Il fusto esile e poco ramificato, può crescere fino a 6 m di lunghezza. Le foglie verde scuro, lunghe 5-20 mm e larghe 2-3 mm, ottuse, hanno margine intero, sono fortemente arcuato-ricurve, conferendo alla pianta un aspetto arricciato; spesso presentano incrostazioni di carbonato di calcio sulla pagina superiore; la disposizione è a spirale attorno al fusto, con addensamento nella porzione terminale. La specie è dioica, porta cioè i fiori maschili e i femminili su piante separate. I fiori femminili molto piccoli, con 3 petali bianchisono portati da peduncoli filamentosi sulla superficie dell’acqua, mentre i maschili galleggiano liberamente. Fuori dall’areale nativo è nota solo la pianta femminile, che non produce frutti e semi. Il frutto è una capsula contenente all’incirca 9 semi."
+ ],
+ "famiglia": "Hydrocharitaceae",
+ "sinonimi": "Elodea crispa Hort. Lagarosiphon muscoides Harvey var. major Ridl.",
+ "nome_inglese": "Curly waterweed",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "Specie nativa dell’Africa centrale e meridionale."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Isola di Rodrigues (Africa), Australia e Nuova Zelanda.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "E’ stata osservata per la prima volta nel XIX secolo in Irlanda e rapidamente si è diffusa in Gran Bretagna e nel resto dell’Europa centrale e settentrionale, dal Portogallo al Mar Nero.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Specie segnalata in Piemonte, Lombardia, Veneto e Trentino-Alto Adige."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "Al di fuori dell’areale nativo sono stati osservati esclusivamente individui femminili ed è stato osservato che L. major si riproduce solo vegetativamente per frammentazione di fusti e rizomi, dopo un periodo di quiescenza invernale (nell’emisfero boreale). L’acqua è il principale mezzo di dispersione naturale."
+    },
+    {
+     "testo": "L. major vive in acque correnti di canali e fossi, e in stagni e laghi dalle acque poco profonde, ferme o molto lente. Un substrato ricco di nutrienti, elevata luminosità, acque limpide e alcaline, e temperature tra 18-25 °C sono le condizioni ottimali per lo sviluppo della specie."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Specie introdotta perlopiù intenzionalmente con il commercio di piante acquatiche ornamentali per acquari e zone umide da giardino, o utilizzata come “ossigenatrice” di corpi idrici. Successivamente sfuggita, si è diffusa attraverso i corsi d’acqua, ad opera dell’avifauna e delle attività ricreative. Anche lo scambio di materiale vegetale tra botanici e giardini botanici è ritenuto causa di diffusione della specie."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "Dove presente, la specie comporta un aumento dei costi per la gestione e la manutenzione dei canali e fossi utilizzati a scopo irriguo; in alcuni casi, L. major può arrivare a intasare gli invasi idroelettrici. La formazione di densi tappeti può inoltre ostacolare le attività ricreative e il valore estetico dei siti invasi.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Densi tappeti di L. major alterano le caratteristiche chimico-fisiche dell’acqua, causando una riduzione delle specie indigene con conseguente effetto a cascata sulla fauna acquatica (invertebrati e pesci) e sull’avifauna. L’elevata competizione per la luce (solo 1% della luce penetra una coltre spessa 0.5 m) è un ulteriore motivo di deterioramento quali-quantitativo della ricchezza specifica del sito invaso.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Popolamenti densi alterano il funzionamento dell’ecosistema acquatico, aumentando la sedimentazione, modificando il regime idrico e, di conseguenza, la qualità chimico-fisica dell’acqua.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "La prevenzione, tramite operazioni di divulgazione ai cittadini e corretto riconoscimento della specie, rimane il metodo di contrasto più economico ed efficace per impedire l’insediamento e l’espansione di L. major. Anche il divieto di commercio e scambio tra acquariofili è un’azione prioritaria. Inoltre, gli acquari che contengono L. major e altre acquatiche esotiche, non devono essere svuotati direttamente nei corpi idrici, ma su terreni asciutti e soleggiati. Una volta insediatasi, il controllo di L. major risulta molto difficile, visto il potenziale di dispersione vegetativo. L’eradicazione è costosa, e risulta efficace solo per popolazioni di ridotte dimensioni; tuttavia gli interventi meccanici sono sconsigliati vista la propagazione per frammentazione, così come la lotta chimica in ambienti acquatici. I metodi di lotta biologica son ancora in fase di studio. La corretta verifica e pulizia dei materiali e mezzi ricreativi utilizzati in siti invasi è un ottimo modo per ostacolare la diffusione della specie."
+    },
+    {
+     "testo": "Per ulteriori approfondimenti sul controllo si rimanda allo standard EPPO (PM 9/19(1): Invasive alien aquatic plants, DOI: 10.1111/epp.12165)."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Lagarosiphon_major-Peste_d_acqua_arcuata.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Lagarosiphon_major_GBNNRA.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Lagarosiphon_major_2025.jpg",
+ "nome_scientifico": "Lagarosiphon major",
+ "nome_comune_ispra": "Peste d’acqua arcuata",
+ "presenza_italia": "Localizzata",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/33-specie-10",
+  "recuperato_il": "2026-11-06"
+ }
+}

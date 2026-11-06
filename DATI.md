@@ -37,6 +37,28 @@ scheda di ciascuna segnalazione insieme alla fonte. Distribuzione al 6 novembre 
 
 Il conteggio per specie è in `data/index.json` (campo `licenze`) dopo la sincronizzazione.
 
+## Schede delle specie (ISPRA)
+
+I testi delle schede (descrizione, areale, distribuzione, biologia, vettori, impatti,
+gestione) provengono dal sito [specieinvasive.isprambiente.it](https://www.specieinvasive.isprambiente.it)
+di ISPRA, pubblicati con licenza **Creative Commons Attribuzione 4.0 (CC BY 4.0)**.
+Ogni scheda riporta il link alla pagina originale e la data di consultazione
+(`assets/data/sheets/<specie>.json`, campo `fonte`); l'app li mostra nella sezione "Fonti".
+
+Le foto del sito ISPRA hanno licenze diverse (spesso CC BY-SA, autori di Wikimedia Commons)
+e **non** sono incluse. La mappa di distribuzione è caricata dal sito ISPRA al momento.
+
+A novembre 2026 sette schede ISPRA sono incomplete: *Celastrus orbiculatus*, *Crassula helmsii*,
+*Hakea sericea* e *Nanozostera japonica* (solo pagina segnaposto) e *Gunnera tinctoria*,
+*Microstegium vimineum*, *Myriophyllum heterophyllum* (solo descrizione; scheda completa in PDF).
+
+## Normativa
+
+La sezione "Cosa dice la legge" è una sintesi del D.Lgs. 15 dicembre 2017, n. 230 (testo
+vigente su [Normattiva](https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.legislativo:2017-12-15;230))
+e della pagina del [Ministero dell'Ambiente](https://www.mase.gov.it/portale/specie-esotiche-invasive),
+in `src/data/legal.js`. Non sostituisce il testo di legge.
+
 ## Elenco delle specie
 
 - Regolamento (UE) n. 1143/2014 e Regolamento di esecuzione (UE) 2016/1141, aggiornato dai

@@ -82,6 +82,41 @@ COMMON_NAMES = {
 }
 
 
+# Regolamento di esecuzione che ha inserito la specie nell'elenco dell'Unione e data di
+# entrata in vigore (20 giorni dopo la pubblicazione in GUUE). "applies_from" solo per le
+# specie con applicazione differita dei divieti (Reg. 2022/1203: dal 2 agosto 2027).
+REGULATIONS = {
+    "2016/1141": "2016-08-03",
+    "2017/1263": "2017-08-02",
+    "2019/1262": "2019-08-15",
+    "2022/1203": "2022-08-02",
+    "2025/1422": "2025-08-07",
+}
+LISTING = {
+    "2016/1141": ["Baccharis halimifolia", "Cabomba caroliniana", "Pontederia crassipes",
+                  "Heracleum persicum", "Heracleum sosnowskyi", "Hydrocotyle ranunculoides",
+                  "Lagarosiphon major", "Ludwigia grandiflora", "Ludwigia peploides",
+                  "Lysichiton americanus", "Myriophyllum aquaticum", "Parthenium hysterophorus",
+                  "Persicaria perfoliata", "Pueraria montana var. lobata"],
+    "2017/1263": ["Alternanthera philoxeroides", "Asclepias syriaca", "Elodea nuttallii",
+                  "Gunnera tinctoria", "Heracleum mantegazzianum", "Impatiens glandulifera",
+                  "Microstegium vimineum", "Myriophyllum heterophyllum", "Cenchrus setaceus"],
+    "2019/1262": ["Acacia saligna", "Ailanthus altissima", "Andropogon virginicus",
+                  "Cardiospermum grandiflorum", "Cortaderia jubata", "Ehrharta calycina",
+                  "Gymnocoronis spilanthoides", "Humulus scandens", "Lygodium japonicum",
+                  "Prosopis juliflora", "Salvinia molesta", "Triadica sebifera"],
+    "2022/1203": ["Celastrus orbiculatus", "Hakea sericea s.l.", "Koenigia polystachya",
+                  "Lespedeza cuneata", "Pistia stratiotes", "Rugulopteryx okamurae"],
+    "2025/1422": ["Acacia mearnsii", "Broussonetia papyrifera", "Crassula helmsii",
+                  "Delairea odorata", "Nanozostera japonica", "Reynoutria japonica",
+                  "Reynoutria sachalinensis", "Reynoutria × bohemica"],
+}
+DEFERRED = {"Celastrus orbiculatus": "2027-08-02", "Rugulopteryx okamurae": "2027-08-02"}
+SPECIES_LISTING = {name: reg for reg, names in LISTING.items() for name in names}
+
+SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
+
+
 def compact(geojson: dict) -> dict:
     sources: list[dict] = []
     source_idx: dict[tuple, int] = {}
@@ -111,6 +146,8 @@ def main() -> None:
         name, slug = s["nome_scientifico"], s["slug"]
         if name not in COMMON_NAMES:
             raise SystemExit(f"Manca il nome comune per {name}")
+        if name not in SPECIES_LISTING:
+            raise SystemExit(f"Manca il regolamento di inserimento per {name}")
         has_data = bool(s["totale"])
         if has_data:
             data = compact(json.loads((GEOJSON_DIR / f"{slug}.geojson").read_text(encoding="utf-8")))
@@ -137,10 +174,17 @@ def main() -> None:
             "automatic": s["identificazioni_automatiche"],
             "years": s["anni"],
             "bbox": s["bbox"],
+            "listing": {
+                "regulation": SPECIES_LISTING[name],
+                "inForce": REGULATIONS[SPECIES_LISTING[name]],
+                "appliesFrom": DEFERRED.get(name),
+            },
         }
         body = json.dumps(meta, ensure_ascii=False)[1:-1]
         loader = f"() => require('../../assets/data/species/{slug}.json')" if has_data else "null"
-        lines.append(f"  {{ {body}, load: {loader} }},")
+        sheet = (f"() => require('../../assets/data/sheets/{slug}.json')"
+                 if (SHEETS_DIR / f"{slug}.json").exists() else "null")
+        lines.append(f"  {{ {body}, load: {loader}, sheet: {sheet} }},")
     lines += ["];", ""]
     OUT_JS.parent.mkdir(parents=True, exist_ok=True)
     OUT_JS.write_text("\n".join(lines), encoding="utf-8")

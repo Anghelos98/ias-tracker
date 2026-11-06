@@ -1,0 +1,98 @@
+{
+ "titolo": "Soldinella reniforme",
+ "nome_scientifico_autore": "Hydrocotyle ranunculoides L. f.",
+ "descrizione": [
+  "Hydrocotyle ranunculoides è una pianta acquatica, radicante nel terreno, con lunghi stoloni striscianti radicanti ai nodi. Le foglie, che si dipartono dai nodi e fuoriescono dalla superficie dell’acqua, sono tondeggianti o reniformi, sottili, verdi chiare, di 2-10 cm di diametro a seconda della disponibilità di nutrienti, con lobi tondeggianti. I fiori sono piccoli (circa 3 mm di diametro), giallastri, e formano una piccola ombrella sotto le foglie. I frutti sono ovoidi, appiattiti sul lato dorsale. La specie, venduta come pianta d’acquario o come ornamentale per i giardini, viene spesso commercializzata come Hydrocotyle vulgaris o Hydrocotyle leucocephala ."
+ ],
+ "famiglia": "Apiaceae",
+ "sinonimi": "Hydrocotyle nutans G.",
+ "nome_inglese": "Floating pennywort",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "È nativa delle aree sud-orientali del Nord America e di parte del Centro America."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "La distribuzione nel mondo non è ancora ben nota. La specie è stata segnalata in Australia occidentale, in parte dell’Africa, in Medio-Oriente ed in Europa.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "La presenza della specie è accertata in Gran Bretagna, Irlanda, Olanda, Belgio, Francia, Germania e Italia. La segnalazione in Spagna è probabilmente dovuta ad un riconoscimento erroneo delle piante, in realtà attribuibili alle specie H. vulgaris o H. verticillata. Erronee risultano anche le segnalazioni in Portogallo, Austria e Danimarca.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Presenza accertata in Toscana, Sardegna, Lazio, Campania e Calabria ; non più ritrovata in Sicilia."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "La specie cresce e si rigenera rapidamente, con tassi superiori in acque ad elevata concentrazione di nutrienti. La riproduzione può avvenire tramite seme o moltiplicazione vegetativa. Nell’areale introdotto, nonostante le parti emerse della pianta non riescano a superare inverni rigidi, gli individui sono in grado di rigenerarsi rapidamente nella stagione successiva. Temperature tra i 25-32 °C ed elevata luminosità rappresentano le condizioni ottimali di crescita."
+    },
+    {
+     "testo": "La specie cresce in ambienti umidi, ai bordi dei corsi d’acqua naturali e artificiali, tra cui fiumi, canali, lungo i fossi e al margine degli acquitrini, su suoli fangosi, ai bordi dei laghi e altri bacini o lungo le coste. In Europa è spesso presente in stagni e vasche di giardini e parchi pubblici e privati, e all’interno dei giardini botanici."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "In Olanda, Belgio, Gran Bretagna, Francia, Italia e in altri paesi europei la specie viene venduta, in vivai o su internet, come pianta tropicale da acquario. Inoltre, la specie è assai utilizzata nel fitorisanamento per via delle elevate capacità di accumulo di metalli pesanti e fosforo. Spesso, le piante vengono commercializzate sotto il nome di altre specie (es. H. vulgaris, H.leucocephala), rendendo l’entità del commercio di questa specie difficile da quantificare. La diffusione di idrocotile in ambiente naturale è, pertanto, favorita prevalentemente dalle attività umane: coltivazione in stagni e laghetti ornamentali, fitorisanamento e acquariofilia (frammenti dispersi a seguito della pulizia degli acquari). La diffusione della specie avviene anche per via vegetativa (frammentazione) e tramite seme. I fiori compaiono precocemente in primavera e la fruttificazione pare avvenga in maggio e giugno, ma sono pochi i dati disponibili su questi aspetti della biologia riproduttiva."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "L’idrocotile ha un forte impatto economico a causa dei costi sostenuti per la gestione dei canali navigabili e dei canali irrigui. Attualmente in Europa il contenimento della specie risulta oneroso anche per la rapidità e la facilità di diffusione a seguito di fenomeni alluvionali. La formazione di densi tappeti determina una riduzione del valore estetico dei bacini colonizzati e incide negativamente sulle attività ricreative.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Ad oggi l’impatto più evidente viene segnalato sulla biodiversità poiché le foglie di idrocotile formano un tappeto denso e quasi impenetrabile per le altre specie. In alcuni siti invasi in Belgio è stata registrata una diminuzione del 50% delle specie acquatiche e del 100% delle specie sommerse, con una copertura della flora indigena ridotta al 10%.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Laddove è abbondante, la specie determina l’ alterazione chimico-fisica del corpo idrico, con conseguenze sulla fauna locale (pesci e marcoinverterbrati).",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "Il controllo meccanico tramite rimozione manuale è utilizzata già attuato in Gran Bretagna e Olanda, tuttavia la necessità di frequenti e ripetuti interventi grava sui costi di gestione da sostenere. Il controllo meccanico può essere integrato con il controllo chimico, quest’ultimo tuttavia sconsigliato o vietato dalla legge nei corsi d’acqua, in relazione alla particolare sensibilità di questi ecosistemi. Il controllo biologico è stato sperimentato in Gran Bretagna, ma gli esiti non sono ancora noti. Per ulteriori approfondimenti sulla specie si rimanda alle schede EPPO (gd.eppo.int/taxon/HYDRA/documents, consultato nell’ottobre 2017) ed in particolare al PRA 09-15161."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Hydrocotyle_ranunculoides-Soldinella_reniforme.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Hydrocotyle_ranunculoides_EPPO_RA.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Hydrocotyle_ranunculoides_2025.jpg",
+ "nome_scientifico": "Hydrocotyle ranunculoides",
+ "nome_comune_ispra": "Soldinella reniforme",
+ "presenza_italia": "Diffusa",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/32-specie-9",
+  "recuperato_il": "2026-11-06"
+ }
+}

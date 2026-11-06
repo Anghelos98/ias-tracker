@@ -1,0 +1,101 @@
+{
+ "titolo": "Ludwigia peploide",
+ "nome_scientifico_autore": "Ludwigia peploides (Kunth) P.H. Raven",
+ "descrizione": [
+  "Pianta acquatica perenne, facilmente confondibile con Ludwigia grandiflora , dalla quale si distingue solo al momento della fioritura. La Ludwigia peploide ha fusti fiorali che crescono orizzontalmente, petali lunghi 1.0-1.5 cm e antere di 1.0-1.7 mm, mentre L. grandiflora ha fusti che crescono verticalmente e petali e antere di maggiori dimensioni. Lo sviluppo vegetativo della Ludwigia peploide è sia orizzontale sia tramite getti verticali, che possono emergere fino a 80 cm sopra la superficie dell’acqua. La specie è in grado di colonizzare diversi ambienti grazie alla presenza lungo il fusto di radici avventizie per l’assorbimento dell’ossigeno, permettendo alla pianta di tollerare ambienti anossici. Il potenziale invasivo è accresciuto da un elevato tasso di crescita e numerose strategie di svernamento, oltre al rilascio di sostanze allelopatiche e all’elevata capacità di rigenerazione vegetativa a partire da frammenti e dai nodi."
+ ],
+ "famiglia": "Onagraceae",
+ "sinonimi": "Jussiaea patibilcensis Kunth. Jussiaea peploides Kunth. Jussiaea polygonoides Kunth. Jussiaea gomezii Ram. Goyena,",
+ "nome_inglese": "Common milkweed",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "Specie con un vasto areale primario, sebbene ancora non confermato, che comprende gli USA e numerosi stati dell’America centrale e meridionale."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Specie introdotta in diversi paesi, tra cui Turchia, Madagascar, Tailandia, Taiwan, Australia e Nuova Zelanda.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "In Europa la specie è presente in Francia (inclusa la Corsica), dove forma densi ed estesi popolamenti, in Belgio, Grecia, Italia, Olanda, Spagna e Regno Unito.",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "In Italia è segnalata la sottospecie L. peploides subsp. montevidensis ( Ludwigia di Montevideo) per Lombardia, Veneto, Emilia Romagna, Toscana e Lazio."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "Il potenziale invasivo è determinato da un elevato tasso di crescita e da numerose strategie di svernamento, oltre al rilascio di sostanze allelopatiche e all’elevata capacità di rigenerazione vegetativa a partire da frammenti di fusto. La frammentazione può essere determinata dalla corrente, da attività di animali e dell’uomo. I frammenti radicano, si accrescono e formano in breve densi tappeti. I semi sono prodotti in quantità elevate (10.000 -14.000 semi/m2) e possono germinare anche in assenza di luce e ossigeno. La capacità di germinare viene persa però in breve tempo (3 anni)."
+    },
+    {
+     "testo": "La specie colonizza i medesimi ambienti della Ludwigia a fiori grandi e mostra la stessa adattabilità, tollerando un ampio range di condizioni in termini di disponibilità di nutrienti, tipologie di substrato e qualità dell’acqua; si insedia spesso su substrati fangosi in zone umide aperte, naturali o artificiali, soggette a continua fluttuazione del livello dell’acqua. Acque ferme oppure a lento scorrimento e acque salmastre sono ulteriori habitat favorevoli alla Ludwigia peploide. La salinità elevata rappresenta un fattore limitante per l’insediamento della specie e, rispetto a L. grandiflora, tollera meno le basse temperature (< 0°C)."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "La Ludwigia peploide, così come la p. a grandi fiori, è stata introdotta intenzionalmente dall’uomo come pianta acquatica ornamentale. Nonostante non si abbiano numeri certi sull’entità delle importazioni, si sa che la specie è ancora in commercio, molto spesso come Jussiaea o Ludwigia grandiflora. Anche la diffusione in natura è imputabile prevalentemente ad azione antropica accidentale, alla fauna delle zone umide e alle correnti che trasportano il materiale vegetativo."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "A causa dell’elevata produzione di biomassa e il conseguente aumento della sedimentazione e riduzione della capacità portante del canale, entrambe le porracchie interferiscono con le attività agricole, i servizi ecosistemici e l’utilizzo dei corpi idrici da parte dell’uomo. I principali danni sono il deterioramento delle dighe e delle infrastrutture, la perdita di aree ricreative (pesca, caccia, sport acquatici), l’incremento della proliferazione delle zanzare e l’aumento dei rischi di allagamento.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "Il rilascio di sostanze allelopatiche altera la composizione specifica del sito in termini quali-quantitativi, con una complessiva riduzione del numero di specie, in particolare autoctone. La riduzione nelle concentrazioni di ossigeno disciolto, dove la specie è presente in elevate densità, può risultare letale per la fauna acquatica.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "La Ludwigia peploide è in grado di alterare in modo significativo gli ecosistemi in cui si insedia sia dal punto di vista sia ecologico sia strutturale. Densi popolamenti provocano deossigenazione dell’acqua, riduzione del pH, in conseguenza alla diminuzione dell’attività fotosintetica delle specie sommerse, riducono il flusso con conseguente interferenza sul drenaggio, accelerazione della sedimentazione, accumulo di materia organica e riduzione della capacità portante del corpo idrico. In acque ferme, la lenta decomposizione può provocare una riduzione della profondità del corpo idrico e un’alterazione della successione di vegetazione, con possibilità di colonizzazione da parte di altre specie che vanno ad alterare la struttura complessiva del sistema.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "Le metodologie di controllo da applicare a questa specie sono le medesime descritte per L. grandiflora . I costi per il controllo della specie sono molto elevati."
+    },
+    {
+     "testo": "Per ulteriori approfondimenti sul controllo si rimanda allo standard EPPO (PM 9/19(1): Invasive alien aquatic plants , DOI: 10.1111/epp.12165)."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Ludwigia_peploides-Ludwigia_peploide.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Ludwigia_peploides_EPPO_RA.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Ludwigia_peploides_2025.jpg",
+ "nome_scientifico": "Ludwigia peploides",
+ "nome_comune_ispra": "Ludwigia peploide",
+ "presenza_italia": "Diffusa",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/35-specie-12",
+  "recuperato_il": "2026-11-06"
+ }
+}

@@ -1,0 +1,98 @@
+{
+ "titolo": "Panace di Sosnowsky",
+ "nome_scientifico_autore": "Heracleum sosnowskyi (Manden.)",
+ "descrizione": [
+  "Il panace di Sosnowsky è un pianta erbacea biennale o perenne, monocarpica, che può raggiungere i 2-3 m di altezza. Le foglie sono molto grandi, parzialmente o completamente divise in segmenti e possono raggiungere anche i 2 m di lunghezza compreso il picciolo. Le infiorescenze sono ombrelle di circa 40-50 cm di diametro, con fiori bianchi o rosati, che compaiono nel secondo anno o negli anni successivi al secondo, in casi particolari. Ogni pianta produce circa 9000-10000 semi e poi muore dopo la fruttificazione. E’ simile a H. mantegazzianum Sommier & Levier e a H. persicum Desf. e per questo motivo spesso nelle liste di esotiche invasive questa specie non compare in quanto “compresa” in H. mantegazzianum ."
+ ],
+ "famiglia": "Apiaceae",
+ "sinonimi": null,
+ "nome_inglese": "Sosnowsky's hogweed",
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "E’ nativa delle aree del Caucaso centrale e orientale (Georgia, Russia, Armenia, Azerbaijan e nel NE dell’Anatolia in Turchia). E’ stata descritta su esemplari della Georgia."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Heracleum sosnowskyi non è segnalato fino ad ora al di fuori di Europa orientale e Asia occidentale.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "La specie si è diffusa in alcuni stati dell’Europa orientale e dell’Asia occidentale, in relazione alle aree dove è stata coltivata a partire dalla fine degli anni ’40 del secolo scorso a titolo sperimentale e poi dagli anni ’60 in molti paesi dell’Est, come foraggio. I paesi in cui è diffusa sono Estonia, Latvia e Lituania ma vi sono segnalazioni anche per Ungheria, Polonia, Ucraina, Bielorussia, Germania dell’Est e Russia europea, ma da confermare. In Russia la specie è stata anche ibridata con altre specie dello stesso genere e questi ibridi potrebbero essersi diffusi, anche se non vi sono dati al proposito.",
+     "sottotitolo": "In Europa e asia"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "La specie non è stata segnalata fino ad ora per l’Italia."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "Ogni individuo può produrre fino a 10-12000 semi che vengono dispersi dal vento o dall’acqua quando la specie si trova in prossimità di fiumi o canali. Poiché la specie è caratterizzata da un fittone che accumula molte riserve ogni pianta a primavera produce in breve tempo numerose foglie basali di grandi dimensioni e questo le permette di sviluppare successivamente grandi infiorescenze. H. sosnowskyi è adattato a condizioni termiche di bassa temperatura d’inverno, con neve persistente, e di alta temperatura durante il periodo estivo e quindi può diffondersi in aree di montagna, sia nelle Alpi, sia nell’Appennino."
+    },
+    {
+     "testo": "La specie si trova principalmente in habitat disturbati come bordi stradali, campi coltivati, pascoli abbandonati e giardini poco curati o in habitat semi-disturbati come pascoli, prati e frutteti. Si trova anche lungo fiumi e torrenti, nelle zone di greto."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "Questa specie è stata introdotta come ornamentale ma principalmente perché si riteneva che avesse buone potenzialità come pianta da foraggio, a seguito di ibridazione con altre specie dello stesso genere, meno ricche in furanocumarine. Tale introduzione come foraggera è avvenuta nei paesi dell’Est europeo e dell’Asia occidentale. H. sosnowskyi si può diffondere rapidamente sia per dispersione naturale (attraverso semi e frammenti trasportati dall’ acqua), sia a causa delle attività dell’uomo che può seminarla nei giardini. Attualmente in alcuni paesi dell’est viene ancora utilizzata come produttrice di biomassa."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "La pianta contiene furanocumarine fototossiche per l’uomo; l’esposizione alla luce dopo aver toccato le piante può provocare irritazioni e dermatiti, a seconda della sensibilità individuale. In alcuni casi i danni sono simili a ustioni e possono provocare alterazioni durature della pigmentazione della pelle.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "La grande dimensione e la velocità di sviluppo di questa specie la rendono estremamente invasiva in habitat ruderali e ripariali, a bassa copertura vegetale, ma anche in habitat erbacei come prati e pascoli. In questi la specie intercetta la luce e riduce la copertura vegetale delle native.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "Le dense popolazioni di questa pianta possono causare l’alterazione della struttura e della funzione degli ecosistemi, portando allo stravolgimento della catena alimentare e del normale ciclo dei nutrienti.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "Il controllo può essere effettuato meccanicamente, ma richiede risorse ingenti: è consigliata l’estirpazione delle piante dalla base con strumenti meccanici estirpando il fittone o tagliandolo a circa 10 cm di profondità. L’utilizzo di erbicidi per il controllo non sempre è possibile, ad esempio lungo i fiumi, per ragioni normative e di sicurezza. Per questo motivo si ritiene che la principale forma di gestione debba essere la prevenzione (divieto di vendita, trasporto e possesso)."
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Heracleum_sosnowsky-Panace_di_Sosnowsky.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Heracleum_sosnowskyi_RA.pdf",
+ "mappa_distribuzione": null,
+ "nome_scientifico": "Heracleum sosnowskyi",
+ "nome_comune_ispra": "Panace di Sosnowsky",
+ "presenza_italia": "Assente",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/30-specie-7",
+  "recuperato_il": "2026-11-06"
+ }
+}

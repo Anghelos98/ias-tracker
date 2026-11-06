@@ -1,0 +1,101 @@
+{
+ "titolo": "Balsamina ghiandolosa",
+ "nome_scientifico_autore": "Impatiens glandulifera (Royle)",
+ "descrizione": [
+  "La Balsamina ghiandolosa è una pianta erbacea, annuale alta fino a 2 m (la pianta annuale più alta d’Europa!). Il nome scientifico richiama due caratteristiche della pianta: Impatiens (“impaziente”) si riferisce ai frutti (capsule) che a maturità “esplodono” appena toccati, proiettando i semi a notevoli distanze; glandulifera si riferisce alle ghiandole che si trovano ai nodi del fusto, sui piccioli e alla base delle foglie. I fiori, di colore che varia dal bianco al rosa, al porpora hanno una forma particolare ed inconfondibile: grandi 2.5-4 cm, la corolla presenta due labbra (superiore rivolta verso l’alto e inferiore rivolta verso il basso) ed è prolungata posteriormente in un sacco, che termina con un breve sperone. Differenze di colore, forma e dimensione dei fiori, caratterizzano le altre specie alloctone del genere Impatiens , talvolta invasive in Europa."
+ ],
+ "famiglia": "Balsaminaceae",
+ "sinonimi": "Balsamina glandulifera (Royle) Ser. Impatiens roylei Walp.",
+ "nome_inglese": null,
+ "sezioni": [
+  {
+   "titolo": "Area di presenza naturale",
+   "blocchi": [
+    {
+     "testo": "Asia orientale (Himalaya)."
+    }
+   ]
+  },
+  {
+   "titolo": "Area di introduzione",
+   "blocchi": [
+    {
+     "testo": "Diffusa nelle zone temperate di diversi continenti: Europa, Asia, Nord-America e Nuova Zelanda.",
+     "sottotitolo": "Nel mondo"
+    },
+    {
+     "testo": "Attualmente presente in quasi tutti gli Stati europei (23 EU).",
+     "sottotitolo": "In Europa"
+    }
+   ]
+  },
+  {
+   "titolo": "Distribuzione in Italia",
+   "blocchi": [
+    {
+     "testo": "Presente in Valle d’Aosta, Piemonte, Lombardia, Trentino-Alto Adige, Veneto, Friuli, Liguria, Emilia-Romagna, Toscana. Forma popolamenti densi ed estesi soprattutto in Piemonte, Lombardia e Trentino-Alto Adige."
+    }
+   ]
+  },
+  {
+   "titolo": "Biologia ed ecologia",
+   "blocchi": [
+    {
+     "testo": "La balsamina ghiandolosa si riproduce e si diffonde esclusivamente per seme. Ogni pianta può produrre fino a 4000 semi, dispersi grazie al meccanismo di apertura esplosiva del frutto (capsula), oppure trasportati dall’acqua. I semi germinano in percentuali elevate, all’inizio della primavera, stimolati dalle basse temperature invernali. In circa 3 mesi la pianta arriva alla fioritura, che si prolunga da Luglio a Settembre. I. glandulifera preferisce climi umidi e temperati, al contrario non tollera aridità e gelate, nonostante i semi abbiano bisogno di basse temperature invernali per poter germinare. Nell’areale d’origine si può trovare fino a 4000 m di quota, di conseguenza si è diffusa facilmente nelle vallate alpine. Cresce bene in piena luce, anche se può tollerare un parziale ombreggiamento, su suoli umidi, meglio se ricchi di nutrienti."
+    },
+    {
+     "testo": "Si sviluppa lungo i fiumi e sui bordi di fossi e canali, in zone con buona disponibilità idrica e frequentemente disturbate dalle dinamiche naturali dei corsi d’acqua o dall’uomo. Può infiltrarsi anche in boschi ripariali di pianura."
+    }
+   ]
+  },
+  {
+   "titolo": "Vettori di introduzione",
+   "blocchi": [
+    {
+     "testo": "E’ stata introdotta in Europa nella prima metà dell’800 a scopo ornamentale, per i suoi fiori vistosi e profumati, molto attrattivi nei confronti di api e farfalle. Grazie alla particolare modalità di dispersione dei semi si è subito spontaneizzata nelle vicinanze dei giardini in molti Stati d’Europa e dai primi ‘900 ha cominciato ad essere osservata in ambienti naturali, soprattutto lungo i corsi d’acqua. La specie si diffonde molto velocemente: in UK, ad esempio, si è dimostrata capace di coprire distanze fino a 38 km/anno. Le attività antropiche contribuiscono alla sua diffusione su lunghe distanze; infatti è ancora apprezzata e venduta in Europa come pianta ornamentale e mellifera, inoltre può essere diffusa accidentalmente attraverso il trasferimento di terreno e il deposito in natura di rifiuti verdi."
+    }
+   ]
+  },
+  {
+   "titolo": "Impatti",
+   "blocchi": [
+    {
+     "testo": "Non comporta problemi per la salute e per l’agricoltura. Risulta invece nociva per la stabilità delle sponde dei corsi d’acqua, soprattutto d’inverno quando la pianta muore e lascia il terreno totalmente privo di vegetazione e per l’utilizzo a scopo ricreativo di laghi, fiumi e canali (es. pesca all’amo), poiché le folte siepi di balsamina rendono inaccessibili le sponde. I costi per il contenimento della specie sono molto elevati: in UK viene speso circa 1 milione di sterline all’anno per il suo contenimento, mentre i costi di un intervento di eradicazione a scala nazionale sono stati stimati intorno a 150-300 milioni di sterline.",
+     "sottotitolo": "Rapporti con l’uomo, impatto sanitario e socioeconomico"
+    },
+    {
+     "testo": "La capacità invasiva della balsamina ghiandolosa è principalmente dovuta alla produzione di moltissimi semi, che germinano in grande quantità e precocemente nella stagione, rispetto alle piante native. Questa strategia, unita alla rapida crescita ed alla notevole statura permette alla balsamina di formare popolamenti densi, soprattutto lungo i corsi d’acqua, che impoveriscono la vegetazione nativa delle sponde, dei greti e del margine dei boschi ripari. Grazie ai fiori profumati e ricchi di nettare esercita una forte attrazione sugli insetti impollinatori, che trascurano di conseguenza le specie native, riducendone la fitness riproduttiva.",
+     "sottotitolo": "Impatto su altre specie"
+    },
+    {
+     "testo": "L’effetto della balsamina ghiandolosa sulla fauna è ambivalente: da un lato attira e nutre consistenti popolazioni non solo di insetti impollinatori, ma anche di afidi e di artropodi che si cibano di afidi; dall’altro però, con la riduzione di piante nutrici native, vengono eliminati anche gli insetti che si nutrono particolarmente o esclusivamente di esse.",
+     "sottotitolo": "Impatto sugli ecosistemi"
+    }
+   ]
+  },
+  {
+   "titolo": "Metodi di gestione",
+   "blocchi": [
+    {
+     "testo": "La principale forma di gestione è la prevenzione attraverso la sensibilizzazione di apicoltori, vivaisti, giardinieri e appassionati di giardinaggio per evitarne l’uso. Buone pratiche per evitare la diffusione accidentale consistono nell’evitare lo spostamento di suolo contaminato, nel corretto smaltimento dei residui vegetali, nell’evitare il disturbo al suolo in zone a rischio. Il controllo e l’eradicazione sono possibili attraverso l’eradicazione manuale (le radici sono deboli e superficiali), lo sfalcio e il pascolo. È necessario intervenire prima della fioritura per evitare la dispersione dei semi, così da consentire la scomparsa delle popolazioni in pochi anni, poiché i semi non restano vitali a lungo nel terreno."
+    },
+    {
+     "testo": "Per ulteriori approfondimenti sul controllo, si rimanda al Database EPPO"
+    }
+   ]
+  }
+ ],
+ "completa": true,
+ "pdf_scheda": "https://www.specieinvasive.isprambiente.it/images/schede-specie/Impatiens_glandulifera-Balsamina_ghiandolosa.pdf",
+ "pdf_valutazione_rischio": "https://www.specieinvasive.isprambiente.it/images/schede-risk-assessment/Impatiens_glandulifera.pdf",
+ "mappa_distribuzione": "https://www.specieinvasive.isprambiente.it/images/distribuzione-specie/immagini/Impatiens_glandulifera_2025.jpg",
+ "nome_scientifico": "Impatiens glandulifera",
+ "nome_comune_ispra": "Balsamina ghiandolosa",
+ "presenza_italia": "Diffusa",
+ "fonte": {
+  "attribuzione": "ISPRA – specieinvasive.isprambiente.it",
+  "licenza": "CC BY 4.0",
+  "url": "https://www.specieinvasive.isprambiente.it/index.php/it/specie-aliene-invasive/2-le-specie-invasive/72-specie-44",
+  "recuperato_il": "2026-11-06"
+ }
+}
