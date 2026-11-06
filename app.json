@@ -35,7 +35,8 @@
           "microphonePermission": false
         }
       ],
-      "expo-mail-composer"
+      "expo-mail-composer",
+      "expo-sharing"
     ]
   }
 }

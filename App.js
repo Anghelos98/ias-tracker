@@ -9,6 +9,7 @@ import { ClusterMarker, DOT_HIT_RADIUS, DotMarker, clusterSize } from './src/com
 import PointCard from './src/components/PointCard';
 import FiltersPanel, { describeFilters } from './src/components/FiltersPanel';
 import NearbyPanel from './src/components/NearbyPanel';
+import ExportSection from './src/components/ExportSection';
 import SpeciesPanel from './src/components/SpeciesPanel';
 import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
@@ -457,6 +458,15 @@ function IASTracker() {
         filters={filters}
         onChange={changeFilters}
         onClose={() => setFiltersOpen(false)}
+        extra={
+          <ExportSection
+            datasets={datasets}
+            filters={filters}
+            region={region}
+            title={species?.commonName ?? ''}
+            slug={species?.all ? 'tutte-le-specie' : (species?.slug ?? 'specie')}
+          />
+        }
       />
 
       <SpeciesPanel

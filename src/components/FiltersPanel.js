@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { APPROXIMATE_M, DEFAULT_FILTERS } from '../data/points';
@@ -40,35 +40,37 @@ export default function FiltersPanel({ visible, filters, onChange, onClose, extr
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Chiudi filtri" />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.handle} />
-        <View style={styles.header}>
-          <Text style={styles.title}>Filtri</Text>
-          <Pressable onPress={() => onChange(DEFAULT_FILTERS)} hitSlop={10}>
-            <Text style={styles.reset}>Ripristina</Text>
-          </Pressable>
-        </View>
-
-        <Text style={styles.label}>Periodo della segnalazione</Text>
-        <Chips options={PERIODS} value={filters.minYear} onSelect={(minYear) => set({ minYear })} />
-        {filters.minYear != null && <Text style={styles.note}>Escluse le segnalazioni senza anno.</Text>}
-
-        <Text style={styles.label}>Precisione della posizione</Text>
-        <Chips options={PRECISIONS} value={filters.maxUncertainty} onSelect={(maxUncertainty) => set({ maxUncertainty })} />
-        {filters.maxUncertainty != null && (
-          <Text style={styles.note}>Escluse le segnalazioni la cui fonte non indica la precisione.</Text>
-        )}
-
-        <View style={styles.switchRow}>
-          <View style={styles.flex}>
-            <Text style={styles.switchLabel}>Identificazioni automatiche</Text>
-            <Text style={styles.note}>Segnalazioni Pl@ntNet riconosciute solo dall’algoritmo, senza verifica.</Text>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Filtri</Text>
+            <Pressable onPress={() => onChange(DEFAULT_FILTERS)} hitSlop={10}>
+              <Text style={styles.reset}>Ripristina</Text>
+            </Pressable>
           </View>
-          <Switch value={filters.includeAutomatic} onValueChange={(includeAutomatic) => set({ includeAutomatic })} />
-        </View>
 
-        <Text style={styles.label}>Legenda</Text>
-        <Legend />
+          <Text style={styles.label}>Periodo della segnalazione</Text>
+          <Chips options={PERIODS} value={filters.minYear} onSelect={(minYear) => set({ minYear })} />
+          {filters.minYear != null && <Text style={styles.note}>Escluse le segnalazioni senza anno.</Text>}
 
-        {extra}
+          <Text style={styles.label}>Precisione della posizione</Text>
+          <Chips options={PRECISIONS} value={filters.maxUncertainty} onSelect={(maxUncertainty) => set({ maxUncertainty })} />
+          {filters.maxUncertainty != null && (
+            <Text style={styles.note}>Escluse le segnalazioni la cui fonte non indica la precisione.</Text>
+          )}
+
+          <View style={styles.switchRow}>
+            <View style={styles.flex}>
+              <Text style={styles.switchLabel}>Identificazioni automatiche</Text>
+              <Text style={styles.note}>Segnalazioni Pl@ntNet riconosciute solo dall’algoritmo, senza verifica.</Text>
+            </View>
+            <Switch value={filters.includeAutomatic} onValueChange={(includeAutomatic) => set({ includeAutomatic })} />
+          </View>
+
+          <Text style={styles.label}>Legenda</Text>
+          <Legend />
+
+          {extra}
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -119,6 +121,7 @@ function LegendItem({ dotStyle, text }) {
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' },
   sheet: {
+    maxHeight: '85%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,

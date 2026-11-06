@@ -18,6 +18,8 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 - Mappa a schermo intero con la posizione dell'utente
 - Raggruppamento delle segnalazioni vicine (cluster numerati) per una mappa fluida
 - Scheda della segnalazione: anno, fonte, coordinate e incertezza della posizione
+- Esportazione delle segnalazioni mostrate (area visibile o tutta Italia) in CSV, GeoJSON o KML,
+  con fonte e licenza di ogni dato
 - Filtri per periodo, precisione della posizione e identificazioni automatiche (Pl@ntNet),
   salvati sul telefono; le posizioni approssimative (oltre 1 km) hanno un pallino vuoto
 - "Vicino a me": specie segnalate entro 1, 5, 10 o 25 km dalla propria posizione, con la
