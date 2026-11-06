@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import Supercluster from 'supercluster';
 
-import { groupByLocation } from '../data/points';
+import { groupDatasets } from '../data/points';
 import { regionToBBox, regionToZoom } from '../utils/geo';
 
 // Parametri di raggruppamento:
@@ -24,15 +24,15 @@ const VIEWPORT_MARGIN = 0.15;
  * Raggruppa i punti di una specie con supercluster e restituisce solo ciò che è
  * dentro (o appena fuori) lo schermo: i marker fuori vista non vengono creati.
  *
- * @param {{fonti: {nome: string, licenza: string|null}[], punti: Array<[number, number, number|null, number, 0|1, number|null]>} | null} data
+ * @param {{species: object, data: object}[] | null} datasets  punti di una o più specie (formato compatto)
  * @param {object} region  regione visibile della mappa
  * @param {import('../data/points').Filters} filters  filtri scelti dall'utente
  */
-export function useClusters(data, region, filters) {
+export function useClusters(datasets, region, filters) {
   // L'indice si ricostruisce solo quando cambiano dati o filtro, non a ogni pan/zoom.
   const index = useMemo(() => {
-    if (!data) return null;
-    const { features, count } = groupByLocation(data, filters);
+    if (!datasets?.length) return null;
+    const { features, count } = groupDatasets(datasets, filters);
 
     const sc = new Supercluster({
       ...CLUSTER_OPTIONS,
@@ -44,7 +44,7 @@ export function useClusters(data, region, filters) {
     });
     sc.load(features);
     return { sc, count };
-  }, [data, filters]);
+  }, [datasets, filters]);
 
   const zoom = regionToZoom(region);
 

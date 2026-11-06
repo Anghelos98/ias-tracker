@@ -1,31 +1,38 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { speciesOfRecords } from '../data/points';
+
 /**
  * Scheda con anno e fonte delle segnalazioni selezionate.
  * `points` contiene una sola segnalazione oppure tutte quelle che cadono nello stesso
- * punto (record con coordinate identiche, che nessuno zoom può separare).
+ * punto (record con coordinate identiche, che nessuno zoom può separare), anche di specie
+ * diverse quando la mappa mostra tutte le specie. Ogni record porta con sé la sua specie.
  */
-export default function PointCard({ points, coordinate, species, onClose, onOpenSheet, onLayout, bottomInset }) {
-  if (!points?.length || !species) return null;
+export default function PointCard({ points, coordinate, onClose, onOpenSheet, onLayout, bottomInset }) {
+  if (!points?.length) return null;
   const multiple = points.length > 1;
+  const speciesHere = speciesOfRecords(points);
+  const species = speciesHere.length === 1 ? speciesHere[0] : null;
   return (
     <View style={[styles.card, { bottom: bottomInset + 84 }]} onLayout={(e) => onLayout?.(e.nativeEvent.layout)}>
       <View style={styles.header}>
         <Text style={styles.title} numberOfLines={1}>
-          {species.commonName}
+          {species ? species.commonName : `${speciesHere.length} specie in questo punto`}
         </Text>
         <Pressable onPress={onClose} hitSlop={12} accessibilityLabel="Chiudi scheda">
           <Text style={styles.close}>✕</Text>
         </Pressable>
       </View>
-      <View style={styles.subheader}>
-        <Text style={styles.scientific}>{species.scientificName}</Text>
-        {onOpenSheet && (
-          <Pressable onPress={onOpenSheet} hitSlop={8} accessibilityRole="button">
-            <Text style={styles.sheetLink}>Scheda della specie ›</Text>
-          </Pressable>
-        )}
-      </View>
+      {species && (
+        <View style={styles.subheader}>
+          <Text style={styles.scientific}>{species.scientificName}</Text>
+          {onOpenSheet && (
+            <Pressable onPress={() => onOpenSheet(species.slug)} hitSlop={8} accessibilityRole="button">
+              <Text style={styles.sheetLink}>Scheda della specie ›</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
 
       {coordinate && (
         <>
@@ -47,6 +54,11 @@ export default function PointCard({ points, coordinate, species, onClose, onOpen
               <View style={styles.listRow}>
                 <Text style={styles.listYear}>{item.year ?? 'n.d.'}</Text>
                 <View style={styles.listText}>
+                  {!species && (
+                    <Pressable onPress={() => onOpenSheet?.(item.species.slug)} hitSlop={4}>
+                      <Text style={styles.listSpecies}>{item.species.commonName} ›</Text>
+                    </Pressable>
+                  )}
                   <Text style={styles.listSource} numberOfLines={2}>
                     {item.source}
                     {item.automatic ? '  (automatica)' : ''}
@@ -134,6 +146,7 @@ const styles = StyleSheet.create({
   listRow: { flexDirection: 'row', paddingVertical: 5, borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#e0e0e0' },
   listYear: { width: 48, fontSize: 14, fontWeight: '600', color: '#1b1b1b' },
   listText: { flex: 1 },
+  listSpecies: { fontSize: 13, fontWeight: '700', color: '#1565c0' },
   listSource: { fontSize: 13, color: '#333' },
   listMeta: { fontSize: 12, color: '#777', marginTop: 1 },
 });

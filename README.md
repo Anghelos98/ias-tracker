@@ -14,6 +14,7 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
 ## Funzioni
 
 - Elenco delle 49 specie di rilevanza unionale, con nome comune e scientifico
+- Vista "Tutte le specie": tutte le segnalazioni insieme sulla mappa, con la specie di ogni punto
 - Mappa a schermo intero con la posizione dell'utente
 - Raggruppamento delle segnalazioni vicine (cluster numerati) per una mappa fluida
 - Scheda della segnalazione: anno, fonte, coordinate e incertezza della posizione

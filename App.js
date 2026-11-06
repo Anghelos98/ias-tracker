@@ -16,6 +16,7 @@ import MyReports from './src/components/MyReports';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import { checkForUpdates, dataDate, loadStoredManifest, readSpeciesPoints, withRemoteStats } from './src/data/remote';
 import { SPECIES } from './src/data/species';
+import { loadAllDatasets } from './src/data/allSpecies';
 import { DEFAULT_FILTERS, activeFilterCount } from './src/data/points';
 import { loadFilters, saveFilters } from './src/data/preferences';
 import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
@@ -23,6 +24,9 @@ import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shift
 // Colore di fondo mostrato mentre le tile della mappa si caricano: un tono vicino a
 // quello della mappa evita il "flash" bianco durante lo zoom.
 const MAP_BACKGROUND = '#f2efe9';
+
+// Voce "Tutte le specie" dell'elenco: mostra insieme le segnalazioni di ogni specie.
+const ALL_SPECIES_SLUG = '__tutte__';
 
 // Spazio minimo (punti) tra il pallino selezionato e il bordo della scheda dati:
 // metà dell'anello di selezione più un piccolo margine.
@@ -59,7 +63,8 @@ function IASTracker() {
   // segnalazione dell'utente mostrata sulla mappa da "Le mie segnalazioni"
   const [reportPin, setReportPin] = useState(null);
   const [species, setSpecies] = useState(null);
-  const [data, setData] = useState(null);
+  // punti mostrati: [{ species, data }] per una specie o per tutte
+  const [datasets, setDatasets] = useState(null);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -81,7 +86,7 @@ function IASTracker() {
     setRegion(next);
   }, []);
 
-  const { clusters, visibleCount, expansionZoom, leaves } = useClusters(data, region, filters);
+  const { clusters, visibleCount, expansionZoom, leaves } = useClusters(datasets, region, filters);
   useEffect(() => {
     clustersRef.current = clusters;
   }, [clusters]);
@@ -101,6 +106,16 @@ function IASTracker() {
     };
   }, []);
   const speciesList = useMemo(() => SPECIES.map((s) => withRemoteStats(s, manifest)), [manifest]);
+  const allSpeciesItem = useMemo(() => {
+    const withData = speciesList.filter((s) => s.total > 0);
+    return {
+      slug: ALL_SPECIES_SLUG,
+      all: true,
+      commonName: 'Tutte le specie',
+      scientificName: `${withData.length} specie con segnalazioni in Italia`,
+      total: withData.reduce((sum, s) => sum + s.total, 0),
+    };
+  }, [speciesList]);
   const loadRequest = useRef(0);
 
   // Permesso di geolocalizzazione: abilita il pallino blu della posizione dell'utente.
@@ -121,27 +136,32 @@ function IASTracker() {
       setSpecies(item);
       const request = ++loadRequest.current;
       if (!item.total) {
-        setData(null);
+        setDatasets(null);
         return;
       }
       setLoading(true);
       // Caricamento dinamico: dati scaricati (se più recenti) o inclusi nell'app.
-      readSpeciesPoints(item, manifest)
+      const load = item.all
+        ? loadAllDatasets(speciesList, manifest)
+        : readSpeciesPoints(item, manifest).then((data) => (data ? [{ species: item, data }] : null));
+      load
         .catch(() => null)
-        .then((points) => {
+        .then((loaded) => {
           if (request !== loadRequest.current) return; // nel frattempo è stata scelta un'altra specie
-          setData(points);
+          setDatasets(loaded);
           setLoading(false);
-          if (!points) return;
+          if (!loaded) return;
           if (focus) {
             const delta = (focus.radiusM / 111320) * 2.4;
             mapRef.current?.animateToRegion({ ...focus.center, latitudeDelta: delta, longitudeDelta: delta }, 600);
+          } else if (item.all) {
+            mapRef.current?.animateToRegion(ITALY_REGION, 600);
           } else if (item.bbox) {
             mapRef.current?.animateToRegion(bboxToRegion(item.bbox), 600);
           }
         });
     },
-    [manifest],
+    [manifest, speciesList],
   );
 
   const centerOnUser = useCallback(async () => {
@@ -375,7 +395,7 @@ function IASTracker() {
           )}
         </Pressable>
         {loading && <ActivityIndicator style={styles.spinner} />}
-        {species && (
+        {species && !species.all && (
           <Pressable
             style={styles.infoRound}
             onPress={() => setSheetSpecies(species)}
@@ -391,10 +411,9 @@ function IASTracker() {
         onLayout={handleCardLayout}
         points={selection?.points}
         coordinate={selection?.coordinate}
-        species={species}
         bottomInset={insets.bottom}
         onClose={clearSelection}
-        onOpenSheet={() => setSheetSpecies(species)}
+        onOpenSheet={(slug) => setSheetSpecies(speciesList.find((s) => s.slug === slug) ?? null)}
       />
 
       {/* Barra inferiore: filtri, elenco specie, posizione */}
@@ -442,6 +461,7 @@ function IASTracker() {
 
       <SpeciesPanel
         species={speciesList}
+        allItem={allSpeciesItem}
         dataUpdatedAt={dataDate(manifest)}
         visible={panelOpen}
         selectedSlug={species?.slug}
@@ -474,7 +494,7 @@ function IASTracker() {
       <ReportScreen
         key={reportKey}
         visible={reportOpen}
-        initialSpecies={species}
+        initialSpecies={species?.all ? null : species}
         onClose={() => setReportOpen(false)}
         onOpenMyReports={openMyReportsFromReport}
       />

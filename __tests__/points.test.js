@@ -1,5 +1,14 @@
 import { describeFilters } from '../src/components/FiltersPanel';
-import { DEFAULT_FILTERS, activeFilterCount, groupByLocation, passesFilters } from '../src/data/points';
+import {
+  DEFAULT_FILTERS,
+  activeFilterCount,
+  groupDatasets,
+  passesFilters,
+  speciesOfRecords,
+} from '../src/data/points';
+
+const SPECIES_A = { slug: 'a', commonName: 'Specie A', scientificName: 'Planta a' };
+const groupByLocation = (data, filters) => groupDatasets([{ species: SPECIES_A, data }], filters);
 
 const DATA = {
   fonti: [
@@ -64,5 +73,22 @@ describe('filtri', () => {
     expect(describeFilters({ includeAutomatic: true, minYear: 2015, maxUncertainty: 1000 })).toBe(
       'dal 2015 · ≤ 1 km · con Pl@ntNet',
     );
+  });
+});
+
+describe('più specie insieme', () => {
+  const other = { species: { slug: 'b', commonName: 'Specie B', scientificName: 'Planta b' }, data: {
+    fonti: [{ nome: 'Herbarium', licenza: 'CC0 1.0' }],
+    punti: [[12.5, 41.9, 2022, 0, 0, 5]], // stessa posizione di due record della specie A
+  } };
+
+  test('record di specie diverse nello stesso punto restano distinguibili', () => {
+    const { features, count } = groupDatasets([{ species: SPECIES_A, data: DATA }, other], DEFAULT_FILTERS);
+    expect(count).toBe(4);
+    const shared = features.find((f) => f.geometry.coordinates[0] === 12.5);
+    expect(shared.properties.records).toHaveLength(3);
+    expect(shared.properties.records[0].species.slug).toBe('b'); // il più recente (2022)
+    expect(speciesOfRecords(shared.properties.records).map((s) => s.slug)).toEqual(['b', 'a']);
+    expect(new Set(shared.properties.records.map((r) => r.id)).size).toBe(3); // id unici tra specie
   });
 });

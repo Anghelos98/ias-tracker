@@ -27,35 +27,40 @@ export function activeFilterCount(filters) {
 }
 
 /**
- * Raggruppa i record per posizione: record con coordinate identiche diventano UN solo
- * punto con l'elenco dei record, altrimenti sulla mappa sarebbero segnalini sovrapposti.
+ * Raggruppa per posizione i record di una o più specie: record con coordinate identiche
+ * diventano UN solo punto con l'elenco dei record (anche di specie diverse), altrimenti
+ * sulla mappa sarebbero segnalini sovrapposti. Ogni record porta con sé la sua specie.
  *
- * @param {{fonti: {nome: string, licenza: string|null}[], punti: Array<[number, number, number|null, number, 0|1, number|null]>}} data
+ * @param {{species: {slug: string, commonName: string, scientificName: string}, data: {fonti: {nome: string, licenza: string|null}[], punti: Array<[number, number, number|null, number, 0|1, number|null]>}}[]} datasets
  * @param {Filters} filters
  * @returns {{features: object[], count: number}} punti GeoJSON e numero di record inclusi
  */
-export function groupByLocation(data, filters) {
+export function groupDatasets(datasets, filters) {
   const byLocation = new Map();
   let count = 0;
-  data.punti.forEach(([lon, lat, year, sourceIdx, automatic, uncertainty], i) => {
-    const record = {
-      id: i,
-      year,
-      source: data.fonti[sourceIdx].nome,
-      license: data.fonti[sourceIdx].licenza,
-      automatic: automatic === 1,
-      uncertainty: uncertainty ?? null,
-    };
-    if (!passesFilters(record, filters)) return;
-    const key = `${lon},${lat}`;
-    let location = byLocation.get(key);
-    if (!location) {
-      location = { lon, lat, records: [] };
-      byLocation.set(key, location);
-    }
-    location.records.push(record);
-    count += 1;
-  });
+  for (const { species, data } of datasets) {
+    const speciesInfo = { slug: species.slug, commonName: species.commonName, scientificName: species.scientificName };
+    data.punti.forEach(([lon, lat, year, sourceIdx, automatic, uncertainty], i) => {
+      const record = {
+        id: `${species.slug}:${i}`,
+        species: speciesInfo,
+        year,
+        source: data.fonti[sourceIdx].nome,
+        license: data.fonti[sourceIdx].licenza,
+        automatic: automatic === 1,
+        uncertainty: uncertainty ?? null,
+      };
+      if (!passesFilters(record, filters)) return;
+      const key = `${lon},${lat}`;
+      let location = byLocation.get(key);
+      if (!location) {
+        location = { lon, lat, records: [] };
+        byLocation.set(key, location);
+      }
+      location.records.push(record);
+      count += 1;
+    });
+  }
 
   const features = [];
   for (const { lon, lat, records } of byLocation.values()) {
@@ -73,4 +78,11 @@ export function groupByLocation(data, filters) {
     });
   }
   return { features, count };
+}
+
+/** Specie distinte tra le segnalazioni di un punto, nell'ordine in cui compaiono. */
+export function speciesOfRecords(records) {
+  const seen = new Map();
+  for (const r of records) if (!seen.has(r.species.slug)) seen.set(r.species.slug, r.species);
+  return [...seen.values()];
 }

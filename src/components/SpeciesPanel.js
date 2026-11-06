@@ -4,7 +4,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 /** Pannello a scomparsa dal basso con l'elenco ricercabile delle 49 specie. */
-export default function SpeciesPanel({ species, dataUpdatedAt, visible, selectedSlug, onSelect, onInfo, onClose }) {
+export default function SpeciesPanel({
+  species,
+  allItem,
+  dataUpdatedAt,
+  visible,
+  selectedSlug,
+  onSelect,
+  onInfo,
+  onClose,
+}) {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
 
@@ -64,6 +73,25 @@ export default function SpeciesPanel({ species, dataUpdatedAt, visible, selected
               </Pressable>
             );
           }}
+          ListHeaderComponent={
+            query.trim() ? null : (
+              <Pressable
+                onPress={() => onSelect(allItem)}
+                style={({ pressed }) => [
+                  styles.row,
+                  styles.allRow,
+                  allItem.slug === selectedSlug && styles.rowSelected,
+                  pressed && styles.rowPressed,
+                ]}
+              >
+                <View style={styles.rowText}>
+                  <Text style={styles.common}>{allItem.commonName}</Text>
+                  <Text style={styles.allSubtitle}>{allItem.scientificName}</Text>
+                </View>
+                <Text style={styles.count}>{allItem.total.toLocaleString('it-IT')}</Text>
+              </Pressable>
+            )
+          }
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={<Text style={styles.empty}>Nessuna specie trovata</Text>}
         />
@@ -95,6 +123,8 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6, borderRadius: 8 },
   rowSelected: { backgroundColor: '#e6f4ea' },
+  allRow: { borderBottomWidth: 1, borderColor: '#c8d6c9', marginBottom: 4 },
+  allSubtitle: { fontSize: 13, color: '#555', marginTop: 2 },
   rowPressed: { backgroundColor: '#f1f3f4' },
   rowText: { flex: 1, paddingRight: 8 },
   common: { fontSize: 15, fontWeight: '500', color: '#1b1b1b' },
