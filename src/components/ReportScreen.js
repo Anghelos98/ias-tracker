@@ -17,24 +17,37 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { REPORT_EMAIL } from '../data/legal';
 import { SPECIES } from '../data/species';
 import { gpsFromExif } from '../reports/format';
+import { INTERVENTIONS } from '../reports/notebook';
 import { sendByEmail, shareReport } from '../reports/send';
 import { addReport, newReportId, persistPhotos } from '../reports/storage';
+import { useColors, useThemedStyles } from '../theme';
 import { readGpsPosition } from '../utils/location';
 
 const MAX_PHOTOS = 3;
 const POOR_ACCURACY_M = 50; // oltre questa incertezza suggeriamo di riprovare all'aperto
 const UNKNOWN_SPECIES = { slug: null, commonName: 'Specie non identificata', scientificName: 'da identificare' };
+const KINDS = [
+  { value: 'presenza', label: 'Presenza' },
+  { value: 'intervento', label: 'Intervento' },
+];
 
 /**
  * App.js ricrea il componente (key) a ogni apertura: il modulo parte sempre vuoto, con la
  * specie mostrata sulla mappa e il GPS già avviato.
  *
- * Nuova segnalazione in tre passi: specie, posizione GPS (automatica), foto facoltative.
- * La segnalazione viene salvata sul telefono e inviata con strumenti esistenti
- * (email al Ministero dell'Ambiente o condivisione con qualsiasi app).
+ * Nuova voce del taccuino di campo:
+ * - presenza: specie, posizione GPS (automatica), foto e note facoltative; si può inviare al
+ *   Ministero dell'Ambiente, condividere con qualsiasi app o solo salvare;
+ * - intervento di gestione (taglio, eradicazione…): in più il tipo di intervento; si salva
+ *   nel taccuino e si può condividere.
+ * Ogni voce resta salvata sul telefono, nel taccuino.
  */
-export default function ReportScreen({ visible, initialSpecies, onClose, onOpenMyReports }) {
+export default function ReportScreen({ visible, initialSpecies, initialKind = 'presenza', onClose, onOpenNotebook }) {
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useThemedStyles(createStyles);
+  const [kind, setKind] = useState(initialKind);
+  const [intervention, setIntervention] = useState(null);
   const [species, setSpecies] = useState(initialSpecies ?? null);
   const [pickingSpecies, setPickingSpecies] = useState(!initialSpecies);
   const [query, setQuery] = useState('');
@@ -44,6 +57,7 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
   const [photos, setPhotos] = useState([]); // { uri, gps }
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
+  const isIntervention = kind === 'intervento';
 
   const applyReading = useCallback((reading) => {
     if (reading.position) setPosition(reading.position);
@@ -81,9 +95,7 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
   const filteredSpecies = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return SPECIES;
-    return SPECIES.filter(
-      (s) => s.commonName.toLowerCase().includes(q) || s.scientificName.toLowerCase().includes(q),
-    );
+    return SPECIES.filter((s) => s.commonName.toLowerCase().includes(q) || s.scientificName.toLowerCase().includes(q));
   }, [query]);
 
   const addPhoto = useCallback(async (fromCamera) => {
@@ -103,9 +115,19 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
     setPhotos((prev) => [...prev, { uri: asset.uri, gps: gpsFromExif(asset.exif) }].slice(0, MAX_PHOTOS));
   }, []);
 
-  const photoWithGps = photos.find((p) => p.gps);
-  const ready = species !== null && position !== null && !sending;
+  const changeKind = (next) => {
+    setKind(next);
+    // per un intervento la specie deve essere nota
+    if (next === 'intervento' && species && !species.slug) {
+      setSpecies(null);
+      setPickingSpecies(true);
+    }
+  };
 
+  const photoWithGps = photos.find((p) => p.gps);
+  const ready = species !== null && position !== null && (!isIntervention || intervention !== null) && !sending;
+
+  /** channel: 'email' | 'share' | 'save' */
   const send = useCallback(
     async (channel) => {
       if (!ready) return;
@@ -114,6 +136,8 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
         const id = newReportId();
         const report = {
           id,
+          kind,
+          intervention: isIntervention ? intervention : null,
           createdAt: new Date().toISOString(),
           speciesSlug: species.slug,
           scientificName: species.scientificName,
@@ -130,42 +154,87 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
           sent: [],
         };
         await addReport(report); // salvata comunque, anche se l'invio viene annullato
+        if (channel === 'save') {
+          onClose();
+          Alert.alert('Salvato nel taccuino', 'Puoi esportare le voci del taccuino in CSV, GeoJSON o KML.');
+          return;
+        }
         const done = channel === 'email' ? await sendByEmail(report) : await shareReport(report);
         onClose();
         if (!done) {
-          Alert.alert('Segnalazione salvata', 'Non è stata inviata: la trovi in “Le mie segnalazioni”.');
+          Alert.alert('Salvato nel taccuino', 'Non è stato inviato: lo trovi nel taccuino di campo.');
         }
       } catch {
-        Alert.alert('Errore', 'Non è stato possibile salvare la segnalazione. Riprova.');
+        Alert.alert('Errore', 'Non è stato possibile salvare. Riprova.');
       } finally {
         setSending(false);
       }
     },
-    [ready, species, position, note, photos, onClose],
+    [ready, kind, isIntervention, intervention, species, position, note, photos, onClose],
   );
 
   const widespread = presence?.toLowerCase().startsWith('diffusa');
+  let missing = null;
+  if (species === null) missing = 'Scegli la specie';
+  else if (isIntervention && intervention === null) missing = 'Scegli il tipo di intervento';
+  else if (position === null) missing = 'Serve la posizione';
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={styles.header}>
-        <Pressable onPress={onClose} hitSlop={12}>
+        <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button">
           <Text style={styles.headerAction}>Annulla</Text>
         </Pressable>
-        <Text style={styles.headerTitle}>Nuova segnalazione</Text>
-        <Pressable onPress={onOpenMyReports} hitSlop={12}>
-          <Text style={styles.headerAction}>Le mie</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">
+          {isIntervention ? 'Nuovo intervento' : 'Nuova segnalazione'}
+        </Text>
+        <Pressable
+          onPress={onOpenNotebook}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Taccuino di campo"
+        >
+          <Text style={styles.headerAction}>Taccuino</Text>
         </Pressable>
       </View>
 
       <ScrollView
+        style={styles.scroll}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
         keyboardShouldPersistTaps="handled"
       >
+        <View style={styles.segmented} accessibilityRole="tablist">
+          {KINDS.map((k) => {
+            const active = k.value === kind;
+            return (
+              <Pressable
+                key={k.value}
+                style={[styles.segment, active && styles.segmentActive]}
+                onPress={() => changeKind(k.value)}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+              >
+                <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{k.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text style={styles.small}>
+          {isIntervention
+            ? 'Registra un intervento di gestione (taglio, eradicazione…) nel tuo taccuino di campo.'
+            : 'Segnala dove hai visto una specie invasiva.'}
+        </Text>
+
         {/* 1. Specie */}
-        <Step number={1} title="Specie">
+        <Step number={1} title="Specie" styles={styles}>
           {species && !pickingSpecies ? (
-            <Pressable style={styles.choice} onPress={() => setPickingSpecies(true)}>
+            <Pressable
+              style={styles.choice}
+              onPress={() => setPickingSpecies(true)}
+              accessibilityRole="button"
+              accessibilityLabel={`Specie: ${species.commonName}, ${species.scientificName}`}
+              accessibilityHint="Tocca per cambiare specie"
+            >
               <View style={styles.flex}>
                 <Text style={styles.choiceTitle}>{species.commonName}</Text>
                 <Text style={styles.choiceSubtitle}>{species.scientificName}</Text>
@@ -177,9 +246,11 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
               <TextInput
                 style={styles.input}
                 placeholder="Cerca per nome comune o scientifico"
+                placeholderTextColor={colors.placeholder}
                 value={query}
                 onChangeText={setQuery}
                 autoCorrect={false}
+                accessibilityLabel="Cerca la specie"
               />
               <View style={styles.speciesList}>
                 {filteredSpecies.slice(0, 8).map((s) => (
@@ -190,36 +261,62 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
                       setSpecies(s);
                       setPickingSpecies(false);
                     }}
+                    accessibilityRole="button"
                   >
                     <Text style={styles.choiceTitle}>{s.commonName}</Text>
                     <Text style={styles.choiceSubtitle}>{s.scientificName}</Text>
                   </Pressable>
                 ))}
-                <Pressable
-                  style={styles.speciesRow}
-                  onPress={() => {
-                    setSpecies(UNKNOWN_SPECIES);
-                    setPickingSpecies(false);
-                  }}
-                >
-                  <Text style={styles.choiceTitle}>Non so quale sia</Text>
-                  <Text style={styles.choiceSubtitle}>Le foto aiuteranno a identificarla</Text>
-                </Pressable>
+                {!isIntervention && (
+                  <Pressable
+                    style={styles.speciesRow}
+                    onPress={() => {
+                      setSpecies(UNKNOWN_SPECIES);
+                      setPickingSpecies(false);
+                    }}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.choiceTitle}>Non so quale sia</Text>
+                    <Text style={styles.choiceSubtitle}>Le foto aiuteranno a identificarla</Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           )}
         </Step>
 
-        {/* 2. Posizione */}
-        <Step number={2} title="Posizione">
+        {/* Tipo di intervento */}
+        {isIntervention && (
+          <Step number={2} title="Tipo di intervento" styles={styles}>
+            <View style={styles.chips}>
+              {INTERVENTIONS.map((i) => {
+                const active = i.value === intervention;
+                return (
+                  <Pressable
+                    key={i.value}
+                    onPress={() => setIntervention(i.value)}
+                    style={[styles.chip, active && styles.chipActive]}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: active }}
+                  >
+                    <Text style={[styles.chipText, active && styles.chipTextActive]}>{i.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Step>
+        )}
+
+        {/* Posizione */}
+        <Step number={isIntervention ? 3 : 2} title="Posizione" styles={styles}>
           {locating && (
-            <View style={styles.row}>
-              <ActivityIndicator />
+            <View style={styles.row} accessible accessibilityLabel="Rilevo la posizione GPS">
+              <ActivityIndicator color={colors.primary} />
               <Text style={styles.muted}> Rilevo la posizione GPS…</Text>
             </View>
           )}
           {!locating && position && (
-            <View>
+            <View accessible>
               <Text style={styles.coords}>
                 {position.latitude.toFixed(6)}, {position.longitude.toFixed(6)}
               </Text>
@@ -237,26 +334,37 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
               )}
             </View>
           )}
-          {!locating && locationError && <Text style={styles.warning}>{locationError}</Text>}
+          {!locating && locationError && (
+            <Text style={styles.warning} accessibilityLiveRegion="polite">
+              {locationError}
+            </Text>
+          )}
           <View style={styles.row}>
-            <SmallButton label="Aggiorna posizione" onPress={locate} disabled={locating} />
+            <SmallButton label="Aggiorna posizione" onPress={locate} disabled={locating} styles={styles} />
             {photoWithGps && position?.source !== 'foto' && (
               <SmallButton
                 label="Usa posizione della foto"
                 onPress={() => setPosition({ ...photoWithGps.gps, accuracy: null, source: 'foto' })}
+                styles={styles}
               />
             )}
           </View>
         </Step>
 
-        {/* 3. Foto */}
-        <Step number={3} title={`Foto (facoltative, max ${MAX_PHOTOS})`}>
+        {/* Foto */}
+        <Step number={isIntervention ? 4 : 3} title={`Foto (facoltative, max ${MAX_PHOTOS})`} styles={styles}>
           <View style={styles.photos}>
             {photos.map((p, i) => (
               <Pressable
                 key={p.uri}
                 onLongPress={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}
+                accessibilityRole="image"
+                accessibilityLabel={`Foto ${i + 1}`}
                 accessibilityHint="Tieni premuto per rimuovere la foto"
+                accessibilityActions={[{ name: 'delete', label: 'Rimuovi foto' }]}
+                onAccessibilityAction={(e) => {
+                  if (e.nativeEvent.actionName === 'delete') setPhotos((prev) => prev.filter((_, j) => j !== i));
+                }}
               >
                 <Image source={{ uri: p.uri }} style={styles.photo} />
               </Pressable>
@@ -265,64 +373,98 @@ export default function ReportScreen({ visible, initialSpecies, onClose, onOpenM
           {photos.length > 0 && <Text style={styles.small}>Tieni premuta una foto per rimuoverla.</Text>}
           {photos.length < MAX_PHOTOS && (
             <View style={styles.row}>
-              <SmallButton label="Scatta foto" onPress={() => addPhoto(true)} />
-              <SmallButton label="Dalla galleria" onPress={() => addPhoto(false)} />
+              <SmallButton label="Scatta foto" onPress={() => addPhoto(true)} styles={styles} />
+              <SmallButton label="Dalla galleria" onPress={() => addPhoto(false)} styles={styles} />
             </View>
           )}
-          <Text style={styles.small}>Consiglio: una foto della pianta intera e una delle foglie o dei fiori.</Text>
+          <Text style={styles.small}>
+            {isIntervention
+              ? 'Consiglio: una foto prima e una dopo l’intervento.'
+              : 'Consiglio: una foto della pianta intera e una delle foglie o dei fiori.'}
+          </Text>
         </Step>
 
-        {/* 4. Note */}
-        <Step number={4} title="Note (facoltative)">
+        {/* Note */}
+        <Step number={isIntervention ? 5 : 4} title="Note (facoltative)" styles={styles}>
           <TextInput
             style={[styles.input, styles.noteInput]}
-            placeholder="Es. quante piante, estensione, vicino a un corso d’acqua…"
+            placeholder={
+              isIntervention
+                ? 'Es. superficie trattata, numero di piante, mezzi usati, prossimo controllo…'
+                : 'Es. quante piante, estensione, vicino a un corso d’acqua…'
+            }
+            placeholderTextColor={colors.placeholder}
             value={note}
             onChangeText={setNote}
             multiline
+            accessibilityLabel="Note"
           />
         </Step>
 
         {/* Invio */}
-        {species?.slug && presence && (
-          <Text style={[styles.hint, widespread ? styles.hintNeutral : styles.hintImportant]}>
-            {widespread
-              ? 'Specie già diffusa in Italia: la casella del Ministero è pensata soprattutto per le nuove comparse. Puoi condividere la segnalazione con la tua Regione o l’ente parco.'
-              : `Specie ${presence.toLowerCase()} in Italia secondo ISPRA: la tua segnalazione è preziosa per intervenire presto. Inviala al Ministero.`}
-          </Text>
-        )}
-        <Pressable
-          style={[styles.primary, !ready && styles.disabled]}
-          onPress={() => send('email')}
-          disabled={!ready}
-        >
-          <Text style={styles.primaryText}>{sending ? 'Salvataggio…' : 'Invia al Ministero dell’Ambiente'}</Text>
-          <Text style={styles.primarySub}>email a {REPORT_EMAIL}</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.secondary, !ready && styles.disabled]}
-          onPress={() => send('share')}
-          disabled={!ready}
-        >
-          <Text style={styles.secondaryText}>Condividi…</Text>
-        </Pressable>
-        {!ready && !sending && (
-          <Text style={styles.small}>
-            {species === null ? 'Scegli la specie' : 'Serve la posizione'} per poter inviare la segnalazione.
-          </Text>
-        )}
-        <Text style={styles.small}>
-          La segnalazione resta salvata anche sul telefono, in “Le mie segnalazioni”.
-        </Text>
+        <View style={styles.actions}>
+          {!isIntervention && species?.slug && presence && (
+            <Text style={[styles.hint, widespread ? styles.hintNeutral : styles.hintImportant]}>
+              {widespread
+                ? 'Specie già diffusa in Italia: la casella del Ministero è pensata soprattutto per le nuove comparse. Puoi condividere la segnalazione con la tua Regione o l’ente parco.'
+                : `Specie ${presence.toLowerCase()} in Italia secondo ISPRA: la tua segnalazione è preziosa per intervenire presto. Inviala al Ministero.`}
+            </Text>
+          )}
+          {isIntervention ? (
+            <Pressable
+              style={[styles.primary, !ready && styles.disabled]}
+              onPress={() => send('save')}
+              disabled={!ready}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !ready }}
+            >
+              <Text style={styles.primaryText}>{sending ? 'Salvataggio…' : 'Salva nel taccuino'}</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              style={[styles.primary, !ready && styles.disabled]}
+              onPress={() => send('email')}
+              disabled={!ready}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !ready }}
+              accessibilityLabel={`Invia al Ministero dell’Ambiente, email a ${REPORT_EMAIL}`}
+            >
+              <Text style={styles.primaryText}>{sending ? 'Salvataggio…' : 'Invia al Ministero dell’Ambiente'}</Text>
+              <Text style={styles.primarySub}>email a {REPORT_EMAIL}</Text>
+            </Pressable>
+          )}
+          <Pressable
+            style={[styles.secondary, !ready && styles.disabled]}
+            onPress={() => send('share')}
+            disabled={!ready}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !ready }}
+          >
+            <Text style={styles.secondaryText}>{isIntervention ? 'Salva e condividi…' : 'Condividi…'}</Text>
+          </Pressable>
+          {!isIntervention && (
+            <Pressable
+              style={[styles.tertiary, !ready && styles.disabled]}
+              onPress={() => send('save')}
+              disabled={!ready}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !ready }}
+            >
+              <Text style={styles.tertiaryText}>Salva solo nel taccuino</Text>
+            </Pressable>
+          )}
+          {missing && !sending && <Text style={styles.small}>{missing} per poter salvare.</Text>}
+          <Text style={styles.small}>Ogni voce resta salvata sul telefono, nel taccuino di campo.</Text>
+        </View>
       </ScrollView>
     </Modal>
   );
 }
 
-function Step({ number, title, children }) {
+function Step({ number, title, children, styles }) {
   return (
     <View style={styles.step}>
-      <Text style={styles.stepTitle}>
+      <Text style={styles.stepTitle} accessibilityRole="header">
         <Text style={styles.stepNumber}>{number} </Text>
         {title}
       </Text>
@@ -331,75 +473,108 @@ function Step({ number, title, children }) {
   );
 }
 
-function SmallButton({ label, onPress, disabled }) {
+function SmallButton({ label, onPress, disabled, styles }) {
   return (
-    <Pressable style={[styles.smallButton, disabled && styles.disabled]} onPress={onPress} disabled={disabled}>
+    <Pressable
+      style={[styles.smallButton, disabled && styles.disabled]}
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
+    >
       <Text style={styles.smallButtonText}>{label}</Text>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#fff',
-  },
-  headerTitle: { fontSize: 17, fontWeight: '700' },
-  headerAction: { fontSize: 16, color: '#2e7d32', fontWeight: '600' },
-  content: { padding: 16, backgroundColor: '#fff' },
-  flex: { flex: 1 },
-  step: { marginBottom: 22 },
-  stepTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8, color: '#1b1b1b' },
-  stepNumber: { color: '#2e7d32' },
-  row: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 8 },
-  choice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#e6f4ea',
-    borderRadius: 12,
-    padding: 12,
-  },
-  choiceTitle: { fontSize: 15, fontWeight: '600', color: '#1b1b1b' },
-  choiceSubtitle: { fontSize: 13, fontStyle: 'italic', color: '#555' },
-  change: { color: '#2e7d32', fontWeight: '600' },
-  input: { backgroundColor: '#f1f3f4', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15 },
-  noteInput: { minHeight: 80, textAlignVertical: 'top' },
-  speciesList: { marginTop: 6 },
-  speciesRow: { paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: '#e0e0e0' },
-  coords: { fontSize: 17, fontWeight: '600', fontVariant: ['tabular-nums'] },
-  muted: { fontSize: 13, color: '#666' },
-  warning: { fontSize: 13, color: '#b26a00', marginTop: 4 },
-  small: { fontSize: 12, color: '#777', marginTop: 6 },
-  photos: { flexDirection: 'row', gap: 8 },
-  photo: { width: 96, height: 96, borderRadius: 10, backgroundColor: '#eee' },
-  smallButton: {
-    borderWidth: 1.5,
-    borderColor: '#2e7d32',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  smallButtonText: { color: '#2e7d32', fontWeight: '600' },
-  hint: { fontSize: 13, lineHeight: 19, padding: 10, borderRadius: 10, marginBottom: 12 },
-  hintImportant: { backgroundColor: '#fff3e0', color: '#8a4b00' },
-  hintNeutral: { backgroundColor: '#f1f3f4', color: '#444' },
-  primary: { backgroundColor: '#2e7d32', borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
-  primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  primarySub: { color: '#e6f4ea', fontSize: 12, marginTop: 2 },
-  secondary: {
-    marginTop: 10,
-    borderRadius: 14,
-    paddingVertical: 13,
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#2e7d32',
-  },
-  secondaryText: { color: '#2e7d32', fontSize: 16, fontWeight: '700' },
-  disabled: { opacity: 0.4 },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderColor: c.border,
+      backgroundColor: c.background,
+    },
+    headerTitle: { fontSize: 17, fontWeight: '700', color: c.text },
+    headerAction: { fontSize: 16, color: c.primary, fontWeight: '600' },
+    scroll: { backgroundColor: c.background },
+    content: { padding: 16 },
+    flex: { flex: 1 },
+    segmented: {
+      flexDirection: 'row',
+      backgroundColor: c.surfaceAlt,
+      borderRadius: 10,
+      padding: 3,
+    },
+    segment: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
+    segmentActive: { backgroundColor: c.primaryFill },
+    segmentText: { fontSize: 15, fontWeight: '600', color: c.primary },
+    segmentTextActive: { color: c.onPrimary },
+    step: { marginTop: 22 },
+    stepTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8, color: c.text },
+    stepNumber: { color: c.primary },
+    row: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 8 },
+    choice: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: c.selected,
+      borderRadius: 12,
+      padding: 12,
+    },
+    choiceTitle: { fontSize: 15, fontWeight: '600', color: c.text },
+    choiceSubtitle: { fontSize: 13, fontStyle: 'italic', color: c.textSecondary },
+    change: { color: c.primary, fontWeight: '600' },
+    input: {
+      backgroundColor: c.surfaceAlt,
+      color: c.text,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: 15,
+    },
+    noteInput: { minHeight: 80, textAlignVertical: 'top' },
+    speciesList: { marginTop: 6 },
+    speciesRow: { paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: c.border },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    chip: { borderWidth: 1.5, borderColor: c.chipBorder, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
+    chipActive: { backgroundColor: c.primaryFill, borderColor: c.primaryFill },
+    chipText: { fontSize: 14, color: c.primary },
+    chipTextActive: { color: c.onPrimary, fontWeight: '600' },
+    coords: { fontSize: 17, fontWeight: '600', fontVariant: ['tabular-nums'], color: c.text },
+    muted: { fontSize: 13, color: c.textMuted },
+    warning: { fontSize: 13, color: c.warning, marginTop: 4 },
+    small: { fontSize: 12, color: c.textMuted, marginTop: 6 },
+    photos: { flexDirection: 'row', gap: 8 },
+    photo: { width: 96, height: 96, borderRadius: 10, backgroundColor: c.placeholderBg },
+    smallButton: {
+      borderWidth: 1.5,
+      borderColor: c.primary,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+    },
+    smallButtonText: { color: c.primary, fontWeight: '600' },
+    actions: { marginTop: 26 },
+    hint: { fontSize: 13, lineHeight: 19, padding: 10, borderRadius: 10, marginBottom: 12 },
+    hintImportant: { backgroundColor: c.hintImportantBg, color: c.hintImportantText },
+    hintNeutral: { backgroundColor: c.surfaceAlt, color: c.textSecondary },
+    primary: { backgroundColor: c.primaryFill, borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
+    primaryText: { color: c.onPrimary, fontSize: 16, fontWeight: '700' },
+    primarySub: { color: c.onPrimarySoft, fontSize: 12, marginTop: 2 },
+    secondary: {
+      marginTop: 10,
+      borderRadius: 14,
+      paddingVertical: 13,
+      alignItems: 'center',
+      borderWidth: 1.5,
+      borderColor: c.primary,
+    },
+    secondaryText: { color: c.primary, fontSize: 16, fontWeight: '700' },
+    tertiary: { marginTop: 6, paddingVertical: 10, alignItems: 'center' },
+    tertiaryText: { color: c.primary, fontSize: 15, fontWeight: '600' },
+    disabled: { opacity: 0.4 },
+  });

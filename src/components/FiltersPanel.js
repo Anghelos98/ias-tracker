@@ -2,6 +2,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { APPROXIMATE_M, DEFAULT_FILTERS } from '../data/points';
+import { useThemedStyles } from '../theme';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -33,27 +34,48 @@ export function describeFilters(filters) {
 /** Pannello dal basso con i filtri della mappa. */
 export default function FiltersPanel({ visible, filters, onChange, showGrid, onToggleGrid, gridNote, onClose, extra }) {
   const insets = useSafeAreaInsets();
+  const styles = useThemedStyles(createStyles);
   const set = (patch) => onChange({ ...filters, ...patch });
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Chiudi filtri" />
+      <Pressable
+        style={styles.backdrop}
+        onPress={onClose}
+        accessibilityRole="button"
+        accessibilityLabel="Chiudi filtri"
+      />
       <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
         <View style={styles.handle} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
-            <Text style={styles.title}>Filtri</Text>
-            <Pressable onPress={() => onChange(DEFAULT_FILTERS)} hitSlop={10}>
+            <Text style={styles.title} accessibilityRole="header">
+              Filtri
+            </Text>
+            <Pressable
+              onPress={() => onChange(DEFAULT_FILTERS)}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel="Ripristina i filtri"
+            >
               <Text style={styles.reset}>Ripristina</Text>
             </Pressable>
           </View>
 
-          <Text style={styles.label}>Periodo della segnalazione</Text>
+          <Text style={styles.label} accessibilityRole="header">
+            Periodo della segnalazione
+          </Text>
           <Chips options={PERIODS} value={filters.minYear} onSelect={(minYear) => set({ minYear })} />
           {filters.minYear != null && <Text style={styles.note}>Escluse le segnalazioni senza anno.</Text>}
 
-          <Text style={styles.label}>Precisione della posizione</Text>
-          <Chips options={PRECISIONS} value={filters.maxUncertainty} onSelect={(maxUncertainty) => set({ maxUncertainty })} />
+          <Text style={styles.label} accessibilityRole="header">
+            Precisione della posizione
+          </Text>
+          <Chips
+            options={PRECISIONS}
+            value={filters.maxUncertainty}
+            onSelect={(maxUncertainty) => set({ maxUncertainty })}
+          />
           {filters.maxUncertainty != null && (
             <Text style={styles.note}>Escluse le segnalazioni la cui fonte non indica la precisione.</Text>
           )}
@@ -63,7 +85,11 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
               <Text style={styles.switchLabel}>Identificazioni automatiche</Text>
               <Text style={styles.note}>Segnalazioni Pl@ntNet riconosciute solo dall’algoritmo, senza verifica.</Text>
             </View>
-            <Switch value={filters.includeAutomatic} onValueChange={(includeAutomatic) => set({ includeAutomatic })} />
+            <Switch
+              value={filters.includeAutomatic}
+              onValueChange={(includeAutomatic) => set({ includeAutomatic })}
+              accessibilityLabel="Identificazioni automatiche"
+            />
           </View>
 
           <View style={styles.switchRow}>
@@ -73,10 +99,12 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
                 Celle in cui ISPRA registra la specie (rendicontazione UE, giugno 2025). {gridNote}
               </Text>
             </View>
-            <Switch value={showGrid} onValueChange={onToggleGrid} />
+            <Switch value={showGrid} onValueChange={onToggleGrid} accessibilityLabel="Griglia ufficiale ISPRA" />
           </View>
 
-          <Text style={styles.label}>Legenda</Text>
+          <Text style={styles.label} accessibilityRole="header">
+            Legenda
+          </Text>
           <Legend />
 
           {extra}
@@ -87,6 +115,7 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
 }
 
 function Chips({ options, value, onSelect }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.chips}>
       {options.map((o) => {
@@ -108,6 +137,7 @@ function Chips({ options, value, onSelect }) {
 }
 
 function Legend() {
+  const styles = useThemedStyles(createStyles);
   const km = APPROXIMATE_M / 1000;
   return (
     <View style={styles.legend}>
@@ -121,45 +151,58 @@ function Legend() {
 }
 
 function LegendItem({ dotStyle, text }) {
+  const styles = useThemedStyles(createStyles);
   return (
-    <View style={styles.legendItem}>
+    <View style={styles.legendItem} accessible accessibilityLabel={text}>
       <View style={[styles.legendDot, dotStyle]} />
       <Text style={styles.legendText}>{text}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' },
-  sheet: {
-    maxHeight: '85%',
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: '#ccc', marginBottom: 12 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 17, fontWeight: '600' },
-  reset: { fontSize: 15, color: '#2e7d32', fontWeight: '600' },
-  label: { fontSize: 14, fontWeight: '600', color: '#333', marginTop: 16, marginBottom: 8 },
-  note: { fontSize: 12, color: '#777', marginTop: 4 },
-  flex: { flex: 1, paddingRight: 12 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { borderWidth: 1.5, borderColor: '#c8d6c9', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
-  chipActive: { backgroundColor: '#2e7d32', borderColor: '#2e7d32' },
-  chipText: { fontSize: 14, color: '#2e7d32' },
-  chipTextActive: { color: '#fff', fontWeight: '600' },
-  switchRow: { flexDirection: 'row', alignItems: 'center', marginTop: 18 },
-  switchLabel: { fontSize: 14, fontWeight: '600', color: '#333' },
-  legend: { gap: 6 },
-  legendItem: { flexDirection: 'row', alignItems: 'center' },
-  legendDot: { width: 14, height: 14, borderRadius: 7, borderWidth: 2, marginRight: 10 },
-  dotVerified: { backgroundColor: '#2e7d32', borderColor: '#fff' },
-  dotAutomatic: { backgroundColor: '#ef8a00', borderColor: '#fff' },
-  dotApprox: { backgroundColor: '#fff', borderColor: '#2e7d32', borderWidth: 2.5 },
-  dotCluster: { width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(46,125,50,0.85)', borderColor: '#fff' },
-  gridSwatch: { borderRadius: 2, backgroundColor: 'rgba(21,101,192,0.18)', borderColor: 'rgba(21,101,192,0.7)', borderWidth: 1 },
-  legendText: { fontSize: 13, color: '#444' },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    backdrop: { flex: 1, backgroundColor: c.backdrop },
+    sheet: {
+      maxHeight: '85%',
+      backgroundColor: c.surface,
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      paddingHorizontal: 16,
+      paddingTop: 8,
+    },
+    handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.handle, marginBottom: 12 },
+    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    title: { fontSize: 17, fontWeight: '600', color: c.text },
+    reset: { fontSize: 15, color: c.primary, fontWeight: '600' },
+    label: { fontSize: 14, fontWeight: '600', color: c.text, marginTop: 16, marginBottom: 8 },
+    note: { fontSize: 12, color: c.textMuted, marginTop: 4 },
+    flex: { flex: 1, paddingRight: 12 },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    chip: { borderWidth: 1.5, borderColor: c.chipBorder, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
+    chipActive: { backgroundColor: c.primaryFill, borderColor: c.primaryFill },
+    chipText: { fontSize: 14, color: c.primary },
+    chipTextActive: { color: c.onPrimary, fontWeight: '600' },
+    switchRow: { flexDirection: 'row', alignItems: 'center', marginTop: 18 },
+    switchLabel: { fontSize: 14, fontWeight: '600', color: c.text },
+    legend: { gap: 6 },
+    legendItem: { flexDirection: 'row', alignItems: 'center' },
+    legendDot: { width: 14, height: 14, borderRadius: 7, borderWidth: 2, marginRight: 10 },
+    dotVerified: { backgroundColor: '#2e7d32', borderColor: '#fff' },
+    dotAutomatic: { backgroundColor: '#ef8a00', borderColor: '#fff' },
+    dotApprox: { backgroundColor: '#fff', borderColor: '#2e7d32', borderWidth: 2.5 },
+    dotCluster: {
+      width: 18,
+      height: 18,
+      borderRadius: 9,
+      backgroundColor: 'rgba(46,125,50,0.85)',
+      borderColor: '#fff',
+    },
+    gridSwatch: {
+      borderRadius: 2,
+      backgroundColor: 'rgba(21,101,192,0.18)',
+      borderColor: 'rgba(21,101,192,0.7)',
+      borderWidth: 1,
+    },
+    legendText: { fontSize: 13, color: c.textSecondary },
+  });

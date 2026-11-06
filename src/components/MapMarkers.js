@@ -56,7 +56,10 @@ export const ClusterMarker = memo(function ClusterMarker({ feature, onPress }) {
       tracksViewChanges={tracking}
     >
       <View style={[styles.cluster, { width: size, height: size, borderRadius: size / 2 }]}>
-        <Text style={styles.clusterText}>{abbreviate(count)}</Text>
+        {/* dimensione fissa: il cerchio non si adatta al testo ingrandito dalle impostazioni */}
+        <Text style={styles.clusterText} allowFontScaling={false}>
+          {abbreviate(count)}
+        </Text>
       </View>
     </Marker>
   );

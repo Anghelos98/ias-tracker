@@ -10,8 +10,8 @@ const DATASETS = [
         { nome: 'Pl@ntNet automatically identified occurrences', licenza: 'CC BY 4.0' },
       ],
       punti: [
-        [12.5, 41.9, 2020, 0, 0, 10],
-        [9.19, 45.46, 2018, 0, 0, null],
+        [12.5, 41.9, 2020, 0, 0, 10, 12],
+        [9.19, 45.46, 2018, 0, 0, null], // dati senza regione (formato precedente)
         [12.6, 41.8, 2021, 1, 1, 5],
       ],
     },
@@ -28,9 +28,12 @@ test('righe filtrate e limitate all’area', () => {
 test('CSV con intestazione e campi tra virgolette quando serve', () => {
   const csv = toCSV(exportRows(DATASETS, DEFAULT_FILTERS));
   const lines = csv.trim().split('\n');
-  expect(lines[0]).toBe('specie,nome_comune,latitudine,longitudine,anno,incertezza_m,fonte,licenza,identificazione_automatica');
-  expect(lines[1]).toBe('Ailanthus altissima,Ailanto,41.9,12.5,2020,10,"Herbarium, ""Roma""",CC BY 4.0,false');
+  expect(lines[0]).toBe(
+    'specie,nome_comune,latitudine,longitudine,anno,incertezza_m,fonte,licenza,identificazione_automatica,regione',
+  );
+  expect(lines[1]).toBe('Ailanthus altissima,Ailanto,41.9,12.5,2020,10,"Herbarium, ""Roma""",CC BY 4.0,false,Lazio');
   expect(lines[2]).toContain(',2018,,'); // incertezza non indicata = campo vuoto
+  expect(lines[2]).toMatch(/,false,$/); // regione non indicata = campo vuoto
 });
 
 test('GeoJSON valido con attribuzione', () => {

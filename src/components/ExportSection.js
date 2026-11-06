@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { EXPORT_FORMATS, exportFileName, exportRows, formatExport } from '../data/exportData';
+import { useColors, useThemedStyles } from '../theme';
 import { regionToBBox } from '../utils/geo';
 import { shareTextFile } from '../utils/shareFile';
 
@@ -10,6 +11,8 @@ import { shareTextFile } from '../utils/shareFile';
  * visibile o di tutta Italia, in CSV, GeoJSON o KML.
  */
 export default function ExportSection({ datasets, filters, region, title, slug }) {
+  const colors = useColors();
+  const styles = useThemedStyles(createStyles);
   const [format, setFormat] = useState('csv');
   const [onlyVisible, setOnlyVisible] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -22,7 +25,9 @@ export default function ExportSection({ datasets, filters, region, title, slug }
   if (!datasets?.length) {
     return (
       <View style={styles.section}>
-        <Text style={styles.label}>Esporta i dati</Text>
+        <Text style={styles.label} accessibilityRole="header">
+          Esporta i dati
+        </Text>
         <Text style={styles.note}>Scegli una specie (o “Tutte le specie”) per esportarne le segnalazioni.</Text>
       </View>
     );
@@ -45,7 +50,9 @@ export default function ExportSection({ datasets, filters, region, title, slug }
 
   return (
     <View style={styles.section}>
-      <Text style={styles.label}>Esporta i dati mostrati</Text>
+      <Text style={styles.label} accessibilityRole="header">
+        Esporta i dati mostrati
+      </Text>
       <View style={styles.chips}>
         <Chip label="Area visibile" active={onlyVisible} onPress={() => setOnlyVisible(true)} />
         <Chip label="Tutta Italia" active={!onlyVisible} onPress={() => setOnlyVisible(false)} />
@@ -59,9 +66,11 @@ export default function ExportSection({ datasets, filters, region, title, slug }
         style={[styles.button, (busy || rows.length === 0) && styles.disabled]}
         onPress={exportNow}
         disabled={busy || rows.length === 0}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: busy || rows.length === 0, busy }}
       >
         {busy ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={colors.onPrimary} />
         ) : (
           <Text style={styles.buttonText}>
             Esporta {rows.length.toLocaleString('it-IT')} segnalazioni ({EXPORT_FORMATS[format].label})
@@ -76,24 +85,37 @@ export default function ExportSection({ datasets, filters, region, title, slug }
 }
 
 function Chip({ label, active, onPress }) {
+  const styles = useThemedStyles(createStyles);
   return (
-    <Pressable onPress={onPress} style={[styles.chip, active && styles.chipActive]} accessibilityState={{ selected: active }}>
+    <Pressable
+      onPress={onPress}
+      style={[styles.chip, active && styles.chipActive]}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+    >
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  section: { marginTop: 18, borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#e0e0e0', paddingTop: 14 },
-  label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 },
-  note: { fontSize: 12, color: '#777', marginTop: 6 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  formats: { marginTop: 8 },
-  chip: { borderWidth: 1.5, borderColor: '#c8d6c9', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
-  chipActive: { backgroundColor: '#2e7d32', borderColor: '#2e7d32' },
-  chipText: { fontSize: 14, color: '#2e7d32' },
-  chipTextActive: { color: '#fff', fontWeight: '600' },
-  button: { marginTop: 12, backgroundColor: '#2e7d32', borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
-  buttonText: { color: '#fff', fontSize: 15, fontWeight: '700' },
-  disabled: { opacity: 0.4 },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    section: { marginTop: 18, borderTopWidth: StyleSheet.hairlineWidth, borderColor: c.border, paddingTop: 14 },
+    label: { fontSize: 14, fontWeight: '600', color: c.text, marginBottom: 8 },
+    note: { fontSize: 12, color: c.textMuted, marginTop: 6 },
+    chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    formats: { marginTop: 8 },
+    chip: { borderWidth: 1.5, borderColor: c.chipBorder, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
+    chipActive: { backgroundColor: c.primaryFill, borderColor: c.primaryFill },
+    chipText: { fontSize: 14, color: c.primary },
+    chipTextActive: { color: c.onPrimary, fontWeight: '600' },
+    button: {
+      marginTop: 12,
+      backgroundColor: c.primaryFill,
+      borderRadius: 12,
+      paddingVertical: 12,
+      alignItems: 'center',
+    },
+    buttonText: { color: c.onPrimary, fontSize: 15, fontWeight: '700' },
+    disabled: { opacity: 0.4 },
+  });

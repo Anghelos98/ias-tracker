@@ -1,10 +1,15 @@
 // Testo delle segnalazioni e lettura della posizione dalle foto: funzioni pure, testate in __tests__/.
 
+import { entryKind, interventionLabel } from './notebook';
+
 function formatCoordinate(value) {
   return value.toFixed(6);
 }
 
 export function reportSubject(report) {
+  if (entryKind(report) === 'intervento') {
+    return `Intervento su specie esotica invasiva (${interventionLabel(report.intervention).toLowerCase()}): ${report.scientificName}`;
+  }
   return `Segnalazione specie esotica invasiva: ${report.scientificName}`;
 }
 
@@ -18,10 +23,14 @@ export function reportBody(report) {
   const lon = formatCoordinate(report.longitude);
   const accuracy = report.accuracy != null ? ` (precisione ± ${Math.round(report.accuracy)} m)` : '';
   const source = report.locationSource === 'foto' ? ' – posizione ricavata dalla foto' : ' – posizione GPS';
+  const intervention = entryKind(report) === 'intervento';
   const lines = [
-    'Segnalazione di specie esotica invasiva di rilevanza unionale (Reg. UE 1143/2014, D.Lgs. 230/2017).',
+    intervention
+      ? 'Intervento di gestione su specie esotica invasiva di rilevanza unionale (Reg. UE 1143/2014, D.Lgs. 230/2017).'
+      : 'Segnalazione di specie esotica invasiva di rilevanza unionale (Reg. UE 1143/2014, D.Lgs. 230/2017).',
     '',
     `Specie: ${report.commonName} (${report.scientificName})`,
+    ...(intervention ? [`Intervento: ${interventionLabel(report.intervention)}`] : []),
     `Data e ora: ${date}`,
     `Coordinate (WGS84): ${lat}, ${lon}${accuracy}${source}`,
     `Mappa: https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`,

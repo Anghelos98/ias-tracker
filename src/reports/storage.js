@@ -10,6 +10,8 @@ const PHOTO_DIR_NAME = 'reports';
 /**
  * @typedef {Object} Report
  * @property {string} id
+ * @property {'presenza'|'intervento'} [kind]   tipo di voce del taccuino (assente = presenza)
+ * @property {string|null} [intervention] tipo di intervento (vedi INTERVENTIONS in notebook.js)
  * @property {string} createdAt            data ISO
  * @property {string|null} speciesSlug     null = specie non indicata
  * @property {string} scientificName

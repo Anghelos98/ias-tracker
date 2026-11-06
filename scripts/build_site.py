@@ -8,10 +8,12 @@ Legge:   data/index.json               statistiche per specie (da sync_ias_data.
          assets/data/photos.json       foto iNaturalist (da fetch_species_photos.py)
          assets/data/lookalikes.json   specie simili (da build_lookalikes.py)
          assets/data/easin.json        dati europei EASIN (da fetch_easin.py)
+         site/*                        pagine statiche (informativa sulla privacy)
 Scrive:  <site>/data/v1/manifest.json  indice: statistiche e impronta (sha256) di ogni file
          <site>/data/v1/species/*.json
          <site>/data/v1/sheets/*.json
          <site>/index.html             pagina informativa con fonti e licenze
+         <site>/privacy.html           informativa sulla privacy dell'app (copiata da site/)
 
 L'app legge il manifest e scarica solo i file la cui impronta è cambiata.
 "v1" è la versione del formato: se cambierà in modo incompatibile si pubblicherà in v2,
@@ -38,6 +40,7 @@ GRID_DIR = ROOT / "assets" / "data" / "grid"
 PHOTOS = ROOT / "assets" / "data" / "photos.json"
 LOOKALIKES = ROOT / "assets" / "data" / "lookalikes.json"
 EASIN = ROOT / "assets" / "data" / "easin.json"
+STATIC_DIR = ROOT / "site"
 SCHEMA = 1
 
 
@@ -84,6 +87,8 @@ def main(site: Path) -> None:
     }
     (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")
     (site / ".nojekyll").write_text("", encoding="utf-8")
+    for page in STATIC_DIR.glob("*.html"):
+        shutil.copyfile(page, site / page.name)
     (site / "index.html").write_text(index_page(manifest), encoding="utf-8")
 
     size = sum(p.stat().st_size for p in out.rglob("*.json"))
@@ -113,7 +118,10 @@ Indice dei file: <a href="data/v{SCHEMA}/manifest.json"><code>data/v{SCHEMA}/man
 <li>Segnalazioni: <a href="https://www.gbif.org">GBIF.org</a>. Ogni record mantiene la licenza del dataset di origine
 (CC0, CC BY o CC BY-NC), riportata nei file insieme al nome del dataset.</li>
 <li>Schede delle specie: <a href="https://www.specieinvasive.isprambiente.it">ISPRA</a>, licenza CC BY 4.0.</li>
+<li>Regione di ogni segnalazione: confini <a href="https://www.istat.it">ISTAT</a>, licenza CC BY 4.0
+(geometrie semplificate).</li>
 </ul>
+<p><a href="privacy.html">Informativa sulla privacy dell'app</a>.</p>
 <p>Dettagli in <a href="https://github.com/Anghelos98/ias-tracker/blob/main/DATI.md">DATI.md</a>.</p>
 </body>
 </html>

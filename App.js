@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
@@ -14,7 +14,8 @@ import WelcomeScreen from './src/components/WelcomeScreen';
 import SpeciesPanel from './src/components/SpeciesPanel';
 import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
-import MyReports from './src/components/MyReports';
+import Notebook from './src/components/Notebook';
+import RegionReport from './src/components/RegionReport';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import {
   checkForUpdates,
@@ -35,11 +36,8 @@ import {
   saveFilters,
   saveShowGrid,
 } from './src/data/preferences';
+import { useColors, useThemedStyles } from './src/theme';
 import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
-
-// Colore di fondo mostrato mentre le tile della mappa si caricano: un tono vicino a
-// quello della mappa evita il "flash" bianco durante lo zoom.
-const MAP_BACKGROUND = '#f2efe9';
 
 // Voce "Tutte le specie" dell'elenco: mostra insieme le segnalazioni di ogni specie.
 const ALL_SPECIES_SLUG = '__tutte__';
@@ -66,6 +64,8 @@ export default function App() {
 
 function IASTracker() {
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useThemedStyles(createStyles);
   const mapRef = useRef(null);
 
   const [region, setRegion] = useState(ITALY_REGION);
@@ -76,8 +76,10 @@ function IASTracker() {
   const [sheetSpecies, setSheetSpecies] = useState(null);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportKey, setReportKey] = useState(0); // nuova chiave = modulo di segnalazione vuoto
-  const [myReportsOpen, setMyReportsOpen] = useState(false);
-  // segnalazione dell'utente mostrata sulla mappa da "Le mie segnalazioni"
+  const [reportKind, setReportKind] = useState('presenza'); // presenza | intervento
+  const [notebookOpen, setNotebookOpen] = useState(false);
+  const [regionsOpen, setRegionsOpen] = useState(false);
+  // voce del taccuino mostrata sulla mappa
   const [reportPin, setReportPin] = useState(null);
   const [species, setSpecies] = useState(null);
   // punti mostrati: [{ species, data }] per una specie o per tutte
@@ -146,8 +148,9 @@ function IASTracker() {
   }, []);
 
   /**
-   * Mostra una specie sulla mappa. Con `focus` ({ center, radiusM }) la mappa inquadra
-   * quell'area invece dell'intera distribuzione della specie (usato da "Vicino a me").
+   * Mostra una specie sulla mappa. Con `focus` la mappa inquadra un'area invece dell'intera
+   * distribuzione della specie: { center, radiusM } da "Vicino a me", { bbox } dal rapporto
+   * per regione.
    */
   const selectSpecies = useCallback(
     (item, focus = null) => {
@@ -171,7 +174,9 @@ function IASTracker() {
           setDatasets(loaded);
           setLoading(false);
           if (!loaded) return;
-          if (focus) {
+          if (focus?.bbox) {
+            mapRef.current?.animateToRegion(bboxToRegion(focus.bbox), 600);
+          } else if (focus) {
             const delta = (focus.radiusM / 111320) * 2.4;
             mapRef.current?.animateToRegion({ ...focus.center, latitudeDelta: delta, longitudeDelta: delta }, 600);
           } else if (item.all) {
@@ -188,7 +193,7 @@ function IASTracker() {
     if (!hasLocation) {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Posizione non disponibile', 'Consenti l\'accesso alla posizione nelle impostazioni.');
+        Alert.alert('Posizione non disponibile', "Consenti l'accesso alla posizione nelle impostazioni.");
         return;
       }
       setHasLocation(true);
@@ -232,6 +237,16 @@ function IASTracker() {
   );
 
   const clearSelection = useCallback(() => setSelection(null), []);
+
+  // Lettori di schermo: annuncia la scheda che compare in basso (su Android lo fa già
+  // accessibilityLiveRegion sul titolo della scheda).
+  useEffect(() => {
+    if (!selection) return;
+    const n = selection.points.length;
+    AccessibilityInfo.announceForAccessibility(
+      n === 1 ? 'Segnalazione selezionata: dettagli in basso' : `${n} segnalazioni in questo punto: dettagli in basso`,
+    );
+  }, [selection]);
 
   /**
    * Tocco sulla mappa. Su iOS i marker non gestiscono il tocco (vedi MapMarkers.js): qui
@@ -290,14 +305,47 @@ function IASTracker() {
 
   // Dal pannello (anch'esso una Modal): si chiude il pannello e si apre la scheda quando
   // l'animazione di chiusura è finita, perché iOS non mostra due Modal insieme.
-  // Da "Nuova segnalazione" a "Le mie segnalazioni" (due Modal: una alla volta su iOS).
-  const openMyReportsFromReport = useCallback(() => {
+  // Da "Nuova segnalazione" al taccuino e viceversa (due Modal: una alla volta su iOS).
+  const openNotebookFromReport = useCallback(() => {
     setReportOpen(false);
-    setTimeout(() => setMyReportsOpen(true), 400);
+    setTimeout(() => setNotebookOpen(true), 400);
+  }, []);
+
+  const openReport = useCallback((kind) => {
+    setReportKind(kind);
+    setReportKey((k) => k + 1);
+    setReportOpen(true);
+  }, []);
+
+  const newEntryFromNotebook = useCallback(
+    (kind) => {
+      setNotebookOpen(false);
+      setTimeout(() => openReport(kind), 400);
+    },
+    [openReport],
+  );
+
+  const openFromPanel = useCallback((setOpen) => {
+    setPanelOpen(false);
+    setTimeout(() => setOpen(true), 400);
+  }, []);
+
+  // Rapporto per regione: la specie scelta viene mostrata inquadrando la regione.
+  const showSpeciesInRegion = useCallback(
+    (item, region) => {
+      setRegionsOpen(false);
+      const full = speciesList.find((s) => s.slug === item.slug) ?? item;
+      selectSpecies(full, { bbox: region.bbox });
+    },
+    [selectSpecies, speciesList],
+  );
+  const openSheetFromRegions = useCallback((item) => {
+    setRegionsOpen(false);
+    setTimeout(() => setSheetSpecies(item), 400);
   }, []);
 
   const showReportOnMap = useCallback((report) => {
-    setMyReportsOpen(false);
+    setNotebookOpen(false);
     setReportPin(report);
     mapRef.current?.animateToRegion(
       { latitude: report.latitude, longitude: report.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 },
@@ -412,15 +460,17 @@ function IASTracker() {
         mapWidthRef.current = e.nativeEvent.layout.width;
       }}
     >
-      <StatusBar style="dark" />
+      <StatusBar style="auto" />
       <MapView
         ref={mapRef}
-        style={[StyleSheet.absoluteFill, { backgroundColor: MAP_BACKGROUND }]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: colors.mapBackground }]}
         initialRegion={ITALY_REGION}
         onRegionChangeComplete={handleRegionChange}
+        userInterfaceStyle={colors.scheme}
         loadingEnabled
-        loadingBackgroundColor={MAP_BACKGROUND}
-        loadingIndicatorColor="#2e7d32"
+        loadingBackgroundColor={colors.mapBackground}
+        loadingIndicatorColor={colors.primary}
+        accessibilityLabel="Mappa delle segnalazioni"
         moveOnMarkerPress={false}
         showsUserLocation={hasLocation}
         showsMyLocationButton={false}
@@ -456,7 +506,7 @@ function IASTracker() {
           <Marker
             coordinate={{ latitude: reportPin.latitude, longitude: reportPin.longitude }}
             pinColor="blue"
-            title={`La tua segnalazione: ${reportPin.commonName}`}
+            title={`Dal taccuino: ${reportPin.commonName}`}
             description={new Date(reportPin.createdAt).toLocaleDateString('it-IT')}
           />
         )}
@@ -470,7 +520,21 @@ function IASTracker() {
           topBarBottomRef.current = y + height;
         }}
       >
-        <Pressable style={styles.speciesButton} onPress={() => setPanelOpen(true)}>
+        <Pressable
+          style={styles.speciesButton}
+          onPress={() => setPanelOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={
+            species
+              ? `Specie mostrata: ${species.commonName}, ${
+                  species.total === 0
+                    ? 'nessuna segnalazione in Italia'
+                    : `${visibleCount} segnalazioni nell'area visibile`
+                }`
+              : 'Scegli una specie'
+          }
+          accessibilityHint="Apre l'elenco delle specie"
+        >
           <Text style={styles.appName}>IAS Tracker</Text>
           <Text style={styles.speciesName} numberOfLines={1}>
             {species ? species.commonName : 'Scegli una specie'}
@@ -484,14 +548,19 @@ function IASTracker() {
             </Text>
           )}
         </Pressable>
-        {loading && <ActivityIndicator style={styles.spinner} />}
+        {loading && (
+          <ActivityIndicator style={styles.spinner} color={colors.primary} accessibilityLabel="Caricamento" />
+        )}
         {species && !species.all && (
           <Pressable
             style={styles.infoRound}
             onPress={() => setSheetSpecies(species)}
+            accessibilityRole="button"
             accessibilityLabel={`Scheda di ${species.commonName}`}
           >
-            <Text style={styles.infoRoundText}>ⓘ</Text>
+            <Text style={styles.infoRoundText} allowFontScaling={false}>
+              ⓘ
+            </Text>
           </Pressable>
         )}
       </View>
@@ -521,14 +590,35 @@ function IASTracker() {
             {filtersSummary || 'Tutte le segnalazioni verificate'}
           </Text>
         </Pressable>
-        <Pressable style={styles.roundButton} onPress={() => setNearbyOpen(true)} accessibilityLabel="Vicino a me">
-          <Text style={styles.roundButtonEmoji}>📍</Text>
+        <Pressable
+          style={styles.roundButton}
+          onPress={() => setNearbyOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Vicino a me"
+        >
+          <Text style={styles.roundButtonEmoji} allowFontScaling={false}>
+            📍
+          </Text>
         </Pressable>
-        <Pressable style={styles.roundButton} onPress={() => setPanelOpen(true)} accessibilityLabel="Elenco specie">
-          <Text style={styles.roundButtonText}>☰</Text>
+        <Pressable
+          style={styles.roundButton}
+          onPress={() => setPanelOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Elenco specie"
+        >
+          <Text style={styles.roundButtonText} allowFontScaling={false}>
+            ☰
+          </Text>
         </Pressable>
-        <Pressable style={styles.roundButton} onPress={centerOnUser} accessibilityLabel="Centra sulla mia posizione">
-          <Text style={styles.roundButtonText}>◎</Text>
+        <Pressable
+          style={styles.roundButton}
+          onPress={centerOnUser}
+          accessibilityRole="button"
+          accessibilityLabel="Centra sulla mia posizione"
+        >
+          <Text style={styles.roundButtonText} allowFontScaling={false}>
+            ◎
+          </Text>
         </Pressable>
       </View>
 
@@ -570,7 +660,19 @@ function IASTracker() {
         onSelect={selectSpecies}
         onInfo={openSheetFromPanel}
         onAbout={openWelcomeFromPanel}
+        onRegions={() => openFromPanel(setRegionsOpen)}
+        onNotebook={() => openFromPanel(setNotebookOpen)}
         onClose={() => setPanelOpen(false)}
+      />
+
+      <RegionReport
+        visible={regionsOpen}
+        speciesList={speciesList}
+        manifest={manifest}
+        filters={filters}
+        onShowSpecies={showSpeciesInRegion}
+        onInfo={openSheetFromRegions}
+        onClose={() => setRegionsOpen(false)}
       />
 
       <WelcomeScreen visible={welcomeOpen} onDone={finishWelcome} />
@@ -579,14 +681,13 @@ function IASTracker() {
       {!selection && (
         <Pressable
           style={[styles.reportButton, { bottom: insets.bottom + 84 }]}
-          onPress={() => {
-            setReportKey((k) => k + 1);
-            setReportOpen(true);
-          }}
+          onPress={() => openReport('presenza')}
           accessibilityRole="button"
           accessibilityLabel="Nuova segnalazione"
         >
-          <Text style={styles.reportButtonText}>＋ Segnala</Text>
+          <Text style={styles.reportButtonText} maxFontSizeMultiplier={1.6}>
+            ＋ Segnala
+          </Text>
         </Pressable>
       )}
 
@@ -601,74 +702,89 @@ function IASTracker() {
         key={reportKey}
         visible={reportOpen}
         initialSpecies={species?.all ? null : species}
+        initialKind={reportKind}
         onClose={() => setReportOpen(false)}
-        onOpenMyReports={openMyReportsFromReport}
+        onOpenNotebook={openNotebookFromReport}
       />
-      <MyReports visible={myReportsOpen} onClose={() => setMyReportsOpen(false)} onShowOnMap={showReportOnMap} />
+      <Notebook
+        visible={notebookOpen}
+        onClose={() => setNotebookOpen(false)}
+        onShowOnMap={showReportOnMap}
+        onNewEntry={newEntryFromNotebook}
+      />
     </View>
   );
 }
 
-const shadow = {
-  shadowColor: '#000',
-  shadowOpacity: 0.15,
-  shadowRadius: 6,
-  shadowOffset: { width: 0, height: 2 },
-  elevation: 4,
+const createStyles = (c) => {
+  const shadow = {
+    shadowColor: '#000',
+    shadowOpacity: c.shadowOpacity,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  };
+  return StyleSheet.create({
+    container: { flex: 1 },
+    topBar: { position: 'absolute', left: 12, right: 12, flexDirection: 'row', alignItems: 'center' },
+    speciesButton: {
+      flex: 1,
+      backgroundColor: c.surface,
+      borderRadius: 14,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      ...shadow,
+    },
+    appName: { fontSize: 11, fontWeight: '700', color: c.primary, letterSpacing: 0.5, textTransform: 'uppercase' },
+    speciesName: { fontSize: 17, fontWeight: '600', marginTop: 2, color: c.text },
+    speciesMeta: { fontSize: 13, color: c.textSecondary, marginTop: 2 },
+    italic: { fontStyle: 'italic' },
+    spinner: { marginLeft: 10 },
+    bottomBar: { position: 'absolute', left: 12, right: 12, flexDirection: 'row', alignItems: 'center', gap: 10 },
+    filter: {
+      flex: 1,
+      minHeight: 52,
+      paddingVertical: 6,
+      justifyContent: 'center',
+      backgroundColor: c.surface,
+      borderRadius: 14,
+      paddingHorizontal: 14,
+      ...shadow,
+    },
+    filterTitle: { fontSize: 15, fontWeight: '700', color: c.primary },
+    filterBadge: { fontSize: 13, color: c.orange },
+    filterText: { fontSize: 12, color: c.textSecondary, marginTop: 1 },
+    roundButton: {
+      width: 52,
+      height: 52,
+      borderRadius: 26,
+      backgroundColor: c.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...shadow,
+    },
+    roundButtonText: { fontSize: 22, color: c.primary },
+    roundButtonEmoji: { fontSize: 20 },
+    infoRound: {
+      width: 48,
+      height: 48,
+      marginLeft: 8,
+      borderRadius: 24,
+      backgroundColor: c.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...shadow,
+    },
+    infoRoundText: { fontSize: 24, color: c.link },
+    reportButton: {
+      position: 'absolute',
+      right: 12,
+      backgroundColor: c.primaryFill,
+      borderRadius: 26,
+      paddingHorizontal: 18,
+      paddingVertical: 13,
+      ...shadow,
+    },
+    reportButtonText: { color: c.onPrimary, fontSize: 16, fontWeight: '700' },
+  });
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  topBar: { position: 'absolute', left: 12, right: 12, flexDirection: 'row', alignItems: 'center' },
-  speciesButton: { flex: 1, backgroundColor: '#fff', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, ...shadow },
-  appName: { fontSize: 11, fontWeight: '700', color: '#2e7d32', letterSpacing: 0.5, textTransform: 'uppercase' },
-  speciesName: { fontSize: 17, fontWeight: '600', marginTop: 2 },
-  speciesMeta: { fontSize: 13, color: '#555', marginTop: 2 },
-  italic: { fontStyle: 'italic' },
-  spinner: { marginLeft: 10 },
-  bottomBar: { position: 'absolute', left: 12, right: 12, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  filter: {
-    flex: 1,
-    height: 52,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    ...shadow,
-  },
-  filterTitle: { fontSize: 15, fontWeight: '700', color: '#2e7d32' },
-  filterBadge: { fontSize: 13, color: '#ef6c00' },
-  filterText: { fontSize: 12, color: '#555', marginTop: 1 },
-  roundButton: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadow,
-  },
-  roundButtonText: { fontSize: 22, color: '#2e7d32' },
-  roundButtonEmoji: { fontSize: 20 },
-  infoRound: {
-    width: 48,
-    height: 48,
-    marginLeft: 8,
-    borderRadius: 24,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadow,
-  },
-  infoRoundText: { fontSize: 24, color: '#1565c0' },
-  reportButton: {
-    position: 'absolute',
-    right: 12,
-    backgroundColor: '#2e7d32',
-    borderRadius: 26,
-    paddingHorizontal: 18,
-    paddingVertical: 13,
-    ...shadow,
-  },
-  reportButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-});

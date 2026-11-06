@@ -61,6 +61,18 @@ pubblicati da ISPRA (CC BY 4.0), tiene solo le celle con la specie, le unisce in
 converte in coordinate geografiche (`assets/data/grid/`). ISPRA pubblica la griglia per 22
 specie: non per quelle assenti in Italia né per le specie aggiunte all'elenco nel 2025.
 
+## Regioni (ISTAT)
+
+La regione di ogni segnalazione (rapporto per regione e colonna `regione` delle esportazioni) è
+calcolata con i *Confini delle unità amministrative a fini statistici* di
+[ISTAT](https://www.istat.it/notizia/confini-delle-unita-amministrative-a-fini-statistici-al-1-gennaio-2018-2/)
+al 1° gennaio 2026, versione generalizzata, licenza **CC BY 4.0**
+([note legali ISTAT](https://www.istat.it/note-legali/)). Modifiche: geometrie semplificate (circa
+50 m) e convertite in WGS84 (`scripts/fetch_istat_regions.py` → `scripts/data/regioni.json`).
+
+Le segnalazioni appena fuori dalla costa (entro 3 km) sono assegnate alla regione più vicina; quelle
+in mare aperto o oltre confine restano senza regione (16 su 24.095 a novembre 2026).
+
 ## Specie simili
 
 La sezione "Con cosa si può confondere" riporta **citazioni letterali** dalle schede ISPRA

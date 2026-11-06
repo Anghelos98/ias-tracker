@@ -5,11 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "io.github.anghelos98.iastracker",
-      "buildNumber": "1",
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -21,8 +20,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "io.github.anghelos98.iastracker",
-      "versionCode": 1
+      "package": "io.github.anghelos98.iastracker"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -49,7 +47,11 @@
         {
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
-          "backgroundColor": "#FFFFFF"
+          "backgroundColor": "#FFFFFF",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#121212"
+          }
         }
       ]
     ],

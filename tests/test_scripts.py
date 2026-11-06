@@ -91,7 +91,30 @@ def test_compact():
     ]}
     out = build_app_data.compact(geojson)
     assert out["fonti"] == [{"nome": "A", "licenza": "CC BY 4.0"}]
-    assert out["punti"] == [[12.12346, 41.76543, 2020, 0, 0, 12], [12.0, 41.0, None, 0, 1, None]]
+    assert out["punti"] == [[12.12346, 41.76543, 2020, 0, 0, 12, None], [12.0, 41.0, None, 0, 1, None, None]]
+
+
+def test_regione_dei_punti():
+    # due regioni quadrate affiancate: 1 a ovest, 2 a est (confine a lon 11)
+    square = lambda w, e: {"esterno": [[w, 40], [e, 40], [e, 42], [w, 42], [w, 40]], "buchi": []}
+    locator = build_app_data.RegionLocator([
+        {"codice": 1, "poligoni": [square(10, 11)]},
+        {"codice": 2, "poligoni": [square(11, 12)]},
+    ])
+    assert locator.locate(10.5, 41) == 1
+    assert locator.locate(11.5, 41) == 2
+    assert locator.locate(12.02, 41) == 2      # ~1,7 km dalla costa: regione più vicina
+    assert locator.locate(12.2, 41) is None    # mare aperto
+    geojson = {"features": [{"geometry": {"coordinates": [11.5, 41.0]}, "properties": {"dataset": "A"}}]}
+    assert build_app_data.compact(geojson, locator)["punti"][0][6] == 2
+
+
+def test_confini_istat_nel_repository():
+    locator = build_app_data.RegionLocator.from_file()
+    assert len(set(locator.codes)) == 20
+    assert locator.locate(12.4964, 41.9028) == 12   # Roma, Lazio
+    assert locator.locate(9.19, 45.4642) == 3       # Milano, Lombardia
+    assert locator.locate(13.3615, 38.1157) == 19   # Palermo, Sicilia
 
 
 # --------------------------------------------------------------------------- ISPRA
@@ -173,6 +196,7 @@ def test_build_site(tmp_path, monkeypatch):
     assert manifest["europa"]["file"] == "easin.json"
     assert (site / "data" / "v1" / "photos.json").exists()
     assert (site / "index.html").exists() and (site / ".nojekyll").exists()
+    assert "Informativa sulla privacy" in (site / "privacy.html").read_text(encoding="utf-8")
 
 
 # --------------------------------------------------------------------------- foto iNaturalist

@@ -31,7 +31,15 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
   (D.Lgs. 230/2017), cosa fare se la trovi, approfondimenti e mappa di distribuzione ISPRA
 - Segnalazioni: specie, posizione GPS automatica e foto in pochi tocchi; invio per email al
   Ministero dell'Ambiente (casella prevista dall'art. 18 del D.Lgs. 230/2017) o condivisione
-  con qualsiasi app; storico "Le mie segnalazioni" salvato solo sul telefono
+  con qualsiasi app
+- Taccuino di campo: presenze e interventi di gestione (taglio, sfalcio, eradicazione,
+  cercinatura, trattamento, smaltimento, controllo) salvati solo sul telefono, con foto e note,
+  esportabili in CSV, GeoJSON o KML
+- Rapporto per regione (confini ISTAT): segnalazioni e specie di ogni regione, andamento negli
+  ultimi 15 anni, tabella esportabile in CSV; rispetta i filtri attivi
+- Modalità scura automatica (segue le impostazioni del telefono) e accessibilità: etichette per
+  VoiceOver e TalkBack, testo che si ingrandisce con le impostazioni di sistema, colori con
+  contrasto di almeno 4,5:1 (WCAG AA)
 
 ## Struttura del progetto
 
@@ -43,9 +51,13 @@ src/utils/geo.js            calcoli su zoom, coordinate e proiezione
 src/components/SpeciesSheet.js  scheda della specie
 src/components/FiltersPanel.js  filtri della mappa e legenda
 src/components/NearbyPanel.js   "Vicino a me"
-src/components/ReportScreen.js  nuova segnalazione (GPS, foto, invio)
-src/components/MyReports.js     segnalazioni salvate sul telefono
-src/reports/                    salvataggio e invio delle segnalazioni
+src/components/ReportScreen.js  nuova voce del taccuino: presenza o intervento (GPS, foto, invio)
+src/components/Notebook.js      taccuino di campo (elenco, filtri, esportazione)
+src/components/RegionReport.js  rapporto per regione
+src/reports/                    salvataggio, invio ed esportazione delle voci del taccuino
+src/data/regionReport.js        calcolo del rapporto per regione
+src/data/regions.js         regioni ISTAT: nomi e riquadri (generato)
+src/theme.js                colori del tema chiaro e scuro
 src/data/species.js         catalogo specie (generato)
 src/data/legal.js           sintesi della normativa (D.Lgs. 230/2017)
 assets/data/sheets/         schede delle specie ISPRA (generate)
@@ -58,7 +70,12 @@ scripts/fetch_species_photos.py  raccoglie le foto delle specie da iNaturalist
 scripts/build_lookalikes.py specie simili (citazioni dalle schede ISPRA)
 scripts/fetch_easin.py      dati europei dal catalogo EASIN
 scripts/fetch_ispra_grids.py  griglia ISPRA 10×10 km (shapefile → aree in WGS84)
+scripts/fetch_istat_regions.py  confini delle regioni ISTAT (si esegue a mano, di rado)
+scripts/data/regioni.json   confini semplificati usati per assegnare la regione ai punti
 scripts/build_site.py       prepara il sito GitHub Pages con i dati per l'app
+site/privacy.html           informativa sulla privacy (pubblicata su GitHub Pages)
+app.config.js               aggiunge la chiave Google Maps per Android da variabile d'ambiente
+eas.json                    profili di build EAS (preview e production)
 scripts/make_icons.py       icona dell'app, icone Android e schermata di avvio
 src/data/remote.js          aggiornamento dei dati nell'app (manifest, download, cache)
 .github/workflows/          aggiornamento settimanale automatico
@@ -101,6 +118,25 @@ python3 -m venv .venv
 .venv/bin/python scripts/fetch_species_photos.py # raccoglie le foto da iNaturalist
 .venv/bin/python scripts/build_app_data.py       # rigenera assets/data e src/data/species.js
 ```
+
+I confini delle regioni cambiano di rado e sono già nel repository; per aggiornarli (per esempio
+a un nuovo anno ISTAT): `.venv/bin/python scripts/fetch_istat_regions.py 2027`, poi
+`build_app_data.py`.
+
+## Build per gli store (EAS)
+
+```bash
+npx eas-cli@latest login
+npx eas-cli@latest init                              # collega il progetto a expo.dev (una volta)
+npx eas-cli@latest build --profile preview -p ios    # build di prova da installare sul telefono
+npx eas-cli@latest build --profile production        # build per App Store e Google Play
+```
+
+Il numero di build lo gestisce EAS (`appVersionSource: remote`, `autoIncrement`). Per Android serve
+una chiave Google Maps: crearla nella console Google Cloud, limitarla al pacchetto
+`io.github.anghelos98.iastracker` e all'impronta SHA-1 del certificato, e salvarla su expo.dev come
+variabile d'ambiente `GOOGLE_MAPS_ANDROID_API_KEY` (ambienti preview e production, visibilità
+"Sensitive"). Non va mai scritta nel repository.
 
 ## Aggiornamento automatico dei dati
 

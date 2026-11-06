@@ -1,6 +1,7 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { speciesOfRecords } from '../data/points';
+import { useThemedStyles } from '../theme';
 
 /**
  * Scheda con anno e fonte delle segnalazioni selezionate.
@@ -9,6 +10,7 @@ import { speciesOfRecords } from '../data/points';
  * diverse quando la mappa mostra tutte le specie. Ogni record porta con sé la sua specie.
  */
 export default function PointCard({ points, coordinate, onClose, onOpenSheet, onLayout, bottomInset }) {
+  const styles = useThemedStyles(createStyles);
   if (!points?.length) return null;
   const multiple = points.length > 1;
   const speciesHere = speciesOfRecords(points);
@@ -16,11 +18,18 @@ export default function PointCard({ points, coordinate, onClose, onOpenSheet, on
   return (
     <View style={[styles.card, { bottom: bottomInset + 84 }]} onLayout={(e) => onLayout?.(e.nativeEvent.layout)}>
       <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={styles.title} numberOfLines={1} accessibilityRole="header" accessibilityLiveRegion="polite">
           {species ? species.commonName : `${speciesHere.length} specie in questo punto`}
         </Text>
-        <Pressable onPress={onClose} hitSlop={12} accessibilityLabel="Chiudi scheda">
-          <Text style={styles.close}>✕</Text>
+        <Pressable
+          onPress={onClose}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Chiudi scheda della segnalazione"
+        >
+          <Text style={styles.close} allowFontScaling={false}>
+            ✕
+          </Text>
         </Pressable>
       </View>
       {species && (
@@ -55,7 +64,12 @@ export default function PointCard({ points, coordinate, onClose, onOpenSheet, on
                 <Text style={styles.listYear}>{item.year ?? 'n.d.'}</Text>
                 <View style={styles.listText}>
                   {!species && (
-                    <Pressable onPress={() => onOpenSheet?.(item.species.slug)} hitSlop={4}>
+                    <Pressable
+                      onPress={() => onOpenSheet?.(item.species.slug)}
+                      hitSlop={4}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Scheda di ${item.species.commonName}`}
+                    >
                       <Text style={styles.listSpecies}>{item.species.commonName} ›</Text>
                     </Pressable>
                   )}
@@ -100,6 +114,7 @@ function formatUncertainty(meters) {
 }
 
 function SinglePoint({ point }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <>
       <Text style={styles.label}>Incertezza della posizione</Text>
@@ -119,34 +134,40 @@ function SinglePoint({ point }) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    position: 'absolute',
-    left: 12,
-    right: 12,
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 6,
-  },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  title: { flex: 1, fontSize: 16, fontWeight: '600' },
-  close: { fontSize: 18, color: '#666', paddingLeft: 12 },
-  subheader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  scientific: { flex: 1, fontSize: 13, fontStyle: 'italic', color: '#555' },
-  sheetLink: { fontSize: 13, color: '#1565c0', fontWeight: '600', paddingLeft: 8 },
-  label: { fontSize: 12, color: '#777', marginTop: 6 },
-  value: { fontSize: 15, color: '#1b1b1b' },
-  warning: { marginTop: 8, fontSize: 12, color: '#b26a00' },
-  list: { maxHeight: 180, marginTop: 6 },
-  listRow: { flexDirection: 'row', paddingVertical: 5, borderTopWidth: StyleSheet.hairlineWidth, borderColor: '#e0e0e0' },
-  listYear: { width: 48, fontSize: 14, fontWeight: '600', color: '#1b1b1b' },
-  listText: { flex: 1 },
-  listSpecies: { fontSize: 13, fontWeight: '700', color: '#1565c0' },
-  listSource: { fontSize: 13, color: '#333' },
-  listMeta: { fontSize: 12, color: '#777', marginTop: 1 },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    card: {
+      position: 'absolute',
+      left: 12,
+      right: 12,
+      backgroundColor: c.surface,
+      borderRadius: 14,
+      padding: 14,
+      shadowColor: '#000',
+      shadowOpacity: c.shadowOpacity,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 6,
+    },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    title: { flex: 1, fontSize: 16, fontWeight: '600', color: c.text },
+    close: { fontSize: 18, color: c.textMuted, paddingLeft: 12 },
+    subheader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+    scientific: { flex: 1, fontSize: 13, fontStyle: 'italic', color: c.textSecondary },
+    sheetLink: { fontSize: 13, color: c.link, fontWeight: '600', paddingLeft: 8 },
+    label: { fontSize: 12, color: c.textMuted, marginTop: 6 },
+    value: { fontSize: 15, color: c.text },
+    warning: { marginTop: 8, fontSize: 12, color: c.warning },
+    list: { maxHeight: 180, marginTop: 6 },
+    listRow: {
+      flexDirection: 'row',
+      paddingVertical: 5,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderColor: c.border,
+    },
+    listYear: { width: 48, fontSize: 14, fontWeight: '600', color: c.text },
+    listText: { flex: 1 },
+    listSpecies: { fontSize: 13, fontWeight: '700', color: c.link },
+    listSource: { fontSize: 13, color: c.textSecondary },
+    listMeta: { fontSize: 12, color: c.textMuted, marginTop: 1 },
+  });

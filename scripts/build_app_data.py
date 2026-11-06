@@ -7,7 +7,12 @@ Scrive:  assets/data/species/<slug>.json   punti in formato compatto
 
 Formato compatto di un file specie:
     {"fonti": [{"nome": "iNaturalist ...", "licenza": "CC BY-NC 4.0"}, ...],
-     "punti": [[lon, lat, anno|null, indice_fonte, auto(0/1), incertezza_m|null], ...]}
+     "punti": [[lon, lat, anno|null, indice_fonte, auto(0/1), incertezza_m|null, regione|null], ...]}
+
+"regione" è il codice ISTAT (1-20) della regione in cui cade il punto, calcolato con i
+confini di scripts/data/regioni.json (da fetch_istat_regions.py). I punti appena fuori
+dalla costa (entro REGION_TOLERANCE_KM) vanno alla regione più vicina; quelli in mare
+aperto restano senza regione.
 
 Metro (il bundler di Expo) accetta solo require() statici: per questo il catalogo
 contiene una funzione `load` per specie con un require esplicito. Il file JSON
@@ -19,7 +24,11 @@ Uso:  python scripts/build_app_data.py
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
+
+from shapely import STRtree
+from shapely.geometry import Point, Polygon
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "data" / "index.json"
@@ -115,10 +124,42 @@ DEFERRED = {"Celastrus orbiculatus": "2027-08-02", "Rugulopteryx okamurae": "202
 SPECIES_LISTING = {name: reg for reg, names in LISTING.items() for name in names}
 
 SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
+REGIONS_FILE = ROOT / "scripts" / "data" / "regioni.json"
+REGION_TOLERANCE_KM = 3
 GRID_DIR = ROOT / "assets" / "data" / "grid"
 
 
-def compact(geojson: dict) -> dict:
+class RegionLocator:
+    """Trova la regione (codice ISTAT) di un punto [lon, lat]."""
+
+    def __init__(self, regions: list[dict]) -> None:
+        self.polygons: list[Polygon] = []
+        self.codes: list[int] = []
+        for r in regions:
+            for p in r["poligoni"]:
+                self.polygons.append(Polygon(p["esterno"], p["buchi"]))
+                self.codes.append(r["codice"])
+        self.tree = STRtree(self.polygons)
+
+    @classmethod
+    def from_file(cls, path: Path = REGIONS_FILE) -> "RegionLocator":
+        return cls(json.loads(path.read_text(encoding="utf-8"))["regioni"])
+
+    def locate(self, lon: float, lat: float) -> int | None:
+        point = Point(lon, lat)
+        inside = self.tree.query(point, predicate="intersects")
+        if len(inside):
+            return self.codes[int(inside[0])]
+        # gradi -> km: la longitudine si accorcia con la latitudine
+        tolerance = REGION_TOLERANCE_KM / (111.32 * math.cos(math.radians(lat)))
+        near = self.tree.query(point, predicate="dwithin", distance=tolerance)
+        if not len(near):
+            return None
+        best = min(near, key=lambda i: self.polygons[int(i)].distance(point))
+        return self.codes[int(best)]
+
+
+def compact(geojson: dict, locator: RegionLocator | None = None) -> dict:
     sources: list[dict] = []
     source_idx: dict[tuple, int] = {}
     points = []
@@ -132,7 +173,8 @@ def compact(geojson: dict) -> dict:
         unc = p.get("incertezza_m")
         points.append([round(lon, 5), round(lat, 5), p.get("anno"), source_idx[src],
                        1 if p.get("identificazione_automatica") else 0,
-                       round(unc) if unc is not None else None])
+                       round(unc) if unc is not None else None,
+                       locator.locate(lon, lat) if locator else None])
     return {"fonti": sources, "punti": points}
 
 
@@ -142,6 +184,7 @@ def main() -> None:
     for old in OUT_DATA.glob("*.json"):
         old.unlink()
 
+    locator = RegionLocator.from_file()
     entries = []
     for s in index["specie"]:
         name, slug = s["nome_scientifico"], s["slug"]
@@ -151,7 +194,7 @@ def main() -> None:
             raise SystemExit(f"Manca il regolamento di inserimento per {name}")
         has_data = bool(s["totale"])
         if has_data:
-            data = compact(json.loads((GEOJSON_DIR / f"{slug}.geojson").read_text(encoding="utf-8")))
+            data = compact(json.loads((GEOJSON_DIR / f"{slug}.geojson").read_text(encoding="utf-8")), locator)
             (OUT_DATA / f"{slug}.json").write_text(
                 json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         entries.append((name, slug, s, has_data))

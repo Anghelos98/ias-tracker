@@ -2,11 +2,19 @@
 // Ogni riga riporta fonte e licenza del dato, necessarie per citarlo correttamente.
 
 import { passesFilters } from './points';
+import { REGIONS } from './regions';
+
+const REGION_NAMES = new Map(REGIONS.map((r) => [r.code, r.name]));
 
 export const EXPORT_FORMATS = {
   csv: { label: 'CSV', extension: 'csv', mimeType: 'text/csv', uti: 'public.comma-separated-values-text' },
   geojson: { label: 'GeoJSON', extension: 'geojson', mimeType: 'application/geo+json', uti: 'public.json' },
-  kml: { label: 'KML', extension: 'kml', mimeType: 'application/vnd.google-earth.kml+xml', uti: 'com.google.earth.kml' },
+  kml: {
+    label: 'KML',
+    extension: 'kml',
+    mimeType: 'application/vnd.google-earth.kml+xml',
+    uti: 'com.google.earth.kml',
+  },
 };
 
 export const ATTRIBUTION =
@@ -20,7 +28,7 @@ export const ATTRIBUTION =
 export function exportRows(datasets, filters, bbox = null) {
   const rows = [];
   for (const { species, data } of datasets) {
-    for (const [lon, lat, year, sourceIdx, automatic, uncertainty] of data.punti) {
+    for (const [lon, lat, year, sourceIdx, automatic, uncertainty, region] of data.punti) {
       if (bbox && (lon < bbox[0] || lat < bbox[1] || lon > bbox[2] || lat > bbox[3])) continue;
       const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null };
       if (!passesFilters(record, filters)) continue;
@@ -34,6 +42,7 @@ export function exportRows(datasets, filters, bbox = null) {
         fonte: data.fonti[sourceIdx].nome,
         licenza: data.fonti[sourceIdx].licenza,
         identificazione_automatica: automatic === 1,
+        regione: REGION_NAMES.get(region) ?? null,
       });
     }
   }
@@ -50,6 +59,7 @@ const COLUMNS = [
   'fonte',
   'licenza',
   'identificazione_automatica',
+  'regione',
 ];
 
 function csvCell(value) {
