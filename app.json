@@ -7,15 +7,22 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "io.github.anghelos98.iastracker",
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#2E7D32",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "io.github.anghelos98.iastracker",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,7 +43,16 @@
         }
       ],
       "expo-mail-composer",
-      "expo-sharing"
-    ]
+      "expo-sharing",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "backgroundColor": "#FFFFFF"
+        }
+      ]
+    ],
+    "description": "Mappa delle segnalazioni in Italia delle piante esotiche invasive di rilevanza unionale. Gratuita e open source."
   }
 }

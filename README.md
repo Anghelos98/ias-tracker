@@ -59,6 +59,7 @@ scripts/build_lookalikes.py specie simili (citazioni dalle schede ISPRA)
 scripts/fetch_easin.py      dati europei dal catalogo EASIN
 scripts/fetch_ispra_grids.py  griglia ISPRA 10×10 km (shapefile → aree in WGS84)
 scripts/build_site.py       prepara il sito GitHub Pages con i dati per l'app
+scripts/make_icons.py       icona dell'app, icone Android e schermata di avvio
 src/data/remote.js          aggiornamento dei dati nell'app (manifest, download, cache)
 .github/workflows/          aggiornamento settimanale automatico
 ```
