@@ -18,7 +18,7 @@ const CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000; // al massimo un controllo ogni 1
 const TIMEOUT_MS = 15000;
 
 function cacheFile(relPath) {
-  // relPath: "species/<slug>.json" o "sheets/<slug>.json"
+  // relPath: "species/<slug>.json", "sheets/<slug>.json" o "root/photos.json"
   const [folder, name] = relPath.split('/');
   const dir = new Directory(Paths.document, 'data-v1', folder);
   if (!dir.exists) dir.create({ intermediates: true, idempotent: true });
@@ -74,6 +74,22 @@ export async function checkForUpdates({ force = false } = {}) {
     // l'impronta vecchia, così verrà ritentato al prossimo controllo.
     let downloaded = 0;
     const saved = { ...remote, specie: {} };
+
+    // Foto (un solo file per tutte le specie)
+    if (remote.foto && (stored?.foto?.sha !== remote.foto.sha || !cacheFile(`root/${remote.foto.file}`).exists)) {
+      try {
+        const text = await fetchWithTimeout(`${DATA_BASE_URL}/${remote.foto.file}`);
+        JSON.parse(text);
+        const local = cacheFile(`root/${remote.foto.file}`);
+        if (local.exists) local.delete();
+        local.create();
+        await local.write(text);
+        downloaded += 1;
+      } catch {
+        saved.foto = stored?.foto ?? null;
+      }
+    }
+
     for (const [slug, entry] of Object.entries(remote.specie)) {
       const previous = stored?.specie?.[slug];
       const next = { ...entry };
@@ -132,6 +148,19 @@ export async function readSpeciesSheet(species, manifest) {
     if (cached) return cached;
   }
   return species.sheet ? species.sheet() : null;
+}
+
+/** Foto delle specie: scaricate se più recenti, altrimenti quelle incluse nell'app. */
+export async function readPhotos(manifest) {
+  if (remoteIsNewer(manifest) && manifest.foto) {
+    try {
+      const file = cacheFile(`root/${manifest.foto.file}`);
+      if (file.exists) return JSON.parse(await file.text());
+    } catch {
+      // si usano quelle incluse nell'app
+    }
+  }
+  return require('../../assets/data/photos.json');
 }
 
 /** Statistiche della specie (totale, anni, area) aggiornate con i dati scaricati. */

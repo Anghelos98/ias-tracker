@@ -12,7 +12,7 @@ import {
   WHAT_TO_DO,
   formatDateIt,
 } from '../data/legal';
-import { readSpeciesSheet } from '../data/remote';
+import { readPhotos, readSpeciesSheet } from '../data/remote';
 
 const PRESENCE_COLORS = {
   diffusa: '#c62828',
@@ -33,20 +33,22 @@ function openUrl(url) {
 export default function SpeciesSheet({ species, manifest, visible, onClose }) {
   const insets = useSafeAreaInsets();
   // La scheda ISPRA viene caricata solo quando si apre la schermata (scaricata o inclusa nell'app).
-  const [loaded, setLoaded] = useState({ slug: null, sheet: null });
+  const [loaded, setLoaded] = useState({ slug: null, sheet: null, photos: [] });
   useEffect(() => {
     if (!visible || !species) return undefined;
     let active = true;
-    readSpeciesSheet(species, manifest)
-      .catch(() => null)
-      .then((s) => {
-        if (active) setLoaded({ slug: species.slug, sheet: s });
-      });
+    Promise.all([readSpeciesSheet(species, manifest).catch(() => null), readPhotos(manifest).catch(() => null)]).then(
+      ([s, photos]) => {
+        if (active) setLoaded({ slug: species.slug, sheet: s, photos: photos?.specie?.[species.slug] ?? [] });
+      },
+    );
     return () => {
       active = false;
     };
   }, [visible, species, manifest]);
-  const sheet = loaded.slug === species?.slug ? loaded.sheet : null;
+  const current = loaded.slug === species?.slug;
+  const sheet = current ? loaded.sheet : null;
+  const photos = current ? loaded.photos : [];
 
   if (!species) return null;
   const { listing } = species;
@@ -65,6 +67,8 @@ export default function SpeciesSheet({ species, manifest, visible, onClose }) {
       </View>
 
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}>
+        {photos.length > 0 && <PhotoGallery photos={photos} />}
+
         {/* Riepilogo */}
         <View style={styles.badges}>
           {sheet?.presenza_italia && (
@@ -207,6 +211,25 @@ export default function SpeciesSheet({ species, manifest, visible, onClose }) {
   );
 }
 
+/** Foto iNaturalist (CC0 / CC BY) con autore e licenza; toccando si apre la pagina originale. */
+function PhotoGallery({ photos }) {
+  return (
+    <View style={styles.gallery}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.galleryRow}>
+        {photos.map((p) => (
+          <Pressable key={p.pagina} onPress={() => openUrl(p.pagina)} accessibilityRole="link">
+            <Image source={{ uri: p.url }} style={styles.photo} accessibilityLabel={`Foto di ${p.autore}`} />
+            <Text style={styles.photoCredit} numberOfLines={1}>
+              © {p.autore} · {p.licenza}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+      <Text style={styles.small}>Foto da iNaturalist: tocca una foto per vedere l’originale.</Text>
+    </View>
+  );
+}
+
 function Section({ title, children }) {
   return (
     <View style={styles.section}>
@@ -260,6 +283,10 @@ const styles = StyleSheet.create({
   scientific: { fontSize: 15, fontStyle: 'italic', color: '#555', marginTop: 2 },
   close: { fontSize: 16, color: '#2e7d32', fontWeight: '600', paddingTop: 4 },
   content: { paddingHorizontal: 18, paddingTop: 14, backgroundColor: '#fff' },
+  gallery: { marginBottom: 14 },
+  galleryRow: { gap: 10 },
+  photo: { width: 200, height: 150, borderRadius: 10, backgroundColor: '#eee' },
+  photoCredit: { width: 200, fontSize: 11, color: '#666', marginTop: 4 },
   badges: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   badge: { borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 },
   badgeText: { fontSize: 12, fontWeight: '600' },

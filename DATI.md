@@ -52,6 +52,17 @@ A novembre 2026 sette schede ISPRA sono incomplete: *Celastrus orbiculatus*, *Cr
 *Hakea sericea* e *Nanozostera japonica* (solo pagina segnaposto) e *Gunnera tinctoria*,
 *Microstegium vimineum*, *Myriophyllum heterophyllum* (solo descrizione; scheda completa in PDF).
 
+## Foto delle specie (iNaturalist)
+
+Le foto nelle schede vengono da [iNaturalist](https://www.inaturalist.org): solo foto con licenza
+**CC0** o **CC BY**, mai "tutti i diritti riservati", CC BY-NC o CC BY-SA. Per ogni foto sono
+riportati autore, licenza e pagina originale (`assets/data/photos.json`, generato da
+`scripts/fetch_species_photos.py`); l'app li mostra sotto ogni foto. Le immagini non sono incluse
+nell'app: vengono caricate da iNaturalist quando si apre la scheda.
+
+Per tre specie iNaturalist usa un nome più recente: *Andropogon virginicus* → *Anatherum virginicum*,
+*Nanozostera japonica* → *Zostera japonica*, *Prosopis juliflora* → *Neltuma juliflora*.
+
 ## Normativa
 
 La sezione "Cosa dice la legge" è una sintesi del D.Lgs. 15 dicembre 2017, n. 230 (testo

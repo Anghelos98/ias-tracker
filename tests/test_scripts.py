@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import build_app_data
 import build_site
 import fetch_ispra_sheets as ispra
+import fetch_species_photos as photos
 import sync_ias_data as sync
 
 REFERENCE = json.loads((sync.REFERENCE_FILE).read_text(encoding="utf-8"))["rilevanza_unionale"]
@@ -146,6 +147,9 @@ def test_build_site(tmp_path, monkeypatch):
     monkeypatch.setattr(build_site, "INDEX", index)
     monkeypatch.setattr(build_site, "SPECIES_DIR", species_dir)
     monkeypatch.setattr(build_site, "SHEETS_DIR", sheets_dir)
+    photos_file = tmp_path / "photos.json"
+    photos_file.write_text('{"specie": {}}')
+    monkeypatch.setattr(build_site, "PHOTOS", photos_file)
 
     site = tmp_path / "site"
     build_site.main(site)
@@ -155,4 +159,31 @@ def test_build_site(tmp_path, monkeypatch):
     assert len(manifest["specie"]["a"]["punti"]["sha"]) == 16
     assert manifest["specie"]["b"]["punti"] is None
     assert (site / "data" / "v1" / "species" / "a.json").exists()
+    assert manifest["foto"]["file"] == "photos.json"
+    assert (site / "data" / "v1" / "photos.json").exists()
     assert (site / "index.html").exists() and (site / ".nojekyll").exists()
+
+
+# --------------------------------------------------------------------------- foto iNaturalist
+
+def test_inat_name():
+    assert photos.inat_name("Hakea sericea s.l.") == "Hakea sericea"
+    assert photos.inat_name("Pueraria montana var. lobata") == "Pueraria montana lobata"
+    assert photos.slugify("Reynoutria × bohemica") == sync.slugify("Reynoutria × bohemica")
+
+
+def test_photo_entry_solo_licenze_libere():
+    base = {"id": 7, "url": "https://x.org/photos/7/square.jpeg",
+            "attribution": "(c) Mario Rossi, some rights reserved (CC BY)"}
+    entry = photos.photo_entry({**base, "license_code": "cc-by"})
+    assert entry == {
+        "url": "https://x.org/photos/7/medium.jpeg",
+        "url_grande": "https://x.org/photos/7/large.jpeg",
+        "autore": "Mario Rossi",
+        "licenza": "CC BY",
+        "pagina": "https://www.inaturalist.org/photos/7",
+    }
+    assert photos.photo_entry({**base, "license_code": "cc0",
+                               "attribution": "(c) Anna, no rights reserved (CC0)"})["autore"] == "Anna"
+    for code in (None, "cc-by-nc", "cc-by-sa", "cc-by-nd"):
+        assert photos.photo_entry({**base, "license_code": code}) is None

@@ -4,6 +4,7 @@
 Legge:   data/index.json               statistiche per specie (da sync_ias_data.py)
          assets/data/species/*.json    punti in formato compatto (da build_app_data.py)
          assets/data/sheets/*.json     schede ISPRA (da fetch_ispra_sheets.py)
+         assets/data/photos.json       foto iNaturalist (da fetch_species_photos.py)
 Scrive:  <site>/data/v1/manifest.json  indice: statistiche e impronta (sha256) di ogni file
          <site>/data/v1/species/*.json
          <site>/data/v1/sheets/*.json
@@ -30,6 +31,7 @@ ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "data" / "index.json"
 SPECIES_DIR = ROOT / "assets" / "data" / "species"
 SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
+PHOTOS = ROOT / "assets" / "data" / "photos.json"
 SCHEMA = 1
 
 
@@ -68,6 +70,7 @@ def main(site: Path) -> None:
         "generato_il": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "dati_gbif_al": index["aggiornato_il"],
         "totale_segnalazioni": index["totale_segnalazioni"],
+        "foto": copy_entry(PHOTOS, out, PHOTOS.name),
         "specie": species,
     }
     (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")

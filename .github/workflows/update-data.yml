@@ -1,6 +1,7 @@
 # Aggiorna i dati di IAS Tracker e li pubblica su GitHub Pages.
 #
-# Ogni lunedì scarica le segnalazioni da GBIF e le schede da ISPRA, prepara i file per
+# Ogni lunedì scarica le segnalazioni da GBIF, le schede da ISPRA e le foto da iNaturalist
+# (solo CC0 e CC BY), prepara i file per
 # l'app e pubblica il sito https://anghelos98.github.io/ias-tracker/ (manifest in
 # data/v1/manifest.json). L'app scarica da lì solo i file cambiati.
 #
@@ -43,6 +44,10 @@ jobs:
       - name: Scarica le schede da ISPRA
         # Se ISPRA non risponde si tengono le schede già presenti nel repository.
         run: python scripts/fetch_ispra_sheets.py || echo "::warning::Schede ISPRA non aggiornate"
+
+      - name: Raccogli le foto da iNaturalist
+        # Se iNaturalist non risponde si tengono le foto già presenti nel repository.
+        run: python scripts/fetch_species_photos.py || echo "::warning::Foto non aggiornate"
 
       - name: Prepara i dati per l'app
         run: python scripts/build_app_data.py

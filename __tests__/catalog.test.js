@@ -1,6 +1,7 @@
 import { formatDateIt, POSSESSION_DEADLINES } from '../src/data/legal';
 import { SPECIES } from '../src/data/species';
 import reference from '../ias_reference.json';
+import photos from '../assets/data/photos.json';
 
 describe('catalogo delle specie', () => {
   test('contiene tutte le specie di rilevanza unionale, una volta sola', () => {
@@ -15,6 +16,16 @@ describe('catalogo delle specie', () => {
       expect(s.listing.regulation).toMatch(/^20\d\d\/\d+$/);
       expect(s.listing.inForce).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(typeof s.sheet).toBe('function');
+    }
+  });
+
+  test('ogni specie ha foto con autore e licenza libera', () => {
+    for (const s of SPECIES) {
+      for (const p of photos.specie[s.slug] ?? []) {
+        expect(p.autore).toBeTruthy();
+        expect(['CC0', 'CC BY']).toContain(p.licenza);
+        expect(p.url).toMatch(/^https:\/\//);
+      }
     }
   });
 

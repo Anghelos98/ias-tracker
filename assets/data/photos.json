@@ -1,0 +1,1481 @@
+{
+ "fonte": "iNaturalist (inaturalist.org), solo foto con licenza CC0 o CC BY",
+ "recuperato_il": "2026-11-06",
+ "nomi_inaturalist": {
+  "andropogon-virginicus": "Anatherum virginicum",
+  "nanozostera-japonica": "Zostera japonica",
+  "prosopis-juliflora": "Neltuma juliflora"
+ },
+ "specie": {
+  "acacia-mearnsii": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/28449774/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/28449774/large.jpg",
+    "autore": "Chris Ecroyd",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/28449774"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/28449724/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/28449724/large.jpg",
+    "autore": "Chris Ecroyd",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/28449724"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/362257884/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/362257884/large.jpeg",
+    "autore": "Duarte Frade",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/362257884"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/613435835/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/613435835/large.jpg",
+    "autore": "Kalvin Chan",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/613435835"
+   }
+  ],
+  "acacia-saligna": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/338743244/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/338743244/large.jpeg",
+    "autore": "no rights reserved, uploaded by insiderelic",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/338743244"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/28595436/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/28595436/large.jpeg",
+    "autore": "Daniel Cahen",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/28595436"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/4584898/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/4584898/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/4584898"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/73272175/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/73272175/large.jpg",
+    "autore": "Dave Richardson",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/73272175"
+   }
+  ],
+  "ailanthus-altissima": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/74889269/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/74889269/large.jpg",
+    "autore": "Emily Summerbell",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/74889269"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/124882976/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/124882976/large.jpg",
+    "autore": "Jessica Precht",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/124882976"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1022673/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/1022673/large.jpg",
+    "autore": "Mattia Menchetti",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/1022673"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/215759282/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/215759282/large.jpeg",
+    "autore": "John Abrams",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/215759282"
+   }
+  ],
+  "alternanthera-philoxeroides": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/286181667/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/286181667/large.jpeg",
+    "autore": "Michael J. Papay",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/286181667"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/783616/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/783616/large.jpg",
+    "autore": "botanygirl",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/783616"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/726840543/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/726840543/large.jpg",
+    "autore": "Elizabete Marchante",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/726840543"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/468309529/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/468309529/large.jpeg",
+    "autore": "Jens-Christian Svenning",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/468309529"
+   }
+  ],
+  "andropogon-virginicus": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/602385811/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/602385811/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/602385811"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/335091198/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/335091198/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/335091198"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/443433045/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/443433045/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/443433045"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/533294526/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/533294526/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/533294526"
+   }
+  ],
+  "asclepias-syriaca": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/394480961/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/394480961/large.jpeg",
+    "autore": "Michael J. Papay",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/394480961"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/757366347/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/757366347/large.jpg",
+    "autore": "Sandy Wolkenberg",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/757366347"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/682645460/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/682645460/large.jpg",
+    "autore": "Jason K.",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/682645460"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/205234729/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/205234729/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/205234729"
+   }
+  ],
+  "baccharis-halimifolia": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/271998639/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/271998639/large.jpg",
+    "autore": "James H. Miller & Ted Bodner, Southern Weed Science Society, Bugwood.org",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/271998639"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/312022705/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/312022705/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/312022705"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273746856/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/273746856/large.jpg",
+    "autore": "Nathan Aaron",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/273746856"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/103655949/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/103655949/large.jpg",
+    "autore": "Sandy Wolkenberg",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/103655949"
+   }
+  ],
+  "broussonetia-papyrifera": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/82629098/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/82629098/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/82629098"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/20171922/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/20171922/large.jpeg",
+    "autore": "Suhel Quader",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/20171922"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/19905293/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/19905293/large.jpeg",
+    "autore": "Lin Scott",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/19905293"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/6880471/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/6880471/large.jpeg",
+    "autore": "Alison Northup",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/6880471"
+   }
+  ],
+  "cabomba-caroliniana": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/743023017/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/743023017/large.jpg",
+    "autore": "Ryan Sorrells",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/743023017"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/578946045/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/578946045/large.jpg",
+    "autore": "Amber M. King",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/578946045"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/183488313/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/183488313/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/183488313"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/300221798/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/300221798/large.jpg",
+    "autore": "David Weisenbeck",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/300221798"
+   }
+  ],
+  "cardiospermum-grandiflorum": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/245285958/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/245285958/large.jpeg",
+    "autore": "Vítor Jorge",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/245285958"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/184963335/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/184963335/large.jpeg",
+    "autore": "Vítor Jorge",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/184963335"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/107172360/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/107172360/large.jpeg",
+    "autore": "Tom Field",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/107172360"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/479721953/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/479721953/large.jpeg",
+    "autore": "zebedeugalinha",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/479721953"
+   }
+  ],
+  "celastrus-orbiculatus": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/76480392/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/76480392/large.jpg",
+    "autore": "James H. Miller, USDA Forest Service, Bugwood.org",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/76480392"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/76480393/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/76480393/large.jpg",
+    "autore": "Leslie J. Mehrhoff, University of Connecticut, Bugwood.org",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/76480393"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/46253725/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/46253725/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/46253725"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/716338121/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/716338121/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/716338121"
+   }
+  ],
+  "cenchrus-setaceus": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/219848209/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/219848209/large.jpg",
+    "autore": "Harry Rose",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/219848209"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/164996037/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/164996037/large.jpg",
+    "autore": "Lauu",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/164996037"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/338915132/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/338915132/large.jpg",
+    "autore": "Cayman Lanzone",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/338915132"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/321117593/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/321117593/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/321117593"
+   }
+  ],
+  "cortaderia-jubata": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/173108892/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/173108892/large.jpg",
+    "autore": "Ewen Cameron",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/173108892"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/173108897/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/173108897/large.jpg",
+    "autore": "Forest and Kim Starr",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/173108897"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/173108898/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/173108898/large.jpg",
+    "autore": "Forest and Kim Starr",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/173108898"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176947457/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/176947457/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/176947457"
+   }
+  ],
+  "crassula-helmsii": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/375091747/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/375091747/large.jpg",
+    "autore": "no rights reserved, uploaded by Steven Cross",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/375091747"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/58387614/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/58387614/large.jpg",
+    "autore": "Chris Ecroyd",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/58387614"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/410617990/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/410617990/large.jpeg",
+    "autore": "Paul Cook",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/410617990"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/299942041/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/299942041/large.jpg",
+    "autore": "Sean Hartnett",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/299942041"
+   }
+  ],
+  "delairea-odorata": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1420362/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/1420362/large.jpg",
+    "autore": "Ken-ichi Ueda",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/1420362"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/165744939/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/165744939/large.jpeg",
+    "autore": "Thomas Mesaglio",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/165744939"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/342930645/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/342930645/large.jpeg",
+    "autore": "Duarte Frade",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/342930645"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/248168585/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/248168585/large.jpeg",
+    "autore": "Natasha Taylor",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/248168585"
+   }
+  ],
+  "ehrharta-calycina": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/118907872/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/118907872/large.jpeg",
+    "autore": "T. Hammer",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/118907872"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/101476887/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/101476887/large.jpg",
+    "autore": "Dave Richardson",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/101476887"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/618233739/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/618233739/large.jpg",
+    "autore": "etw",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/618233739"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/724139772/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/724139772/large.jpg",
+    "autore": "smathichong",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/724139772"
+   }
+  ],
+  "elodea-nuttallii": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/518937623/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/518937623/large.jpg",
+    "autore": "MJDapifer",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/518937623"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/518937692/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/518937692/large.jpg",
+    "autore": "MJDapifer",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/518937692"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/433217159/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/433217159/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/433217159"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/215926293/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/215926293/large.jpeg",
+    "autore": "Martin Scheuch",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/215926293"
+   }
+  ],
+  "gunnera-tinctoria": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/37253505/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/37253505/large.jpeg",
+    "autore": "Joe Potter Butler",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/37253505"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/22091347/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/22091347/large.jpg",
+    "autore": "Jon Sullivan",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/22091347"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/258925503/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/258925503/large.jpeg",
+    "autore": "Leon Perrie",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/258925503"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/32812085/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/32812085/large.jpeg",
+    "autore": "Alice Shanks",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/32812085"
+   }
+  ],
+  "gymnocoronis-spilanthoides": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1564467/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/1564467/large.jpg",
+    "autore": "Nicolas Olejnik",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/1564467"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/123771241/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/123771241/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/123771241"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/63352754/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/63352754/large.jpg",
+    "autore": "RAP",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/63352754"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/296300765/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/296300765/large.jpeg",
+    "autore": "Yung-Lun Lin",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/296300765"
+   }
+  ],
+  "hakea-sericea-s-l": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/370377/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/370377/large.jpg",
+    "autore": "David Lochlin",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/370377"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/81975229/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/81975229/large.jpg",
+    "autore": "Dave Richardson",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/81975229"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/8032126/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/8032126/large.jpg",
+    "autore": "Murray NZ",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/8032126"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/49087669/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/49087669/large.jpg",
+    "autore": "Geoff Shuetrim",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/49087669"
+   }
+  ],
+  "heracleum-mantegazzianum": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/319710749/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/319710749/large.jpg",
+    "autore": "F. Bemmerlein-Lux",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/319710749"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/86523769/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/86523769/large.jpg",
+    "autore": "Valerii Darmostuk",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/86523769"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/417452432/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/417452432/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/417452432"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/298381145/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/298381145/large.jpeg",
+    "autore": "Tom Norton",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/298381145"
+   }
+  ],
+  "heracleum-persicum": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/222940834/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/222940834/large.jpeg",
+    "autore": "Emad Tahaei",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/222940834"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/8984051/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/8984051/large.jpeg",
+    "autore": "Sigitas Juzėnas",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/8984051"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/536372284/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/536372284/large.jpg",
+    "autore": "Mohammad Khatibi Bayqi",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/536372284"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/538405964/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/538405964/large.jpg",
+    "autore": "Geert Barentsen",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/538405964"
+   }
+  ],
+  "heracleum-sosnowskyi": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/7667182/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/7667182/large.jpeg",
+    "autore": "Aurelijus Narbutas",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/7667182"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/114269858/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/114269858/large.jpeg",
+    "autore": "Oleksandr Shynder",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/114269858"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/242621081/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/242621081/large.jpg",
+    "autore": "Dmitriy Bochkov",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/242621081"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/469269721/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/469269721/large.jpg",
+    "autore": "Oleksandr Shynder",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/469269721"
+   }
+  ],
+  "humulus-scandens": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/38632455/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/38632455/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/38632455"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/43896423/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/43896423/large.jpg",
+    "autore": "no rights reserved, uploaded by Dave Behm",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/43896423"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/76409212/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/76409212/large.jpg",
+    "autore": "Anna",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/76409212"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/53160180/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/53160180/large.jpg",
+    "autore": "Ryan Donnelly",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/53160180"
+   }
+  ],
+  "hydrocotyle-ranunculoides": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/23770353/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/23770353/large.jpg",
+    "autore": "Zihao Wang",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/23770353"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/23770362/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/23770362/large.jpg",
+    "autore": "Zihao Wang",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/23770362"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/54674465/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/54674465/large.jpg",
+    "autore": "Celeste Ray",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/54674465"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/54674460/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/54674460/large.jpg",
+    "autore": "Celeste Ray",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/54674460"
+   }
+  ],
+  "impatiens-glandulifera": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1204644/medium.",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/1204644/large.",
+    "autore": "John Barkla",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/1204644"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/1188494/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/1188494/large.jpg",
+    "autore": "Jon Sullivan",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/1188494"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/95900216/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/95900216/large.jpeg",
+    "autore": "Paweł Ryszawa",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/95900216"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/97570649/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/97570649/large.jpeg",
+    "autore": "no rights reserved, uploaded by Ben Keen",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/97570649"
+   }
+  ],
+  "koenigia-polystachya": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/97664785/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/97664785/large.jpg",
+    "autore": "Dee Shea Himes",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/97664785"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/3251457/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/3251457/large.jpg",
+    "autore": "John Barkla",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/3251457"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/242625066/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/242625066/large.jpeg",
+    "autore": "Name",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/242625066"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/700117536/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/700117536/large.jpg",
+    "autore": "Wang.QG",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/700117536"
+   }
+  ],
+  "lagarosiphon-major": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/17199674/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/17199674/large.jpg",
+    "autore": "Jon Mortin",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/17199674"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/111693698/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/111693698/large.jpg",
+    "autore": "M Rutherford",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/111693698"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/15644051/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/15644051/large.jpg",
+    "autore": "Robert Taylor",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/15644051"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/100799836/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/100799836/large.jpg",
+    "autore": "Nathan Odgers",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/100799836"
+   }
+  ],
+  "lespedeza-cuneata": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/367894059/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/367894059/large.jpeg",
+    "autore": "Licheng Shih",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/367894059"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/694330771/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/694330771/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/694330771"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/154838622/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/154838622/large.jpeg",
+    "autore": "saltyhiker",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/154838622"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/167873547/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/167873547/large.jpg",
+    "autore": "Emily Summerbell",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/167873547"
+   }
+  ],
+  "ludwigia-grandiflora": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/96608806/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/96608806/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/96608806"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/324074134/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/324074134/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/324074134"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/684623619/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/684623619/large.jpg",
+    "autore": "Elizabete Marchante",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/684623619"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/725079348/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/725079348/large.jpg",
+    "autore": "Aitor Labandibar",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/725079348"
+   }
+  ],
+  "ludwigia-peploides": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/323324256/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/323324256/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/323324256"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/236846062/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/236846062/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/236846062"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/140172268/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/140172268/large.jpg",
+    "autore": "Tom Pollard",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/140172268"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13268949/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/13268949/large.jpeg",
+    "autore": "Jacqui Geux",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/13268949"
+   }
+  ],
+  "lygodium-japonicum": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/178001211/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/178001211/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/178001211"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/110549255/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/110549255/large.jpg",
+    "autore": "Michael J. Papay",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/110549255"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/54497387/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/54497387/large.jpeg",
+    "autore": "Alan Rockefeller",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/54497387"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/54008531/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/54008531/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/54008531"
+   }
+  ],
+  "lysichiton-americanus": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39284850/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/39284850/large.jpg",
+    "autore": "Don Loarie",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/39284850"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/369415932/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/369415932/large.jpeg",
+    "autore": "EMU",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/369415932"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/329588625/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/329588625/large.jpeg",
+    "autore": "Gavin Slater",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/329588625"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/265650202/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/265650202/large.jpeg",
+    "autore": "Gavin Slater",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/265650202"
+   }
+  ],
+  "microstegium-vimineum": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/92747116/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/92747116/large.jpg",
+    "autore": "Emily Summerbell",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/92747116"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/170368/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/170368/large.jpg",
+    "autore": "botanygirl",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/170368"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/215818763/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/215818763/large.jpg",
+    "autore": "James H. Miller & Ted Bodner, Southern Weed Science Society, Bugwood.org",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/215818763"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/36819443/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/36819443/large.jpg",
+    "autore": "Mason Heberling",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/36819443"
+   }
+  ],
+  "myriophyllum-aquaticum": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/177023609/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/177023609/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/177023609"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/541985899/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/541985899/large.jpg",
+    "autore": "no rights reserved, uploaded by Alex Heyman",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/541985899"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/26606639/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/26606639/large.jpeg",
+    "autore": "Jacqui Geux",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/26606639"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/111567847/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/111567847/large.jpg",
+    "autore": "Celeste Ray",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/111567847"
+   }
+  ],
+  "myriophyllum-heterophyllum": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/30528336/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/30528336/large.jpeg",
+    "autore": "Joseph D Kurtz",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/30528336"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/394456321/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/394456321/large.jpeg",
+    "autore": "Kevin Speray",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/394456321"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/137015990/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/137015990/large.jpg",
+    "autore": "Wendy McCrady",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/137015990"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/290753689/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/290753689/large.jpg",
+    "autore": "Samuel A Schmid, PhD, PWS",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/290753689"
+   }
+  ],
+  "nanozostera-japonica": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/716418058/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/716418058/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/716418058"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/418430528/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/418430528/large.jpeg",
+    "autore": "Fern",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/418430528"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/413853359/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/413853359/large.jpeg",
+    "autore": "曾昱承 Yu-Cheng Zeng",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/413853359"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/502789683/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/502789683/large.jpeg",
+    "autore": "Muhammad HEEMBOO",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/502789683"
+   }
+  ],
+  "parthenium-hysterophorus": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/57504516/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/57504516/large.jpg",
+    "autore": "Sophia K",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/57504516"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/99894238/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/99894238/large.jpeg",
+    "autore": "Guillermo Debandi",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/99894238"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/354039173/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/354039173/large.jpg",
+    "autore": "Nate Sabo",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/354039173"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/243610862/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/243610862/large.jpeg",
+    "autore": "Annika Lindqvist",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/243610862"
+   }
+  ],
+  "persicaria-perfoliata": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/321123240/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/321123240/large.jpeg",
+    "autore": "Fyodor Pudovikov",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/321123240"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/40082093/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/40082093/large.jpg",
+    "autore": "Andrew Garn",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/40082093"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/383520821/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/383520821/large.jpeg",
+    "autore": "cigazze",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/383520821"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/575711702/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/575711702/large.jpg",
+    "autore": "Alex Abair",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/575711702"
+   }
+  ],
+  "pistia-stratiotes": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/138256748/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/138256748/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/138256748"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/81666273/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/81666273/large.jpeg",
+    "autore": "Jay Horn",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/81666273"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/89123834/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/89123834/large.jpg",
+    "autore": "Sam Kieschnick",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/89123834"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/465321594/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/465321594/large.jpeg",
+    "autore": "Patrick Hacker",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/465321594"
+   }
+  ],
+  "pontederia-crassipes": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/28107964/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/28107964/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/28107964"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/28107997/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/28107997/large.jpeg",
+    "autore": "no rights reserved, uploaded by 葉子",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/28107997"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/125677118/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/125677118/large.jpeg",
+    "autore": "no rights reserved, uploaded by Jade Fortnash",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/125677118"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/151052120/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/151052120/large.jpg",
+    "autore": "Jonathan Eisen",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/151052120"
+   }
+  ],
+  "prosopis-juliflora": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/115623761/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/115623761/large.jpeg",
+    "autore": "Rohit Naniwadekar",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/115623761"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/257413672/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/257413672/large.jpeg",
+    "autore": "Kevin Faccenda",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/257413672"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/257413715/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/257413715/large.jpeg",
+    "autore": "Kevin Faccenda",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/257413715"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/47995161/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/47995161/large.jpg",
+    "autore": "P Jeganathan",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/47995161"
+   }
+  ],
+  "pueraria-montana-var-lobata": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/324390084/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/324390084/large.jpeg",
+    "autore": "WATANABE Hitoshi 渡辺仁",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/324390084"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/414239442/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/414239442/large.jpeg",
+    "autore": "Elizabete Marchante",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/414239442"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/435752100/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/435752100/large.jpeg",
+    "autore": "Massimiliano Bedin",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/435752100"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/572075402/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/572075402/large.jpg",
+    "autore": "村山史世　（Fumiyo MURAYAMA)",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/572075402"
+   }
+  ],
+  "reynoutria-japonica": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/159952609/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/159952609/large.jpeg",
+    "autore": "Tyler Ekholm",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/159952609"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2206539/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/2206539/large.jpg",
+    "autore": "naturalist charlie",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/2206539"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/281726055/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/281726055/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/281726055"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/91694351/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/91694351/large.jpeg",
+    "autore": "Daniel Cahen",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/91694351"
+   }
+  ],
+  "reynoutria-sachalinensis": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/41664590/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/41664590/large.jpg",
+    "autore": "no rights reserved, uploaded by Daniel Atha",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/41664590"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/41664644/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/41664644/large.jpg",
+    "autore": "no rights reserved, uploaded by Daniel Atha",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/41664644"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/170078727/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/170078727/large.jpg",
+    "autore": "Oleksandr Shynder",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/170078727"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/316490913/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/316490913/large.jpg",
+    "autore": "Zachary Dankowicz",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/316490913"
+   }
+  ],
+  "reynoutria-x-bohemica": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/274484098/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/274484098/large.jpeg",
+    "autore": "Patrick Hacker",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/274484098"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/379071461/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/379071461/large.jpeg",
+    "autore": "Heiko Weber",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/379071461"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/89025212/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/89025212/large.jpeg",
+    "autore": "evgeniq_benihanov",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/89025212"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/98589447/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/98589447/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/98589447"
+   }
+  ],
+  "rugulopteryx-okamurae": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/267142355/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/267142355/large.jpg",
+    "autore": "Donald Davesne",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/267142355"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/480820617/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/480820617/large.jpeg",
+    "autore": "Clément Maouche",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/480820617"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/473593458/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/473593458/large.jpeg",
+    "autore": "Elizabete Marchante",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/473593458"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/651969868/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/651969868/large.jpg",
+    "autore": "Elizabete Marchante",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/651969868"
+   }
+  ],
+  "salvinia-molesta": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39028206/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/39028206/large.jpeg",
+    "autore": "Will McFarland",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/39028206"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/15595408/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/15595408/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/15595408"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/481248881/medium.jpg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/481248881/large.jpg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/481248881"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/373541794/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/373541794/large.jpeg",
+    "autore": "Patrícia Mees",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/373541794"
+   }
+  ],
+  "triadica-sebifera": [
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/401041896/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/401041896/large.jpeg",
+    "autore": "WATANABE Hitoshi 渡辺仁",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/401041896"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/5370728/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/5370728/large.jpeg",
+    "autore": "Sam Kieschnick",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/5370728"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/435580524/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/435580524/large.jpeg",
+    "autore": "no rights reserved",
+    "licenza": "CC0",
+    "pagina": "https://www.inaturalist.org/photos/435580524"
+   },
+   {
+    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/401041738/medium.jpeg",
+    "url_grande": "https://inaturalist-open-data.s3.amazonaws.com/photos/401041738/large.jpeg",
+    "autore": "WATANABE Hitoshi 渡辺仁",
+    "licenza": "CC BY",
+    "pagina": "https://www.inaturalist.org/photos/401041738"
+   }
+  ]
+ }
+}
