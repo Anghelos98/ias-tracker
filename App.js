@@ -1,12 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, Alert, Appearance, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  ActivityIndicator,
+  Alert,
+  Appearance,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import MapView, { Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ClusterMarker, DOT_HIT_RADIUS, DotMarker, clusterSize } from './src/components/MapMarkers';
+import { ClusterMarker, DotMarker, clusterSize } from './src/components/MapMarkers';
 import PointCard from './src/components/PointCard';
 import FiltersPanel, { describeFilters } from './src/components/FiltersPanel';
 import NearbyPanel from './src/components/NearbyPanel';
@@ -67,7 +77,14 @@ import {
   saveTheme,
 } from './src/data/preferences';
 import { useColors, useThemedStyles } from './src/theme';
-import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
+import {
+  ITALY_REGION,
+  bboxToRegion,
+  findFeatureAtPoint,
+  latitudeToScreenY,
+  longitudeToScreenX,
+  shiftCenterLatitude,
+} from './src/utils/geo';
 
 // Voce "Tutte le specie" dell'elenco: mostra insieme le segnalazioni di ogni specie.
 const ALL_SPECIES_SLUG = '__tutte__';
@@ -76,8 +93,52 @@ const ALL_SPECIES_SLUG = '__tutte__';
 // metà dell'anello di selezione più un piccolo margine.
 const CARD_CLEARANCE = 24;
 
-// Tolleranza aggiuntiva (px) attorno al cerchio di un cluster per considerarlo toccato.
-const CLUSTER_HIT_SLOP = 6;
+// Aree di tocco dei marker (punti dello schermo): raggio disegnato e tolleranza oltre il bordo.
+// Si sceglie l'elemento con il bordo più vicino al dito (vedi findFeatureAtPoint): i pallini
+// distano almeno 40 px tra loro, quindi la tolleranza può essere ampia senza ambiguità.
+const DOT_VISUAL_RADIUS = 7; // pallino da 14 px
+const DOT_TOUCH_SLOP = 26; // ≈ 33 px dal centro: più di un polpastrello
+const CLUSTER_TOUCH_SLOP = 16;
+
+// Tocco riconosciuto dagli eventi di tocco (iOS, vedi onMapTouchEnd): spostamento massimo del
+// dito (px) e durata massima (ms) perché sia un tocco e non un trascinamento o una pressione lunga.
+const TAP_MAX_MOVE = 16;
+const TAP_MAX_MS = 600;
+// Lo stesso tocco può arrivare da due canali (eventi di tocco e onPress della mappa, in ritardo):
+// un secondo arrivo entro questo tempo e questa distanza viene ignorato.
+const TAP_DEDUP_MS = 700;
+const TAP_DEDUP_PX = 40;
+// Su iOS la selezione parte dagli eventi di tocco (immediati); l'onPress della mappa resta come
+// riserva se un tocco non arrivasse da lì.
+const TAP_FROM_TOUCHES = Platform.OS === 'ios';
+
+/** Area di tocco di un elemento della mappa. */
+function hitArea(feature) {
+  return feature.properties.cluster
+    ? { visual: clusterSize(feature.properties.records) / 2, slop: CLUSTER_TOUCH_SLOP }
+    : { visual: DOT_VISUAL_RADIUS, slop: DOT_TOUCH_SLOP };
+}
+
+/** Diagnostica: marker più vicino al punto toccato, con la distanza e la direzione (px). */
+function describeNearest(features, point, region, width, height) {
+  let nearest = null;
+  for (const f of features) {
+    const [lon, lat] = f.geometry.coordinates;
+    const dx = longitudeToScreenX(lon, region, width) - point.x;
+    const dy = latitudeToScreenY(lat, region, height) - point.y;
+    const d = Math.hypot(dx, dy);
+    if (!nearest || d < nearest.d) nearest = { f, d, dx, dy };
+  }
+  if (!nearest) return 'nessun marker sulla mappa';
+  const kind = nearest.f.properties.cluster ? `gruppo di ${nearest.f.properties.records}` : 'pallino';
+  return `il più vicino è un ${kind} a ${Math.round(nearest.d)} px (dx ${Math.round(nearest.dx)}, dy ${Math.round(nearest.dy)}), ${features.length} visibili`;
+}
+
+/** Diagnostica dei tocchi, solo in sviluppo (Expo Go): compare nei log di Metro. */
+function logTap(source, point, result) {
+  if (!__DEV__) return;
+  console.log(`[tocco] ${source} ${Math.round(point.x)},${Math.round(point.y)} -> ${result}`);
+}
 
 /** Tema scelto nelle Impostazioni applicato a tutta l'app (anche mappa e barre di sistema). */
 function applyTheme(theme) {
@@ -144,11 +205,17 @@ function IASTracker() {
   const topBarBottomRef = useRef(0);
   const [topBarBottom, setTopBarBottom] = useState(0);
   const selectionCounter = useRef(0);
+  const selectedIdRef = useRef(null); // pallino selezionato, letto dai gestori dei tocchi
   const centeredKeyRef = useRef(null);
 
   const handleRegionChange = useCallback((next) => {
     regionRef.current = next;
     setRegion(next);
+  }, []);
+  // Durante il movimento si aggiorna solo il ref (niente render): i tocchi fatti mentre la
+  // mappa rallenta usano la posizione reale, non quella dell'ultimo movimento concluso.
+  const trackRegion = useCallback((next) => {
+    regionRef.current = next;
   }, []);
 
   const { clusters, visibleCount, expansionZoom, leaves } = useClusters(datasets, region, filters);
@@ -264,6 +331,8 @@ function IASTracker() {
 
   // Callback stabili: i marker memoizzati non si ridisegnano a ogni pan/zoom.
   const selectPoint = useCallback((feature) => {
+    // stesso pallino già selezionato (es. secondo tocco di un doppio tocco per lo zoom)
+    if (selectedIdRef.current === feature.properties.id) return;
     const [longitude, latitude] = feature.geometry.coordinates;
     selectionCounter.current += 1;
     setSelection({
@@ -306,33 +375,103 @@ function IASTracker() {
   }, [selection]);
 
   /**
-   * Tocco sulla mappa. Su iOS i marker non gestiscono il tocco (vedi MapMarkers.js): qui
-   * si cerca il marker visibile più vicino al punto toccato, entro il suo raggio. Su
-   * Android arrivano qui solo i tocchi fuori dai marker. Se nessun marker è vicino, la
-   * selezione viene chiusa.
+   * Tocco sulla mappa in un punto dello schermo (dentro la mappa): seleziona il pallino o apre
+   * il gruppo più vicino, oppure chiude la selezione. `source` dice da dove arriva il tocco.
+   * Lo stesso tocco ricevuto due volte (dai due canali) viene gestito una sola volta.
    */
-  const handleMapPress = useCallback(
-    (e) => {
-      const { coordinate } = e.nativeEvent;
-      const region = regionRef.current;
-      const width = mapWidthRef.current;
-      const height = mapHeightRef.current;
-      if (!coordinate || !width || !height) {
-        clearSelection();
+  const lastTapRef = useRef({ t: 0, x: 0, y: 0 });
+  const handleTapAt = useCallback(
+    (point, source) => {
+      const now = Date.now();
+      const last = lastTapRef.current;
+      if (now - last.t < TAP_DEDUP_MS && Math.hypot(point.x - last.x, point.y - last.y) < TAP_DEDUP_PX) {
+        logTap(source, point, 'già gestito');
         return;
       }
-      const best = findTappedFeature(clustersRef.current, coordinate, region, { width, height }, (f) =>
-        f.properties.cluster ? clusterSize(f.properties.records) / 2 + CLUSTER_HIT_SLOP : DOT_HIT_RADIUS,
-      );
-
-      if (!best) clearSelection();
-      else if (best.properties.cluster) pressCluster(best);
-      else selectPoint(best);
+      lastTapRef.current = { t: now, x: point.x, y: point.y };
+      const width = mapWidthRef.current;
+      const height = mapHeightRef.current;
+      const best =
+        width && height ? findFeatureAtPoint(clustersRef.current, point, regionRef.current, { width, height }, hitArea) : null;
+      if (!best) {
+        if (__DEV__) logTap(source, point, `nessun marker; ${describeNearest(clustersRef.current, point, regionRef.current, width, height)}`);
+        clearSelection();
+      } else if (best.properties.cluster) {
+        if (__DEV__) logTap(source, point, `gruppo di ${best.properties.records}; ${describeNearest([best], point, regionRef.current, width, height)}`);
+        pressCluster(best);
+      } else {
+        if (__DEV__) logTap(source, point, `pallino ${best.properties.id}; ${describeNearest([best], point, regionRef.current, width, height)}`);
+        selectPoint(best);
+      }
     },
     [clearSelection, pressCluster, selectPoint],
   );
+
+  /**
+   * Tocco sulla mappa (evento della mappa). Su Android arrivano qui solo i tocchi fuori dai
+   * marker (i marker gestiscono il proprio tocco). Su iOS arriva circa 0,3 s dopo il tocco
+   * (react-native-maps aspetta di escludere un doppio tocco): fa da riserva agli eventi di tocco.
+   */
+  const handleMapPress = useCallback(
+    (e) => {
+      const { coordinate, position } = e.nativeEvent;
+      const width = mapWidthRef.current;
+      const height = mapHeightRef.current;
+      if (!width || !height) return;
+      let point = position && Number.isFinite(position.x) ? { x: position.x, y: position.y } : null;
+      if (!point && coordinate) {
+        const region = regionRef.current;
+        point = {
+          x: longitudeToScreenX(coordinate.longitude, region, width),
+          y: latitudeToScreenY(coordinate.latitude, region, height),
+        };
+      }
+      if (point) handleTapAt(point, 'mappa');
+    },
+    [handleTapAt],
+  );
+
+  /**
+   * iOS: tocco riconosciuto dagli eventi di tocco di React Native, appena il dito si alza,
+   * senza l'attesa del doppio tocco dell'onPress della mappa. I marker non gestiscono il
+   * tocco (vedi MapMarkers.js): handleTapAt cerca il marker più vicino al punto toccato.
+   */
+  const touchRef = useRef(null);
+  const mapContainerRef = useRef(null);
+  const mapOffsetRef = useRef({ x: 0, y: 0 });
+  const onMapTouchStart = useCallback((e) => {
+    const { touches, pageX, pageY, timestamp } = e.nativeEvent;
+    touchRef.current = touches && touches.length > 1 ? null : { x: pageX, y: pageY, t: timestamp ?? Date.now() };
+  }, []);
+  const onMapTouchMove = useCallback((e) => {
+    const start = touchRef.current;
+    if (!start) return;
+    const { touches, pageX, pageY } = e.nativeEvent;
+    if ((touches && touches.length > 1) || Math.hypot(pageX - start.x, pageY - start.y) > TAP_MAX_MOVE) {
+      touchRef.current = null; // trascinamento o zoom con due dita
+    }
+  }, []);
+  const onMapTouchEnd = useCallback(
+    (e) => {
+      const start = touchRef.current;
+      touchRef.current = null;
+      if (!start) return;
+      const { pageX, pageY, timestamp } = e.nativeEvent;
+      const elapsed = (timestamp ?? Date.now()) - start.t;
+      if (elapsed > TAP_MAX_MS || Math.hypot(pageX - start.x, pageY - start.y) > TAP_MAX_MOVE) return;
+      handleTapAt({ x: pageX - mapOffsetRef.current.x, y: pageY - mapOffsetRef.current.y }, 'tocco');
+    },
+    [handleTapAt],
+  );
+  const onMapTouchCancel = useCallback(() => {
+    touchRef.current = null;
+  }, []);
+
   // id del punto selezionato (per l'animazione del pallino); null se è un elenco da cluster
   const selectedId = selection?.pointId ?? null;
+  useEffect(() => {
+    selectedIdRef.current = selectedId;
+  }, [selectedId]);
 
   /**
    * Chiamata quando la scheda dati compare (o cambia dimensione). Se il punto selezionato
@@ -726,10 +865,28 @@ function IASTracker() {
       }}
     >
       <StatusBar style="auto" />
+      {/* Contenitore della mappa: su iOS riceve i tocchi per la selezione dei marker */}
+      <View
+        ref={mapContainerRef}
+        style={StyleSheet.absoluteFill}
+        onLayout={() => {
+          // posizione della mappa nella vista principale: pageX/pageY dei tocchi sono relativi
+          // alla stessa vista (measureInWindow si riferisce alla finestra, che può differire)
+          mapContainerRef.current?.measure?.((x, y, w, h, pageX, pageY) => {
+            mapOffsetRef.current = { x: pageX || 0, y: pageY || 0 };
+            logTap('mappa', { x: pageX || 0, y: pageY || 0 }, `posizione della mappa, ${Math.round(w)}×${Math.round(h)}`);
+          });
+        }}
+        onTouchStart={TAP_FROM_TOUCHES ? onMapTouchStart : undefined}
+        onTouchMove={TAP_FROM_TOUCHES ? onMapTouchMove : undefined}
+        onTouchEnd={TAP_FROM_TOUCHES ? onMapTouchEnd : undefined}
+        onTouchCancel={TAP_FROM_TOUCHES ? onMapTouchCancel : undefined}
+      >
       <MapView
         ref={mapRef}
         style={[StyleSheet.absoluteFill, { backgroundColor: colors.mapBackground }]}
         initialRegion={ITALY_REGION}
+        onRegionChange={trackRegion}
         onRegionChangeComplete={handleRegionChange}
         mapType={mapType}
         userInterfaceStyle={colors.scheme}
@@ -742,6 +899,9 @@ function IASTracker() {
         showsMyLocationButton={false}
         toolbarEnabled={false}
         onPress={handleMapPress}
+        // nord sempre in alto e niente inclinazione: il calcolo del marker toccato è esatto
+        rotateEnabled={false}
+        pitchEnabled={false}
       >
         {clusters.map((f) => {
           if (f.properties.cluster) {
@@ -785,6 +945,7 @@ function IASTracker() {
           />
         )}
       </MapView>
+      </View>
 
       {/* Barra superiore: specie selezionata e apertura dell'elenco */}
       <View

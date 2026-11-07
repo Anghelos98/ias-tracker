@@ -82,30 +82,54 @@ export function longitudeToScreenX(longitude, region, mapWidth) {
 }
 
 /**
- * Elemento della mappa (cluster o punto) toccato: il più vicino al punto toccato tra quelli
- * entro il proprio raggio di tocco. Restituisce null se nessuno è abbastanza vicino.
+ * Elemento della mappa (cluster o punto) toccato: quello il cui BORDO è più vicino al punto
+ * toccato, purché entro la tolleranza. Restituisce null se nessuno è abbastanza vicino.
+ *
+ * Confrontare la distanza dal bordo (e non dal centro) fa sì che un tocco dentro un cerchio
+ * grande scelga sempre il cerchio, e che un tocco tra due elementi scelga quello più vicino.
  *
  * @param {object[]} features   cluster e punti visibili (GeoJSON)
- * @param {{latitude: number, longitude: number}} tap   coordinate del tocco
- * @param {object} region       regione visibile della mappa
+ * @param {{x: number, y: number}} point   punto toccato, in punti dello schermo dentro la mappa
+ * @param {object} region       regione visibile della mappa (nord in alto, senza inclinazione)
  * @param {{width: number, height: number}} size   dimensioni della mappa in punti
- * @param {(feature: object) => number} hitRadius  raggio di tocco in punti per ogni elemento
+ * @param {(feature: object) => number | {visual: number, slop: number}} hitArea
+ *   area di tocco: raggio disegnato (`visual`) e tolleranza oltre il bordo (`slop`), in punti;
+ *   un numero equivale a { visual: 0, slop: numero }
+ * @returns {object|null}
  */
-export function findTappedFeature(features, tap, region, { width, height }, hitRadius) {
-  const tapX = longitudeToScreenX(tap.longitude, region, width);
-  const tapY = latitudeToScreenY(tap.latitude, region, height);
+export function findFeatureAtPoint(features, point, region, { width, height }, hitArea) {
   let best = null;
+  let bestScore = Infinity;
   let bestDistance = Infinity;
   for (const f of features) {
     const [lon, lat] = f.geometry.coordinates;
     const distance = Math.hypot(
-      longitudeToScreenX(lon, region, width) - tapX,
-      latitudeToScreenY(lat, region, height) - tapY,
+      longitudeToScreenX(lon, region, width) - point.x,
+      latitudeToScreenY(lat, region, height) - point.y,
     );
-    if (distance <= hitRadius(f) && distance < bestDistance) {
+    const area = hitArea(f);
+    const { visual, slop } = typeof area === 'number' ? { visual: 0, slop: area } : area;
+    const score = Math.max(0, distance - visual); // distanza dal bordo (0 = dentro)
+    if (score > slop) continue;
+    if (score < bestScore || (score === bestScore && distance < bestDistance)) {
       best = f;
+      bestScore = score;
       bestDistance = distance;
     }
   }
   return best;
+}
+
+/**
+ * Come findFeatureAtPoint, ma a partire dalle coordinate geografiche del tocco (evento
+ * onPress della mappa).
+ *
+ * @param {{latitude: number, longitude: number}} tap   coordinate del tocco
+ */
+export function findTappedFeature(features, tap, region, size, hitRadius) {
+  const point = {
+    x: longitudeToScreenX(tap.longitude, region, size.width),
+    y: latitudeToScreenY(tap.latitude, region, size.height),
+  };
+  return findFeatureAtPoint(features, point, region, size, hitRadius);
 }

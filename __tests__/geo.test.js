@@ -1,5 +1,6 @@
 import {
   bboxToRegion,
+  findFeatureAtPoint,
   findTappedFeature,
   latitudeToScreenY,
   longitudeToScreenX,
@@ -66,5 +67,39 @@ describe('findTappedFeature', () => {
     const cluster = point(12.6, 41.9, { cluster: true });
     const hit = findTappedFeature([cluster], tap, REGION, SIZE, (f) => (f.properties.cluster ? 50 : 20));
     expect(hit).toBe(cluster);
+  });
+});
+
+describe('findFeatureAtPoint', () => {
+  test('punto dello schermo: il centro della mappa corrisponde al centro della regione', () => {
+    const center = point(12.5, 41.9);
+    const right = point(12.5 + 30 / 400, 41.9); // 30 px a destra del centro
+    const radius = () => 24;
+    expect(findFeatureAtPoint([center, right], { x: 200, y: 400 }, REGION, SIZE, radius)).toBe(center);
+    expect(findFeatureAtPoint([center, right], { x: 228, y: 400 }, REGION, SIZE, radius)).toBe(right);
+    expect(findFeatureAtPoint([center], { x: 260, y: 400 }, REGION, SIZE, radius)).toBeNull();
+  });
+});
+
+
+describe('findFeatureAtPoint: bordo più vicino', () => {
+  // 1 px = 1/400 di grado in longitudine con REGION e SIZE
+  const px = (n) => n / 400;
+  const area = (f) => (f.properties.cluster ? { visual: 27, slop: 16 } : { visual: 7, slop: 26 });
+
+  test('un tocco dentro un gruppo grande sceglie il gruppo anche se un pallino è vicino', () => {
+    const cluster = point(12.5, 41.9, { cluster: true });
+    const dot = point(12.5 + px(45), 41.9);
+    // 20 px dal centro del gruppo (dentro il cerchio), 25 px dal pallino
+    expect(findFeatureAtPoint([dot, cluster], { x: 220, y: 400 }, REGION, SIZE, area)).toBe(cluster);
+  });
+
+  test('tra due pallini vince il più vicino; lontano da tutto nessuno', () => {
+    const a = point(12.5, 41.9);
+    const b = point(12.5 + px(40), 41.9);
+    expect(findFeatureAtPoint([a, b], { x: 215, y: 400 }, REGION, SIZE, area)).toBe(a);
+    expect(findFeatureAtPoint([a, b], { x: 228, y: 400 }, REGION, SIZE, area)).toBe(b);
+    expect(findFeatureAtPoint([a], { x: 200, y: 432 }, REGION, SIZE, area)).toBe(a); // 32 px: ancora preso
+    expect(findFeatureAtPoint([a], { x: 200, y: 440 }, REGION, SIZE, area)).toBeNull();
   });
 });

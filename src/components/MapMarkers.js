@@ -13,9 +13,10 @@ const INITIAL_TRACKING_MS = 500;
  * Chi riceve il tocco sui marker:
  * - iOS (Apple Maps): il riconoscimento del tocco di un marker personalizzato dipende
  *   dalle dimensioni della sua vista React, che con la nuova architettura possono essere
- *   sbagliate, e i tocchi vanno persi. Per questo i marker NON gestiscono il tocco: lo
- *   riceve la MapView (che su iOS registra ogni tocco, anche sopra i marker) e App.js
- *   trova il marker più vicino al punto toccato (vedi hitTest in App.js).
+ *   sbagliate, e i tocchi vanno persi. Per questo i marker NON gestiscono il tocco:
+ *   App.js lo riconosce dagli eventi di tocco di React Native sul contenitore della mappa,
+ *   appena il dito si alza, e trova il marker con il bordo più vicino (handleTapAt).
+ *   L'onPress della mappa, che arriva ~0,3 s dopo (attesa del doppio tocco), fa da riserva.
  * - Android (Google Maps): il tocco su un marker non arriva alla MapView, quindi il marker
  *   lo gestisce direttamente (qui è affidabile: l'area è la bitmap del marker).
  */

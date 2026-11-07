@@ -33,120 +33,123 @@ export default function SpeciesPanel({
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable
-        style={styles.backdrop}
-        onPress={onClose}
-        accessibilityRole="button"
-        accessibilityLabel="Chiudi elenco"
-      />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + 8 }]}>
-        <View style={styles.handle} />
-        <View style={styles.titleRow}>
-          <Text style={styles.title} accessibilityRole="header">
-            Specie di rilevanza unionale ({species.length})
-          </Text>
-          <Pressable onPress={onSettings} hitSlop={10} accessibilityRole="button">
-            <Text style={styles.about}>Impostazioni</Text>
-          </Pressable>
-        </View>
-        <Text style={styles.updated}>
-          Dati GBIF aggiornati al{' '}
-          {new Date(dataUpdatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </Text>
-        <View style={styles.tools}>
-          <Pressable style={styles.tool} onPress={onRegions} accessibilityRole="button">
-            <Text style={styles.toolText}>Rapporto per regione</Text>
-          </Pressable>
-          <Pressable style={styles.tool} onPress={onNotebook} accessibilityRole="button">
-            <Text style={styles.toolText}>Taccuino di campo</Text>
-          </Pressable>
-          {onNews && (
-            <Pressable
-              style={styles.tool}
-              onPress={onNews}
-              accessibilityRole="button"
-              accessibilityLabel={newsBadge ? `Novità: ${newsBadge}` : 'Novità e specie seguite'}
-            >
-              <Text style={styles.toolText}>
-                Novità{newsBadge ? <Text style={styles.toolBadge}> ●</Text> : null}
-              </Text>
+      {/* sfondo scuro a tutto schermo, anche dietro gli angoli arrotondati del pannello */}
+      <View style={styles.overlay}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Chiudi elenco"
+        />
+        <View style={[styles.sheet, { paddingBottom: insets.bottom + 8 }]}>
+          <View style={styles.handle} />
+          <View style={styles.titleRow}>
+            <Text style={styles.title} accessibilityRole="header">
+              Specie di rilevanza unionale ({species.length})
+            </Text>
+            <Pressable onPress={onSettings} hitSlop={10} accessibilityRole="button">
+              <Text style={styles.about}>Impostazioni</Text>
             </Pressable>
-          )}
-        </View>
-        <TextInput
-          style={styles.search}
-          placeholder="Cerca per nome comune o scientifico"
-          placeholderTextColor={colors.placeholder}
-          accessibilityLabel="Cerca specie"
-          value={query}
-          onChangeText={setQuery}
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-        />
-        <FlatList
-          data={filtered}
-          keyExtractor={(s) => s.slug}
-          keyboardShouldPersistTaps="handled"
-          renderItem={({ item }) => {
-            const selected = item.slug === selectedSlug;
-            const empty = item.total === 0;
-            return (
+          </View>
+          <Text style={styles.updated}>
+            Dati GBIF aggiornati al{' '}
+            {new Date(dataUpdatedAt).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </Text>
+          <View style={styles.tools}>
+            <Pressable style={styles.tool} onPress={onRegions} accessibilityRole="button">
+              <Text style={styles.toolText}>Rapporto per regione</Text>
+            </Pressable>
+            <Pressable style={styles.tool} onPress={onNotebook} accessibilityRole="button">
+              <Text style={styles.toolText}>Taccuino di campo</Text>
+            </Pressable>
+            {onNews && (
               <Pressable
-                onPress={() => onSelect(item)}
-                style={({ pressed }) => [styles.row, selected && styles.rowSelected, pressed && styles.rowPressed]}
+                style={styles.tool}
+                onPress={onNews}
                 accessibilityRole="button"
-                accessibilityState={{ selected }}
-                accessibilityLabel={`${item.commonName}, ${item.scientificName}, ${
-                  empty ? 'nessuna segnalazione' : `${item.total.toLocaleString('it-IT')} segnalazioni`
-                }`}
-                accessibilityHint="Mostra le segnalazioni sulla mappa"
+                accessibilityLabel={newsBadge ? `Novità: ${newsBadge}` : 'Novità e specie seguite'}
               >
-                <View style={styles.rowText}>
-                  <Text style={[styles.common, empty && styles.muted]}>{item.commonName}</Text>
-                  <Text style={[styles.scientific, empty && styles.muted]}>{item.scientificName}</Text>
-                </View>
-                <Text style={[styles.count, empty && styles.muted]}>
-                  {empty ? 'nessuna\nsegnalazione' : item.total.toLocaleString('it-IT')}
+                <Text style={styles.toolText}>
+                  Novità{newsBadge ? <Text style={styles.toolBadge}> ●</Text> : null}
                 </Text>
+              </Pressable>
+            )}
+          </View>
+          <TextInput
+            style={styles.search}
+            placeholder="Cerca per nome comune o scientifico"
+            placeholderTextColor={colors.placeholder}
+            accessibilityLabel="Cerca specie"
+            value={query}
+            onChangeText={setQuery}
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+          />
+          <FlatList
+            data={filtered}
+            keyExtractor={(s) => s.slug}
+            keyboardShouldPersistTaps="handled"
+            renderItem={({ item }) => {
+              const selected = item.slug === selectedSlug;
+              const empty = item.total === 0;
+              return (
                 <Pressable
-                  onPress={() => onInfo(item)}
-                  hitSlop={10}
-                  style={styles.infoButton}
+                  onPress={() => onSelect(item)}
+                  style={({ pressed }) => [styles.row, selected && styles.rowSelected, pressed && styles.rowPressed]}
                   accessibilityRole="button"
-                  accessibilityLabel={`Scheda di ${item.commonName}`}
+                  accessibilityState={{ selected }}
+                  accessibilityLabel={`${item.commonName}, ${item.scientificName}, ${
+                    empty ? 'nessuna segnalazione' : `${item.total.toLocaleString('it-IT')} segnalazioni`
+                  }`}
+                  accessibilityHint="Mostra le segnalazioni sulla mappa"
                 >
-                  <Text style={styles.infoText} allowFontScaling={false}>
-                    ⓘ
+                  <View style={styles.rowText}>
+                    <Text style={[styles.common, empty && styles.muted]}>{item.commonName}</Text>
+                    <Text style={[styles.scientific, empty && styles.muted]}>{item.scientificName}</Text>
+                  </View>
+                  <Text style={[styles.count, empty && styles.muted]}>
+                    {empty ? 'nessuna\nsegnalazione' : item.total.toLocaleString('it-IT')}
                   </Text>
+                  <Pressable
+                    onPress={() => onInfo(item)}
+                    hitSlop={10}
+                    style={styles.infoButton}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Scheda di ${item.commonName}`}
+                  >
+                    <Text style={styles.infoText} allowFontScaling={false}>
+                      ⓘ
+                    </Text>
+                  </Pressable>
                 </Pressable>
-              </Pressable>
-            );
-          }}
-          ListHeaderComponent={
-            query.trim() ? null : (
-              <Pressable
-                onPress={() => onSelect(allItem)}
-                style={({ pressed }) => [
-                  styles.row,
-                  styles.allRow,
-                  allItem.slug === selectedSlug && styles.rowSelected,
-                  pressed && styles.rowPressed,
-                ]}
-                accessibilityRole="button"
-                accessibilityState={{ selected: allItem.slug === selectedSlug }}
-                accessibilityLabel={`${allItem.commonName}, ${allItem.scientificName}, ${allItem.total.toLocaleString('it-IT')} segnalazioni`}
-              >
-                <View style={styles.rowText}>
-                  <Text style={styles.common}>{allItem.commonName}</Text>
-                  <Text style={styles.allSubtitle}>{allItem.scientificName}</Text>
-                </View>
-                <Text style={styles.count}>{allItem.total.toLocaleString('it-IT')}</Text>
-              </Pressable>
-            )
-          }
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          ListEmptyComponent={<Text style={styles.empty}>Nessuna specie trovata</Text>}
-        />
+              );
+            }}
+            ListHeaderComponent={
+              query.trim() ? null : (
+                <Pressable
+                  onPress={() => onSelect(allItem)}
+                  style={({ pressed }) => [
+                    styles.row,
+                    styles.allRow,
+                    allItem.slug === selectedSlug && styles.rowSelected,
+                    pressed && styles.rowPressed,
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: allItem.slug === selectedSlug }}
+                  accessibilityLabel={`${allItem.commonName}, ${allItem.scientificName}, ${allItem.total.toLocaleString('it-IT')} segnalazioni`}
+                >
+                  <View style={styles.rowText}>
+                    <Text style={styles.common}>{allItem.commonName}</Text>
+                    <Text style={styles.allSubtitle}>{allItem.scientificName}</Text>
+                  </View>
+                  <Text style={styles.count}>{allItem.total.toLocaleString('it-IT')}</Text>
+                </Pressable>
+              )
+            }
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            ListEmptyComponent={<Text style={styles.empty}>Nessuna specie trovata</Text>}
+          />
+        </View>
       </View>
     </Modal>
   );
@@ -154,7 +157,8 @@ export default function SpeciesPanel({
 
 const createStyles = (c) =>
   StyleSheet.create({
-    backdrop: { flex: 1, backgroundColor: c.backdrop },
+    overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: c.backdrop },
+    backdrop: { ...StyleSheet.absoluteFillObject },
     sheet: {
       maxHeight: '75%',
       backgroundColor: c.surface,
