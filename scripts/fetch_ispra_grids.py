@@ -77,6 +77,14 @@ def ring(coords) -> list[list[float]]:
     return [[round(x, DECIMALS), round(y, DECIMALS)] for x, y in coords]
 
 
+def previous_cells(path: Path) -> int:
+    """Celle della griglia già salvata (0 se assente o illeggibile)."""
+    try:
+        return int(json.loads(path.read_text(encoding="utf-8")).get("celle", 0))
+    except (OSError, ValueError, TypeError, AttributeError):
+        return 0
+
+
 def to_polygons(cells: list[Polygon]) -> list[dict]:
     """Unisce le celle, suddivide i lati lunghi e converte in WGS84."""
     if not cells:
@@ -116,6 +124,11 @@ def main() -> int:
             continue
         finally:
             time.sleep(REQUEST_DELAY_S)
+        if not codes and previous_cells(out):
+            # file letto ma senza celle per la specie: probabile cambio di formato, si tiene il precedente
+            print(f"  ! {slug}: nessuna cella nel file ISPRA, tengo la griglia precedente")
+            failed.append(slug)
+            continue
         payload = {
             "celle": len(codes),
             "aggiornamento": "giugno 2025",

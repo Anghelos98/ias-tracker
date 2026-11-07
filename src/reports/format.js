@@ -36,6 +36,7 @@ export function reportBody(report) {
     `Mappa: https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`,
   ];
   if (report.note?.trim()) lines.push(`Note: ${report.note.trim()}`);
+  if (report.signature?.trim()) lines.push(`Rilevatore: ${report.signature.trim()}`);
   lines.push(
     `Foto: ${report.photos.length ? `${report.photos.length} allegate` : 'nessuna'}`,
     '',

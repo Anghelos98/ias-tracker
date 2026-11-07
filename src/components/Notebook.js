@@ -56,9 +56,24 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
       {
         text: 'Elimina',
         style: 'destructive',
-        onPress: async () => setEntries(await deleteReport(entry.id)),
+        onPress: async () => {
+          try {
+            setEntries(await deleteReport(entry.id));
+          } catch {
+            Alert.alert('Eliminazione non riuscita', 'Non è stato possibile eliminare la voce. Riprova.');
+          }
+        },
       },
     ]);
+
+  // Reinvio per email o condivisione di una voce già salvata.
+  const resend = async (send) => {
+    try {
+      if (await send()) await reload();
+    } catch {
+      Alert.alert('Invio non riuscito', 'Non è stato possibile aprire l’email o la condivisione.');
+    }
+  };
 
   const exportNow = async () => {
     setExporting(true);
@@ -188,11 +203,11 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
                   <Action
                     label="Email"
                     a11y="Invia per email al Ministero"
-                    onPress={async () => (await sendByEmail(item)) && reload()}
+                    onPress={() => resend(() => sendByEmail(item))}
                     styles={styles}
                   />
                 )}
-                <Action label="Condividi" onPress={async () => (await shareReport(item)) && reload()} styles={styles} />
+                <Action label="Condividi" onPress={() => resend(() => shareReport(item))} styles={styles} />
                 <Action label="Mappa" a11y="Mostra sulla mappa" onPress={() => onShowOnMap(item)} styles={styles} />
                 <Action label="Elimina" destructive onPress={() => confirmDelete(item)} styles={styles} />
               </View>

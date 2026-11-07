@@ -21,14 +21,53 @@ const PHOTO_DIR_NAME = 'reports';
  * @property {number|null} accuracy        raggio di incertezza in metri
  * @property {'gps'|'foto'} locationSource
  * @property {string} note
+ * @property {string|null} [signature]   firma facoltativa (nome, ente) dalle Impostazioni
  * @property {string[]} photos             URI dei file salvati
- * @property {{channel: 'email'|'condivisione', at: string}[]} sent
+ * @property {{channel: 'email'|'regione'|'condivisione', at: string}[]} sent
  */
 
+/**
+ * Su iOS il percorso della cartella dell'app cambia a ogni aggiornamento (o reinstallazione
+ * da backup): gli URI assoluti salvati in passato non sarebbero più validi. Le foto stanno
+ * tutte in `reports/`, quindi si ricostruisce l'URI dal nome del file.
+ */
+function currentPhotoUri(uri) {
+  const name = typeof uri === 'string' ? uri.split('/').pop() : null;
+  if (!name) return uri;
+  try {
+    return new File(Paths.document, PHOTO_DIR_NAME, name).uri;
+  } catch {
+    return uri;
+  }
+}
+
+/** Voce letta dal telefono, con i campi essenziali sempre presenti. */
+function normalizeReport(r) {
+  return {
+    ...r,
+    note: typeof r.note === 'string' ? r.note : '',
+    photos: Array.isArray(r.photos) ? r.photos.map(currentPhotoUri) : [],
+    sent: Array.isArray(r.sent) ? r.sent : [],
+  };
+}
+
+function isValidReport(r) {
+  return Boolean(r && typeof r.id === 'string' && Number.isFinite(r.latitude) && Number.isFinite(r.longitude));
+}
+
+/** Legge l'elenco salvato; lancia un errore se non è leggibile (per non sovrascriverlo). */
+async function readReports() {
+  const raw = await AsyncStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
+  const parsed = JSON.parse(raw);
+  if (!Array.isArray(parsed)) throw new Error('Taccuino non leggibile');
+  return parsed.filter(isValidReport).map(normalizeReport);
+}
+
+/** Voci del taccuino per l'interfaccia (elenco vuoto se non leggibili). */
 export async function loadReports() {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    return await readReports();
   } catch {
     return [];
   }
@@ -37,6 +76,16 @@ export async function loadReports() {
 async function writeReports(reports) {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
   return reports;
+}
+
+// Le modifiche (aggiunta, invio, eliminazione) leggono e riscrivono tutto l'elenco: vanno
+// eseguite una alla volta, altrimenti due modifiche ravvicinate si cancellerebbero a vicenda.
+// Se l'elenco salvato non si legge, la modifica fallisce invece di sovrascriverlo con uno vuoto.
+let queue = Promise.resolve();
+function updateReports(change) {
+  const run = queue.then(async () => writeReports(await change(await readReports())));
+  queue = run.catch(() => {});
+  return run;
 }
 
 export function newReportId() {
@@ -62,27 +111,28 @@ export async function persistPhotos(reportId, uris) {
   return saved;
 }
 
-export async function addReport(report) {
-  const reports = await loadReports();
-  return writeReports([report, ...reports]);
+export function addReport(report) {
+  return updateReports((reports) => [report, ...reports]);
 }
 
-export async function markSent(reportId, channel) {
-  const reports = await loadReports();
+export function markSent(reportId, channel) {
   const at = new Date().toISOString();
-  return writeReports(reports.map((r) => (r.id === reportId ? { ...r, sent: [...r.sent, { channel, at }] } : r)));
+  return updateReports((reports) =>
+    reports.map((r) => (r.id === reportId ? { ...r, sent: [...r.sent, { channel, at }] } : r)),
+  );
 }
 
-export async function deleteReport(reportId) {
-  const reports = await loadReports();
-  const report = reports.find((r) => r.id === reportId);
-  for (const uri of report?.photos ?? []) {
-    try {
-      const f = new File(uri);
-      if (f.exists) f.delete();
-    } catch {
-      // file già rimosso: niente da fare
+export function deleteReport(reportId) {
+  return updateReports((reports) => {
+    const report = reports.find((r) => r.id === reportId);
+    for (const uri of report?.photos ?? []) {
+      try {
+        const f = new File(uri);
+        if (f.exists) f.delete();
+      } catch {
+        // file già rimosso: niente da fare
+      }
     }
-  }
-  return writeReports(reports.filter((r) => r.id !== reportId));
+    return reports.filter((r) => r.id !== reportId);
+  });
 }

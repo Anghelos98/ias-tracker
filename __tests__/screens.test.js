@@ -1,6 +1,6 @@
 // Prova di disegno delle schermate nei due temi: scopre errori a runtime (stili mancanti,
 // componenti non definiti) che il lint non vede. Moduli nativi sostituiti da finti.
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { useColorScheme } from 'react-native';
 
 import FiltersPanel from '../src/components/FiltersPanel';
@@ -11,6 +11,7 @@ import PointCard from '../src/components/PointCard';
 import RegionReport from '../src/components/RegionReport';
 import ReportScreen from '../src/components/ReportScreen';
 import SpeciesPanel from '../src/components/SpeciesPanel';
+import SettingsScreen from '../src/components/SettingsScreen';
 import SpeciesSheet from '../src/components/SpeciesSheet';
 import WelcomeScreen from '../src/components/WelcomeScreen';
 import { DEFAULT_FILTERS } from '../src/data/points';
@@ -70,7 +71,7 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
         visible
         onSelect={noop}
         onInfo={noop}
-        onAbout={noop}
+        onSettings={noop}
         onRegions={noop}
         onNotebook={noop}
         onClose={noop}
@@ -183,6 +184,51 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
     expect(await screen.findByText(/permesso di accesso alla posizione/)).toBeTruthy();
   });
 
+  test('impostazioni: aggiornamento manuale dei dati', async () => {
+    let finish;
+    const onUpdateNow = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    await render(
+      <SettingsScreen
+        visible
+        onClose={noop}
+        dataDate="2026-11-06T20:40:38+00:00"
+        updating={false}
+        onUpdateNow={onUpdateNow}
+        onClearData={noop}
+        mapType="standard"
+        onChangeMapType={noop}
+        showGrid={false}
+        onToggleGrid={noop}
+        filtersSummary="dal 2015"
+        onResetFilters={noop}
+        theme="auto"
+        onChangeTheme={noop}
+        signature=""
+        onChangeSignature={noop}
+        notify={false}
+        canNotify={false}
+        onToggleNotify={noop}
+        onOpenWelcome={noop}
+      />,
+    );
+    expect(screen.getByText('I dati dell’app vengono aggiornati ogni 12 ore per impostazione predefinita.')).toBeTruthy();
+    expect(screen.getByText(/aggiornate al 6 novembre 2026/)).toBeTruthy();
+    expect(screen.getByText('Ripristina i filtri predefiniti')).toBeTruthy();
+    // il tocco resta in attesa dell'aggiornamento: non lo si aspetta qui
+    const pressed = fireEvent.press(screen.getByText('Aggiorna ora'));
+    expect(await screen.findByText('Aggiornamento dei dati in corso…')).toBeTruthy();
+    expect(onUpdateNow).toHaveBeenCalledTimes(1);
+    await act(async () => finish({ status: 'current' }));
+    await pressed;
+    expect(await screen.findByText('I dati sono già aggiornati.')).toBeTruthy();
+    expect(screen.getByText('Aggiorna ora')).toBeTruthy();
+  });
+
   test('novità e specie seguite', async () => {
     const news = {
       settimane: [
@@ -228,4 +274,75 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
     await render(<NewsScreen {...props} news={{ settimane: [] }} follows={{ species: [], regions: [] }} />);
     expect(screen.getByText(/prossimo aggiornamento settimanale/)).toBeTruthy();
   });
+});
+
+test('vicino a me: risultati solo dopo la nuova lettura della posizione, anche alla riapertura', async () => {
+  useColorScheme.mockReturnValue('light');
+  const Location = require('expo-location');
+  Location.requestForegroundPermissionsAsync.mockResolvedValue({ status: 'granted' });
+  let resolveGps;
+  Location.getCurrentPositionAsync.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveGps = resolve;
+      }),
+  );
+  // un punto dell'ailanto come posizione: almeno una segnalazione entro il raggio
+  const [lon, lat] = ailanto.load().punti[0];
+  const coords = { coords: { latitude: lat, longitude: lon, accuracy: 5 } };
+  const props = {
+    speciesList: [ailanto],
+    manifest: null,
+    filters: { ...DEFAULT_FILTERS, includeAutomatic: true },
+    onSelect: noop,
+    onInfo: noop,
+    onClose: noop,
+  };
+
+  const { rerender } = await render(<NearbyPanel visible {...props} />);
+  expect(await screen.findByText('Aggiornamento della posizione…')).toBeTruthy();
+  expect(screen.queryByText(/specie entro/)).toBeNull();
+  await act(async () => resolveGps(coords));
+  expect(await screen.findByText(/specie entro 5 km/)).toBeTruthy();
+
+  // chiusura e riapertura: i risultati precedenti non si mostrano finché il GPS non risponde
+  await rerender(<NearbyPanel visible={false} {...props} />);
+  await rerender(<NearbyPanel visible {...props} />);
+  expect(await screen.findByText('Aggiornamento della posizione…')).toBeTruthy();
+  expect(screen.queryByText(/specie entro/)).toBeNull();
+  await act(async () => resolveGps(coords));
+  expect(await screen.findByText(/specie entro 5 km/)).toBeTruthy();
+});
+
+test('presentazione: pulsanti e swipe restano sincronizzati', async () => {
+  useColorScheme.mockReturnValue('light');
+  const onDone = jest.fn();
+  await render(<WelcomeScreen visible onDone={onDone} />);
+  expect(screen.getByText('Avanti')).toBeTruthy();
+  expect(screen.queryByText('Indietro')).toBeNull();
+  await fireEvent.press(screen.getByText('Avanti'));
+  expect(screen.getByText('Indietro')).toBeTruthy();
+  // swipe fino all'ultima pagina
+  const pager = screen.getByTestId('welcome-pager');
+  await fireEvent(pager, 'momentumScrollEnd', { nativeEvent: { contentOffset: { x: 10000, y: 0 } } });
+  expect(screen.getByText('Inizia')).toBeTruthy();
+  expect(screen.queryByText('Salta')).toBeNull();
+  // swipe indietro alla prima
+  await fireEvent(pager, 'momentumScrollEnd', { nativeEvent: { contentOffset: { x: 0, y: 0 } } });
+  expect(screen.getByText('Salta')).toBeTruthy();
+  await fireEvent.press(screen.getByText('Salta'));
+  expect(onDone).toHaveBeenCalled();
+});
+
+test('filtri: periodo relativo e dall’anno si escludono a vicenda', async () => {
+  useColorScheme.mockReturnValue('light');
+  const onChange = jest.fn();
+  const props = { visible: true, showGrid: false, onToggleGrid: noop, gridNote: '', onClose: noop, onChange };
+  const { rerender } = await render(<FiltersPanel {...props} filters={{ ...DEFAULT_FILTERS, minYear: 2010 }} />);
+  await fireEvent.press(screen.getByText('Ultimo mese'));
+  expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_FILTERS, minYear: null, maxAgeDays: 30 });
+  await rerender(<FiltersPanel {...props} filters={{ ...DEFAULT_FILTERS, maxAgeDays: 30 }} />);
+  expect(screen.getByText(/escluse le segnalazioni senza data completa/)).toBeTruthy();
+  await fireEvent.press(screen.getByLabelText('Dal 2020'));
+  expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_FILTERS, minYear: 2020, maxAgeDays: null });
 });

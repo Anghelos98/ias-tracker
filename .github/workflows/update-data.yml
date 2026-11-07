@@ -14,6 +14,11 @@ on:
   schedule:
     - cron: "0 4 * * 1" # lunedì alle 04:00 UTC
   workflow_dispatch:
+    inputs:
+      forza:
+        description: "Pubblica anche se i dati nuovi hanno molte meno segnalazioni dei precedenti"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -27,7 +32,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +44,17 @@ jobs:
         run: pip install requests beautifulsoup4 pyshp pyproj shapely
 
       - name: Scarica le segnalazioni da GBIF
-        run: python sync_ias_data.py --all
+        # GBIF a volte risponde con errori temporanei: lo script riprende da dove si era fermato,
+        # quindi si riprova fino a tre volte prima di rinunciare all'aggiornamento della settimana.
+        run: |
+          python sync_ias_data.py --all \
+            || (echo "::warning::Download GBIF incompleto, nuovo tentativo tra 2 minuti" && sleep 120 && python sync_ias_data.py --all) \
+            || (echo "::warning::Download GBIF incompleto, ultimo tentativo tra 10 minuti" && sleep 600 && python sync_ias_data.py --all)
+
+      - name: Controlla che i dati siano plausibili
+        # Ferma la pubblicazione se GBIF ha restituito molte meno segnalazioni della volta prima.
+        # Per pubblicare comunque un calo reale: avvio manuale con l'opzione "forza".
+        run: python scripts/check_data.py ${{ inputs.forza && '--forza' || '' }}
 
       - name: Scarica le schede da ISPRA
         # Se ISPRA non risponde si tengono le schede già presenti nel repository.

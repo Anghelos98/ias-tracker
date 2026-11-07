@@ -1,6 +1,6 @@
 // Calcolo delle specie segnalate vicino a una posizione. Funzioni pure, testate in __tests__/.
 
-import { passesFilters } from './points';
+import { passesFilters, todayDay } from './points';
 
 const EARTH_RADIUS_M = 6371008.8;
 const toRad = (deg) => (deg * Math.PI) / 180;
@@ -36,13 +36,15 @@ export function speciesNearby(datasets, position, radiusM, filters) {
   const dLat = radiusM / 111320;
   const dLon = dLat / Math.max(0.01, Math.cos(toRad(position.latitude)));
   const results = [];
+  const today = todayDay();
   for (const { species, data } of datasets) {
     let count = 0;
     let nearest = Infinity;
     let nearestPoint = null;
-    for (const [lon, lat, year, , automatic, uncertainty] of data.punti) {
+    for (const [lon, lat, year, , automatic, uncertainty, , , , day] of data.punti) {
       if (Math.abs(lat - position.latitude) > dLat || Math.abs(lon - position.longitude) > dLon) continue;
-      if (!passesFilters({ year, automatic: automatic === 1, uncertainty: uncertainty ?? null }, filters)) continue;
+      const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null, day: day ?? null };
+      if (!passesFilters(record, filters, today)) continue;
       const d = distanceMeters(position, { latitude: lat, longitude: lon });
       if (d > radiusM) continue;
       count += 1;

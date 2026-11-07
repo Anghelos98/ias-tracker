@@ -13,7 +13,7 @@ export default function SpeciesPanel({
   selectedSlug,
   onSelect,
   onInfo,
-  onAbout,
+  onSettings,
   onRegions,
   onNotebook,
   onNews,
@@ -45,8 +45,8 @@ export default function SpeciesPanel({
           <Text style={styles.title} accessibilityRole="header">
             Specie di rilevanza unionale ({species.length})
           </Text>
-          <Pressable onPress={onAbout} hitSlop={10} accessibilityRole="button">
-            <Text style={styles.about}>Informazioni</Text>
+          <Pressable onPress={onSettings} hitSlop={10} accessibilityRole="button">
+            <Text style={styles.about}>Impostazioni</Text>
           </Pressable>
         </View>
         <Text style={styles.updated}>

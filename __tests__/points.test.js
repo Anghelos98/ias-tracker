@@ -125,3 +125,18 @@ describe('collegamento al dato originale', () => {
     expect(originalSiteName(null)).toBeNull();
   });
 });
+
+test('periodo per data: ultimo mese e ultimo anno', () => {
+  const today = 20000;
+  const filters = (maxAgeDays) => ({ ...DEFAULT_FILTERS, maxAgeDays });
+  const rec = (day) => ({ year: 2024, automatic: false, uncertainty: null, day });
+  expect(passesFilters(rec(today - 10), filters(30), today)).toBe(true);
+  expect(passesFilters(rec(today - 30), filters(30), today)).toBe(true);
+  expect(passesFilters(rec(today - 31), filters(30), today)).toBe(false);
+  expect(passesFilters(rec(null), filters(30), today)).toBe(false); // senza data completa
+  expect(passesFilters(rec(today - 300), filters(365), today)).toBe(true);
+  expect(passesFilters(rec(null), DEFAULT_FILTERS, today)).toBe(true);
+  expect(activeFilterCount(filters(30))).toBe(1);
+  expect(describeFilters(filters(30))).toBe('ultimo mese');
+  expect(describeFilters({ ...DEFAULT_FILTERS, minYear: 2010 })).toBe('dal 2010');
+});

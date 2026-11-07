@@ -120,6 +120,14 @@ def photos_for(session: requests.Session, name: str) -> tuple[list[dict], str | 
     return photos, (inat if inat and inat.lower() != inat_name(name).lower() else None)
 
 
+def load_previous() -> dict[str, list[dict]]:
+    """Foto salvate dall'esecuzione precedente, per specie."""
+    try:
+        return json.loads(OUTPUT.read_text(encoding="utf-8")).get("specie", {})
+    except (OSError, ValueError, AttributeError):
+        return {}
+
+
 def main() -> int:
     species = json.loads(REFERENCE.read_text(encoding="utf-8"))["rilevanza_unionale"]
     session = requests.Session()
@@ -139,11 +147,15 @@ def main() -> int:
             inat_names[slugify(name)] = inat
         print(f"  {name}: {len(photos)} foto" + (f" (su iNaturalist: {inat})" if inat else ""))
 
-    if failed and OUTPUT.exists():
-        # mantiene le foto già raccolte per le specie non riuscite
-        previous = json.loads(OUTPUT.read_text(encoding="utf-8")).get("specie", {})
-        for name in failed:
-            result.setdefault(slugify(name), previous.get(slugify(name), []))
+    previous = load_previous()
+    # mantiene le foto già raccolte per le specie non riuscite
+    for name in failed:
+        result.setdefault(slugify(name), previous.get(slugify(name), []))
+    # nessuna foto trovata dove prima c'erano: probabile cambio dell'API, si tengono le precedenti
+    for slug, photos in result.items():
+        if not photos and previous.get(slug):
+            print(f"  ! {slug}: nessuna foto trovata, tengo le {len(previous[slug])} precedenti")
+            result[slug] = previous[slug]
 
     payload = {
         "fonte": "iNaturalist (inaturalist.org), solo foto con licenza CC0 o CC BY",

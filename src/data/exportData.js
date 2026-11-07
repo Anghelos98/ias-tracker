@@ -1,7 +1,7 @@
 // Esportazione delle segnalazioni mostrate in CSV, GeoJSON e KML. Funzioni pure, testate.
 // Ogni riga riporta fonte e licenza del dato, necessarie per citarlo correttamente.
 
-import { gbifUrl, originalUrl, passesFilters } from './points';
+import { dayToIso, gbifUrl, originalUrl, passesFilters, todayDay } from './points';
 import { REGIONS } from './regions';
 
 const REGION_NAMES = new Map(REGIONS.map((r) => [r.code, r.name]));
@@ -27,24 +27,27 @@ export const ATTRIBUTION =
  */
 export function exportRows(datasets, filters, bbox = null) {
   const rows = [];
+  const today = todayDay();
   for (const { species, data } of datasets) {
-    for (const [lon, lat, year, sourceIdx, automatic, uncertainty, region, gbifId, originalId] of data.punti) {
+    for (const [lon, lat, year, sourceIdx, automatic, uncertainty, region, gbifId, originalId, day] of data.punti) {
+      const source = data.fonti[sourceIdx] ?? { nome: 'Fonte sconosciuta', licenza: null };
       if (bbox && (lon < bbox[0] || lat < bbox[1] || lon > bbox[2] || lat > bbox[3])) continue;
-      const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null };
-      if (!passesFilters(record, filters)) continue;
+      const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null, day: day ?? null };
+      if (!passesFilters(record, filters, today)) continue;
       rows.push({
         specie: species.scientificName,
         nome_comune: species.commonName,
         latitudine: lat,
         longitudine: lon,
         anno: year,
+        data: dayToIso(day),
         incertezza_m: uncertainty ?? null,
-        fonte: data.fonti[sourceIdx].nome,
-        licenza: data.fonti[sourceIdx].licenza,
+        fonte: source.nome,
+        licenza: source.licenza,
         identificazione_automatica: automatic === 1,
         regione: REGION_NAMES.get(region) ?? null,
         gbif: gbifUrl(gbifId),
-        dato_originale: originalUrl(data.fonti[sourceIdx], originalId),
+        dato_originale: originalUrl(source, originalId),
       });
     }
   }
@@ -57,6 +60,7 @@ const COLUMNS = [
   'latitudine',
   'longitudine',
   'anno',
+  'data',
   'incertezza_m',
   'fonte',
   'licenza',
@@ -69,7 +73,7 @@ const COLUMNS = [
 function csvCell(value) {
   if (value == null) return '';
   const text = String(value);
-  return /[",\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  return /[",\r\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
 export function toCSV(rows) {
@@ -105,7 +109,7 @@ function xml(text) {
 export function toKML(rows, title = 'IAS Tracker') {
   const placemarks = rows.map((r) => {
     const details = [
-      `Anno: ${r.anno ?? 'non indicato'}`,
+      r.data ? `Data: ${r.data}` : `Anno: ${r.anno ?? 'non indicato'}`,
       `Fonte: ${r.fonte}`,
       `Licenza: ${r.licenza ?? 'non indicata'}`,
       r.incertezza_m != null ? `Incertezza: ± ${r.incertezza_m} m` : null,

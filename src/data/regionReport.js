@@ -5,18 +5,19 @@
 // dalla pipeline dati con i confini ISTAT (scripts/build_app_data.py). I dati senza quel campo
 // (versioni precedenti) o i punti in mare aperto non rientrano in nessuna regione.
 
-import { passesFilters } from './points';
+import { passesFilters, todayDay } from './points';
 import { REGIONS } from './regions';
 
 /** Anni mostrati nel grafico dell'andamento (gli ultimi N, anno in corso compreso). */
 export const TREND_YEARS = 15;
 
 function* filteredPoints(datasets, filters) {
+  const today = todayDay();
   for (const { species, data } of datasets) {
     for (const p of data.punti) {
-      const [, , year, , automatic, uncertainty, region] = p;
-      const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null };
-      if (passesFilters(record, filters)) yield { species, year, region: region ?? null };
+      const [, , year, , automatic, uncertainty, region, , , day] = p;
+      const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null, day: day ?? null };
+      if (passesFilters(record, filters, today)) yield { species, year, region: region ?? null };
     }
   }
 }
@@ -94,7 +95,7 @@ export function regionReport(datasets, filters, code, currentYear = new Date().g
 function csvCell(value) {
   if (value == null) return '';
   const text = String(value);
-  return /[",\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  return /[",\r\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
 /** Tabella CSV del rapporto (una riga per specie), da condividere o aprire in un foglio di calcolo. */

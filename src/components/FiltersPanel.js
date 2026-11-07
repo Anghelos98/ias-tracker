@@ -1,17 +1,21 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { MARKER_COLORS } from './markerColors';
 import { APPROXIMATE_M, DEFAULT_FILTERS } from '../data/points';
 import { useThemedStyles } from '../theme';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-const PERIODS = [
-  { label: 'Tutti', value: null },
-  { label: 'Dal 2000', value: 2000 },
-  { label: 'Dal 2015', value: 2015 },
-  { label: 'Ultimi 5 anni', value: CURRENT_YEAR - 4 },
+// Periodo: scelte relative a oggi (prima riga) e anni di partenza (seconda riga).
+// "Ultimo mese" e "Ultimo anno" usano la data completa dell'osservazione, le altre l'anno.
+const RECENT_PERIODS = [
+  { label: 'Tutti', minYear: null, maxAgeDays: null },
+  { label: 'Ultimo mese', minYear: null, maxAgeDays: 30 },
+  { label: 'Ultimo anno', minYear: null, maxAgeDays: 365 },
+  { label: 'Ultimi 5 anni', minYear: CURRENT_YEAR - 4, maxAgeDays: null },
 ];
+const FROM_YEARS = [2000, 2005, 2010, 2015, 2020];
 
 const PRECISIONS = [
   { label: 'Qualsiasi', value: null },
@@ -23,8 +27,10 @@ const PRECISIONS = [
 /** Breve descrizione dei filtri attivi, per il pulsante sulla mappa. */
 export function describeFilters(filters) {
   const parts = [];
-  const period = PERIODS.find((p) => p.value === filters.minYear);
-  if (filters.minYear != null) parts.push(period?.label.toLowerCase() ?? `dal ${filters.minYear}`);
+  const recent = RECENT_PERIODS.find((p) => p.minYear === filters.minYear && p.maxAgeDays === filters.maxAgeDays);
+  if (filters.maxAgeDays != null || filters.minYear != null) {
+    parts.push(recent ? recent.label.toLowerCase() : `dal ${filters.minYear}`);
+  }
   const precision = PRECISIONS.find((p) => p.value === filters.maxUncertainty);
   if (filters.maxUncertainty != null) parts.push(precision?.label ?? `≤ ${filters.maxUncertainty} m`);
   if (filters.includeAutomatic) parts.push('con Pl@ntNet');
@@ -65,8 +71,45 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
           <Text style={styles.label} accessibilityRole="header">
             Periodo della segnalazione
           </Text>
-          <Chips options={PERIODS} value={filters.minYear} onSelect={(minYear) => set({ minYear })} />
-          {filters.minYear != null && <Text style={styles.note}>Escluse le segnalazioni senza anno.</Text>}
+          <View style={styles.chips}>
+            {RECENT_PERIODS.map((p) => (
+              <Chip
+                key={p.label}
+                label={p.label}
+                active={p.minYear === (filters.minYear ?? null) && p.maxAgeDays === (filters.maxAgeDays ?? null)}
+                onPress={() => set({ minYear: p.minYear, maxAgeDays: p.maxAgeDays })}
+              />
+            ))}
+          </View>
+          <View style={styles.fromYears}>
+            <Text style={styles.fromLabel}>Dall’anno</Text>
+            <View style={styles.segmented} accessibilityRole="radiogroup" accessibilityLabel="Dall'anno">
+              {FROM_YEARS.map((year) => {
+                const active = filters.minYear === year && filters.maxAgeDays == null;
+                return (
+                  <Pressable
+                    key={year}
+                    style={[styles.segment, active && styles.segmentActive]}
+                    onPress={() => set({ minYear: year, maxAgeDays: null })}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: active }}
+                    accessibilityLabel={`Dal ${year}`}
+                  >
+                    <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{year}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+          {filters.maxAgeDays != null && (
+            <Text style={styles.note}>
+              {filters.maxAgeDays <= 31 ? 'Ultimi 30 giorni' : 'Ultimi 12 mesi'} in base alla data dell’osservazione:
+              escluse le segnalazioni senza data completa.
+            </Text>
+          )}
+          {filters.minYear != null && filters.maxAgeDays == null && (
+            <Text style={styles.note}>Escluse le segnalazioni senza anno.</Text>
+          )}
 
           <Text style={styles.label} accessibilityRole="header">
             Precisione della posizione
@@ -118,21 +161,24 @@ function Chips({ options, value, onSelect }) {
   const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.chips}>
-      {options.map((o) => {
-        const active = o.value === value;
-        return (
-          <Pressable
-            key={o.label}
-            onPress={() => onSelect(o.value)}
-            style={[styles.chip, active && styles.chipActive]}
-            accessibilityRole="button"
-            accessibilityState={{ selected: active }}
-          >
-            <Text style={[styles.chipText, active && styles.chipTextActive]}>{o.label}</Text>
-          </Pressable>
-        );
-      })}
+      {options.map((o) => (
+        <Chip key={o.label} label={o.label} active={o.value === value} onPress={() => onSelect(o.value)} />
+      ))}
     </View>
+  );
+}
+
+function Chip({ label, active, onPress }) {
+  const styles = useThemedStyles(createStyles);
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.chip, active && styles.chipActive]}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+    >
+      <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -183,19 +229,26 @@ const createStyles = (c) =>
     chipActive: { backgroundColor: c.primaryFill, borderColor: c.primaryFill },
     chipText: { fontSize: 14, color: c.primary },
     chipTextActive: { color: c.onPrimary, fontWeight: '600' },
+    fromYears: { flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 10 },
+    fromLabel: { fontSize: 13, color: c.textSecondary },
+    segmented: { flex: 1, flexDirection: 'row', backgroundColor: c.surfaceAlt, borderRadius: 10, padding: 3 },
+    segment: { flex: 1, paddingVertical: 6, borderRadius: 8, alignItems: 'center' },
+    segmentActive: { backgroundColor: c.primaryFill },
+    segmentText: { fontSize: 14, fontWeight: '600', color: c.primary },
+    segmentTextActive: { color: c.onPrimary },
     switchRow: { flexDirection: 'row', alignItems: 'center', marginTop: 18 },
     switchLabel: { fontSize: 14, fontWeight: '600', color: c.text },
     legend: { gap: 6 },
     legendItem: { flexDirection: 'row', alignItems: 'center' },
     legendDot: { width: 14, height: 14, borderRadius: 7, borderWidth: 2, marginRight: 10 },
-    dotVerified: { backgroundColor: '#2e7d32', borderColor: '#fff' },
-    dotAutomatic: { backgroundColor: '#ef8a00', borderColor: '#fff' },
-    dotApprox: { backgroundColor: '#fff', borderColor: '#2e7d32', borderWidth: 2.5 },
+    dotVerified: { backgroundColor: MARKER_COLORS.verified, borderColor: '#fff' },
+    dotAutomatic: { backgroundColor: MARKER_COLORS.automatic, borderColor: '#fff' },
+    dotApprox: { backgroundColor: MARKER_COLORS.approximate, borderColor: MARKER_COLORS.verified, borderWidth: 2.5 },
     dotCluster: {
       width: 18,
       height: 18,
       borderRadius: 9,
-      backgroundColor: 'rgba(46,125,50,0.85)',
+      backgroundColor: MARKER_COLORS.cluster,
       borderColor: '#fff',
     },
     gridSwatch: {

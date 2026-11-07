@@ -5,6 +5,11 @@ import { REPORT_EMAIL } from '../data/legal';
 import { reportBody, reportSubject } from './format';
 import { markSent } from './storage';
 
+/** Annota l'invio nel taccuino; se non riesce, l'invio resta comunque avvenuto. */
+function markSentQuietly(reportId, channel) {
+  return markSent(reportId, channel).catch(() => {});
+}
+
 /**
  * Email al Ministero dell'Ambiente (casella per le segnalazioni, art. 18 c. 8 D.Lgs. 230/2017)
  * o all'ufficio regionale indicato. Con l'app Mail configurata le foto vengono allegate;
@@ -25,7 +30,7 @@ export async function sendByEmail(report, to = { address: REPORT_EMAIL, channel:
       attachments: report.photos,
     });
     const ok = status === MailComposer.MailComposerStatus.SENT || status === MailComposer.MailComposerStatus.SAVED;
-    if (ok) await markSent(report.id, to.channel);
+    if (ok) await markSentQuietly(report.id, to.channel);
     return ok;
   }
 
@@ -39,7 +44,7 @@ export async function sendByEmail(report, to = { address: REPORT_EMAIL, channel:
       );
     }
     await Linking.openURL(url);
-    await markSent(report.id, to.channel);
+    await markSentQuietly(report.id, to.channel);
     return true;
   }
 
@@ -60,7 +65,7 @@ export async function shareReport(report) {
     Platform.OS === 'ios' && report.photos[0] ? { message, url: report.photos[0] } : { message, title: reportSubject(report) };
   const result = await Share.share(content, { subject: reportSubject(report) });
   if (result.action === Share.sharedAction) {
-    await markSent(report.id, 'condivisione');
+    await markSentQuietly(report.id, 'condivisione');
     return true;
   }
   return false;

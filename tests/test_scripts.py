@@ -85,7 +85,7 @@ def test_identificazione_automatica():
 def test_compact():
     geojson = {"features": [
         {"geometry": {"coordinates": [12.1234567, 41.7654321]},
-         "properties": {"anno": 2020, "dataset": "A", "licenza": "CC BY 4.0",
+         "properties": {"anno": 2020, "dataset": "A", "licenza": "CC BY 4.0", "data": "2020-01-02T10:00:00",
                         "identificazione_automatica": False, "incertezza_m": 12.4}},
         {"geometry": {"coordinates": [12.0, 41.0]},
          "properties": {"anno": None, "dataset": "A", "licenza": "CC BY 4.0",
@@ -93,8 +93,18 @@ def test_compact():
     ]}
     out = build_app_data.compact(geojson)
     assert out["fonti"] == [{"nome": "A", "licenza": "CC BY 4.0"}]
-    assert out["punti"] == [[12.12346, 41.76543, 2020, 0, 0, 12, None, None, None],
-                            [12.0, 41.0, None, 0, 1, None, None, None, None]]
+    assert out["punti"] == [[12.12346, 41.76543, 2020, 0, 0, 12, None, None, None, 18263],
+                            [12.0, 41.0, None, 0, 1, None, None, None, None, None]]
+
+
+def test_giorno_dell_osservazione():
+    assert build_app_data.event_day("1970-01-02") == 1
+    assert build_app_data.event_day("2026-04-19T20:11:25") == build_app_data.event_day("2026-04-19")
+    assert build_app_data.event_day("2019-05-01/2019-05-31") == build_app_data.event_day("2019-05-01")
+    assert build_app_data.event_day("2019-05") is None          # solo il mese
+    assert build_app_data.event_day("2019") is None             # solo l'anno
+    assert build_app_data.event_day("2019-02-30") is None       # data non valida
+    assert build_app_data.event_day(None) is None
 
 
 def test_collegamento_al_dato_originale():
@@ -418,3 +428,39 @@ def test_confini_semplificati_per_l_app():
 def test_aggiornamento_reale_solo_dopo_un_giorno():
     assert build_news.is_real_update("2026-11-02T04:00:00+00:00", "2026-11-09T04:00:00+00:00")
     assert not build_news.is_real_update("2026-11-06T15:24:30+00:00", "2026-11-06T20:40:38+00:00")
+
+
+def test_novita_ignora_la_reindicizzazione_gbif():
+    old = _data([[12, 41, 2020, 0, 0, None, 9, 1, None], [12, 42, 2021, 0, 0, None, 9, 2, None]])
+    # stessi record con identificativi nuovi (dataset reindicizzato) + una segnalazione davvero nuova
+    new = _data([[12, 41, 2020, 0, 0, None, 9, 101, None], [12, 42, 2021, 0, 0, None, 9, 102, None],
+                 [12, 43, 2025, 0, 0, None, 9, 103, None]])
+    d = build_news.diff_species(old, new)
+    assert d["nuove"] == 1 and d["prime_regioni"] == []
+    # coordinate corrette di un record esistente (stesso identificativo): non è nuovo
+    moved = _data([[12.5, 41, 2020, 0, 0, None, 9, 1, None], [12, 42, 2021, 0, 0, None, 9, 2, None]])
+    assert build_news.diff_species(old, moved) is None
+    # due osservazioni nello stesso punto, anno e fonte: una era già presente, l'altra è nuova
+    twice = _data([[12, 41, 2020, 0, 0, None, 9, 1, None], [12, 42, 2021, 0, 0, None, 9, 2, None],
+                   [12, 41, 2020, 0, 0, None, 9, 3, None]])
+    assert build_news.diff_species(old, twice)["nuove"] == 1
+
+
+def test_controllo_di_plausibilita():
+    import check_data
+
+    previous = {"totale_segnalazioni": 1000,
+                "specie": {"a": {"totale": 900}, "b": {"totale": 60}, "c": {"totale": 10}, "d": {"totale": 0}}}
+
+    def index(a, b, c, total=None):
+        species = [{"slug": "a", "totale": a}, {"slug": "b", "totale": b}, {"slug": "c", "totale": c},
+                   {"slug": "d", "totale": 0}]
+        return {"totale_segnalazioni": a + b + c if total is None else total, "specie": species}
+
+    assert check_data.check(previous, index(905, 58, 4)) == []          # oscillazioni normali
+    problems = check_data.check(previous, index(905, 30, 10))
+    assert len(problems) == 1 and problems[0].startswith("b:")          # specie dimezzata
+    assert any(p.startswith("c: 0") for p in check_data.check(previous, index(905, 60, 0)))
+    assert any(p.startswith("totale") for p in check_data.check(previous, index(700, 60, 10)))
+    missing = {"totale_segnalazioni": 970, "specie": [{"slug": "a", "totale": 910}, {"slug": "b", "totale": 60}]}
+    assert any("assente" in p for p in check_data.check(previous, missing))

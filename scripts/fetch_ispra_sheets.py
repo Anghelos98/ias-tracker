@@ -192,6 +192,21 @@ def parse_sheet(soup: BeautifulSoup) -> dict:
 
 # --------------------------------------------------------------------------- main
 
+def has_content(sheet: dict | None) -> bool:
+    return bool(sheet and (sheet.get("descrizione") or sheet.get("sezioni")))
+
+
+def lost_content(new: dict, path: Path) -> bool:
+    """La scheda appena letta è vuota ma quella salvata no? Succede se ISPRA cambia
+    l'impaginazione del sito o risponde con una pagina di manutenzione: meglio tenere la vecchia."""
+    if has_content(new) or not path.exists():
+        return False
+    try:
+        return has_content(json.loads(path.read_text(encoding="utf-8")))
+    except (OSError, ValueError):
+        return False
+
+
 def main() -> int:
     species = json.loads(REFERENCE.read_text(encoding="utf-8"))["rilevanza_unionale"]
     session = requests.Session()
@@ -226,6 +241,10 @@ def main() -> int:
             },
         })
         path = OUT_DIR / f"{slugify(name)}.json"
+        if lost_content(sheet, path):
+            missing.append(name)
+            print(f"  ! {name}: pagina ISPRA senza testo, tengo la scheda precedente")
+            continue
         path.write_text(json.dumps(sheet, ensure_ascii=False, indent=1), encoding="utf-8")
         written += 1
         n_text = sum(len(b["testo"]) for s in sheet["sezioni"] for b in s["blocchi"])

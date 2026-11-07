@@ -2,6 +2,8 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { Animated, Platform, StyleSheet, Text, View } from 'react-native';
 import { Marker } from 'react-native-maps';
 
+import { MARKER_COLORS } from './markerColors';
+
 // Durata del tracking iniziale della vista (ms). Su Android il marker personalizzato
 // diventa una bitmap: va disegnato prima di spegnere il tracking, altrimenti resta vuoto.
 // (Su Apple Maps tracksViewChanges viene ignorato: i marker sono viste native.)
@@ -129,7 +131,7 @@ export const DotMarker = memo(function DotMarker({ feature, selected, onPress })
 
 const styles = StyleSheet.create({
   cluster: {
-    backgroundColor: 'rgba(46,125,50,0.85)',
+    backgroundColor: MARKER_COLORS.cluster,
     borderWidth: 3,
     borderColor: 'rgba(255,255,255,0.9)',
     alignItems: 'center',
@@ -141,14 +143,22 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: '#2e7d32',
+    backgroundColor: MARKER_COLORS.verified,
     borderWidth: 2,
     borderColor: '#fff',
   },
-  dotAutomatic: { backgroundColor: '#ef8a00' },
-  // posizione approssimativa: pallino vuoto con il bordo del colore della categoria
-  dotApproximate: { backgroundColor: '#fff', borderColor: '#2e7d32', borderWidth: 2.5 },
-  dotApproximateAutomatic: { backgroundColor: '#fff', borderColor: '#ef8a00', borderWidth: 2.5 },
+  dotAutomatic: { backgroundColor: MARKER_COLORS.automatic },
+  // posizione approssimativa: centro grigio con il bordo del colore della categoria
+  dotApproximate: {
+    backgroundColor: MARKER_COLORS.approximate,
+    borderColor: MARKER_COLORS.verified,
+    borderWidth: 2.5,
+  },
+  dotApproximateAutomatic: {
+    backgroundColor: MARKER_COLORS.approximate,
+    borderColor: MARKER_COLORS.automatic,
+    borderWidth: 2.5,
+  },
   ring: {
     position: 'absolute',
     top: (DOT_BOX - RING) / 2,

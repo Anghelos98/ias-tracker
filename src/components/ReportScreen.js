@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -46,7 +46,14 @@ const KINDS = [
  *   nel taccuino e si può condividere.
  * Ogni voce resta salvata sul telefono, nel taccuino.
  */
-export default function ReportScreen({ visible, initialSpecies, initialKind = 'presenza', onClose, onOpenNotebook }) {
+export default function ReportScreen({
+  visible,
+  initialSpecies,
+  initialKind = 'presenza',
+  signature = '',
+  onClose,
+  onOpenNotebook,
+}) {
   const insets = useSafeAreaInsets();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
@@ -103,20 +110,29 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
   }, [query]);
 
   const addPhoto = useCallback(async (fromCamera) => {
-    if (fromCamera) {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Fotocamera non disponibile', 'Consenti l’accesso alla fotocamera nelle impostazioni.');
-        return;
+    try {
+      if (fromCamera) {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Fotocamera non disponibile', 'Consenti l’accesso alla fotocamera nelle impostazioni.');
+          return;
+        }
       }
+      const options = { mediaTypes: ['images'], quality: 0.7, exif: true };
+      const result = fromCamera
+        ? await ImagePicker.launchCameraAsync(options)
+        : await ImagePicker.launchImageLibraryAsync(options);
+      if (result.canceled || !result.assets?.length) return;
+      const asset = result.assets[0];
+      setPhotos((prev) =>
+        prev.some((p) => p.uri === asset.uri)
+          ? prev // stessa foto scelta due volte
+          : [...prev, { uri: asset.uri, gps: gpsFromExif(asset.exif) }].slice(0, MAX_PHOTOS),
+      );
+    } catch {
+      // es. simulatore senza fotocamera, galleria non accessibile
+      Alert.alert('Foto non disponibile', 'Non è stato possibile aprire la fotocamera o la galleria.');
     }
-    const options = { mediaTypes: ['images'], quality: 0.7, exif: true };
-    const result = fromCamera
-      ? await ImagePicker.launchCameraAsync(options)
-      : await ImagePicker.launchImageLibraryAsync(options);
-    if (result.canceled || !result.assets?.length) return;
-    const asset = result.assets[0];
-    setPhotos((prev) => [...prev, { uri: asset.uri, gps: gpsFromExif(asset.exif) }].slice(0, MAX_PHOTOS));
   }, []);
 
   const changeKind = (next) => {
@@ -131,14 +147,19 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
   const photoWithGps = photos.find((p) => p.gps);
   const ready = species !== null && position !== null && (!isIntervention || intervention !== null) && !sending;
 
-  /** channel: 'email' | 'share' | 'save' */
+  // Blocca un secondo tocco prima che lo stato `sending` arrivi al render (voce doppia).
+  const busyRef = useRef(false);
+
+  /** channel: 'email' | 'share' | 'save' | { office } */
   const send = useCallback(
     async (channel) => {
-      if (!ready) return;
+      if (!ready || busyRef.current) return;
+      busyRef.current = true;
       setSending(true);
+      let report;
       try {
         const id = newReportId();
-        const report = {
+        report = {
           id,
           kind,
           intervention: isIntervention ? intervention : null,
@@ -151,6 +172,7 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
           accuracy: position.accuracy ?? null,
           locationSource: position.source,
           note,
+          signature: signature.trim() || null,
           photos: await persistPhotos(
             id,
             photos.map((p) => p.uri),
@@ -158,26 +180,36 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
           sent: [],
         };
         await addReport(report); // salvata comunque, anche se l'invio viene annullato
-        if (channel === 'save') {
-          onClose();
-          Alert.alert('Salvato nel taccuino', 'Puoi esportare le voci del taccuino in CSV, GeoJSON o KML.');
-          return;
-        }
-        let done;
-        if (channel === 'email') done = await sendByEmail(report);
-        else if (channel?.office) done = await sendByEmail(report, { address: officeAddress(channel.office), channel: 'regione' });
-        else done = await shareReport(report);
-        onClose();
-        if (!done) {
-          Alert.alert('Salvato nel taccuino', 'Non è stato inviato: lo trovi nel taccuino di campo.');
-        }
       } catch {
+        // niente è stato salvato: il modulo resta aperto per riprovare
         Alert.alert('Errore', 'Non è stato possibile salvare. Riprova.');
-      } finally {
+        busyRef.current = false;
         setSending(false);
+        return;
+      }
+      // Da qui la voce è nel taccuino: un errore nell'invio non deve farla salvare di nuovo,
+      // quindi il modulo si chiude comunque. L'email (o la condivisione) si apre prima della
+      // chiusura: su iOS non si può presentarla sopra una Modal che si sta chiudendo.
+      if (channel === 'save') {
+        onClose();
+        Alert.alert('Salvato nel taccuino', 'Puoi esportare le voci del taccuino in CSV, GeoJSON o KML.');
+        return;
+      }
+      let done = false;
+      try {
+        if (channel === 'email') done = await sendByEmail(report);
+        else if (channel?.office) {
+          done = await sendByEmail(report, { address: officeAddress(channel.office), channel: 'regione' });
+        } else done = await shareReport(report);
+      } catch {
+        done = false;
+      }
+      onClose();
+      if (!done) {
+        Alert.alert('Salvato nel taccuino', 'Non è stato inviato: lo trovi nel taccuino di campo.');
       }
     },
-    [ready, kind, isIntervention, intervention, species, position, note, photos, onClose],
+    [ready, kind, isIntervention, intervention, species, position, note, signature, photos, onClose],
   );
 
   const widespread = presence?.toLowerCase().startsWith('diffusa');
@@ -369,7 +401,7 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
           <View style={styles.photos}>
             {photos.map((p, i) => (
               <Pressable
-                key={p.uri}
+                key={`${i}-${p.uri}`}
                 onLongPress={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}
                 accessibilityRole="image"
                 accessibilityLabel={`Foto ${i + 1}`}
@@ -488,7 +520,12 @@ export default function ReportScreen({ visible, initialSpecies, initialKind = 'p
             </Pressable>
           )}
           {missing && !sending && <Text style={styles.small}>{missing} per poter salvare.</Text>}
-          <Text style={styles.small}>Ogni voce resta salvata sul telefono, nel taccuino di campo.</Text>
+          <Text style={styles.small}>
+            {signature.trim()
+              ? `Firmata come “${signature.trim()}” (modificabile nelle Impostazioni). `
+              : ''}
+            Ogni voce resta salvata sul telefono, nel taccuino di campo.
+          </Text>
         </View>
       </ScrollView>
     </Modal>

@@ -66,3 +66,21 @@ describe('testo della segnalazione', () => {
     expect(body).toContain('posizione ricavata dalla foto');
   });
 });
+
+test('firma facoltativa nel testo della segnalazione', () => {
+  const report = {
+    createdAt: '2026-11-06T10:00:00.000Z',
+    scientificName: 'Ailanthus altissima',
+    commonName: 'Ailanto',
+    latitude: 41.9,
+    longitude: 12.5,
+    accuracy: null,
+    locationSource: 'gps',
+    note: '',
+    photos: [],
+  };
+  expect(reportBody(report)).not.toContain('Rilevatore');
+  expect(reportBody({ ...report, signature: '  Mario Rossi, Parco del Ticino ' })).toContain(
+    'Rilevatore: Mario Rossi, Parco del Ticino',
+  );
+});

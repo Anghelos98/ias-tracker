@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Alert, Appearance, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
@@ -12,15 +12,18 @@ import FiltersPanel, { describeFilters } from './src/components/FiltersPanel';
 import NearbyPanel from './src/components/NearbyPanel';
 import ExportSection from './src/components/ExportSection';
 import WelcomeScreen from './src/components/WelcomeScreen';
+import StatusPill from './src/components/StatusPill';
 import SpeciesPanel from './src/components/SpeciesPanel';
 import SpeciesSheet from './src/components/SpeciesSheet';
 import ReportScreen from './src/components/ReportScreen';
 import Notebook from './src/components/Notebook';
 import RegionReport from './src/components/RegionReport';
 import NewsScreen from './src/components/NewsScreen';
+import SettingsScreen from './src/components/SettingsScreen';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
 import {
   checkForUpdates,
+  clearDownloadedData,
   dataDate,
   loadStoredManifest,
   readNews,
@@ -46,16 +49,22 @@ import {
   hasSeenWelcome,
   loadFilters,
   loadFollows,
+  loadMapType,
   loadNewsSeen,
   loadNotify,
   loadShowGrid,
+  loadSignature,
+  loadTheme,
   markWelcomeSeen,
   saveFilters,
   saveFollows,
+  saveMapType,
   saveNewsNotified,
   saveNewsSeen,
   saveNotify,
   saveShowGrid,
+  saveSignature,
+  saveTheme,
 } from './src/data/preferences';
 import { useColors, useThemedStyles } from './src/theme';
 import { ITALY_REGION, bboxToRegion, findTappedFeature, latitudeToScreenY, shiftCenterLatitude } from './src/utils/geo';
@@ -69,6 +78,18 @@ const CARD_CLEARANCE = 24;
 
 // Tolleranza aggiuntiva (px) attorno al cerchio di un cluster per considerarlo toccato.
 const CLUSTER_HIT_SLOP = 6;
+
+/** Tema scelto nelle Impostazioni applicato a tutta l'app (anche mappa e barre di sistema). */
+function applyTheme(theme) {
+  Appearance.setColorScheme?.(theme === 'auto' ? 'unspecified' : theme);
+}
+
+/** Punti da mostrare: una specie o, per "Tutte le specie", tutte quelle con segnalazioni. */
+function loadDatasets(item, manifest, speciesList) {
+  return item.all
+    ? loadAllDatasets(speciesList, manifest)
+    : readSpeciesPoints(item, manifest).then((data) => (data ? [{ species: item, data }] : null));
+}
 
 function zoomToRegion([longitude, latitude], zoom) {
   const delta = 360 / 2 ** zoom;
@@ -136,14 +157,22 @@ function IASTracker() {
   }, [clusters]);
 
   // Dati aggiornati: prima quelli già scaricati, poi (al massimo ogni 12 ore) controllo online.
+  // Mentre si scaricano i file nuovi compare un avviso discreto sotto la barra superiore.
   const [manifest, setManifest] = useState(null);
+  const [updatingData, setUpdatingData] = useState(false);
   useEffect(() => {
     let active = true;
     (async () => {
       const stored = await loadStoredManifest();
       if (active && stored) setManifest(stored);
-      const { manifest: latest } = await checkForUpdates();
-      if (active && latest) setManifest(latest);
+      const { manifest: latest } = await checkForUpdates({
+        onDownloadStart: () => {
+          if (active) setUpdatingData(true);
+        },
+      });
+      if (!active) return;
+      setUpdatingData(false);
+      if (latest) setManifest(latest);
     })();
     return () => {
       active = false;
@@ -182,20 +211,21 @@ function IASTracker() {
       const request = ++loadRequest.current;
       if (!item.total) {
         setDatasets(null);
+        setLoading(false); // un caricamento ancora in corso di un'altra specie non va più atteso
         return;
       }
       setLoading(true);
       // Caricamento dinamico: dati scaricati (se più recenti) o inclusi nell'app.
-      const load = item.all
-        ? loadAllDatasets(speciesList, manifest)
-        : readSpeciesPoints(item, manifest).then((data) => (data ? [{ species: item, data }] : null));
-      load
+      loadDatasets(item, manifest, speciesList)
         .catch(() => null)
         .then((loaded) => {
           if (request !== loadRequest.current) return; // nel frattempo è stata scelta un'altra specie
           setDatasets(loaded);
           setLoading(false);
-          if (!loaded) return;
+          if (!loaded) {
+            Alert.alert('Dati non disponibili', 'Non è stato possibile leggere le segnalazioni. Riprova.');
+            return;
+          }
           if (focus?.bbox) {
             mapRef.current?.animateToRegion(bboxToRegion(focus.bbox), 600);
           } else if (focus) {
@@ -212,19 +242,24 @@ function IASTracker() {
   );
 
   const centerOnUser = useCallback(async () => {
-    if (!hasLocation) {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Posizione non disponibile', "Consenti l'accesso alla posizione nelle impostazioni.");
-        return;
+    try {
+      if (!hasLocation) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Posizione non disponibile', "Consenti l'accesso alla posizione nelle impostazioni.");
+          return;
+        }
+        setHasLocation(true);
       }
-      setHasLocation(true);
+      const { coords } = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      mapRef.current?.animateToRegion(
+        { latitude: coords.latitude, longitude: coords.longitude, latitudeDelta: 0.2, longitudeDelta: 0.2 },
+        600,
+      );
+    } catch {
+      // GPS spento, servizi di localizzazione disattivati o nessun segnale
+      Alert.alert('Posizione non disponibile', 'Controlla che la localizzazione sia attiva e riprova.');
     }
-    const { coords } = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-    mapRef.current?.animateToRegion(
-      { latitude: coords.latitude, longitude: coords.longitude, latitudeDelta: 0.2, longitudeDelta: 0.2 },
-      600,
-    );
   }, [hasLocation]);
 
   // Callback stabili: i marker memoizzati non si ridisegnano a ogni pan/zoom.
@@ -415,11 +450,6 @@ function IASTracker() {
     if (!species) setTimeout(() => setPanelOpen(true), 400);
   }, [species]);
 
-  const openWelcomeFromPanel = useCallback(() => {
-    setPanelOpen(false);
-    setTimeout(() => setWelcomeOpen(true), 400);
-  }, []);
-
   // Filtri: ripristinati all'avvio, salvati a ogni modifica.
   useEffect(() => {
     let active = true;
@@ -474,10 +504,12 @@ function IASTracker() {
   // Novità della settimana e specie / regioni seguite
   const [news, setNews] = useState(null);
   const [follows, setFollows] = useState(NO_FOLLOWS);
+  const followsRef = useRef(NO_FOLLOWS); // vedi changeFollow
   const [newsSeen, setNewsSeen] = useState(undefined); // undefined = non ancora letto
   const [newsOpen, setNewsOpen] = useState(false);
   const [seenAtOpen, setSeenAtOpen] = useState(null);
   const [notify, setNotify] = useState(false);
+  const notifyRef = useRef(false);
   useEffect(() => {
     let active = true;
     readNews(manifest)
@@ -493,6 +525,7 @@ function IASTracker() {
     let active = true;
     Promise.all([loadFollows(), loadNewsSeen(), loadNotify()]).then(([f, seen, n]) => {
       if (!active) return;
+      followsRef.current = f;
       setFollows(f);
       setNewsSeen(seen);
       setNotify(n);
@@ -548,20 +581,24 @@ function IASTracker() {
     return () => subscription.remove();
   }, [openNews]);
 
-  const changeFollow = useCallback(
-    (kind, value) => {
-      const next = toggleFollow(follows, kind, value);
-      setFollows(next);
-      saveFollows(next);
-      if (!hasFollows(next) && notify) {
-        // niente da seguire: niente avvisi
-        setNotify(false);
-        saveNotify(false);
-        disableNewsAlerts().catch(() => {});
-      }
-    },
-    [follows, notify],
-  );
+  // Valori correnti letti da un ref: più tocchi su "Segui" prima del render successivo (elenco
+  // delle Novità) si sommano invece di sovrascriversi.
+  useEffect(() => {
+    notifyRef.current = notify;
+  }, [notify]);
+  const changeFollow = useCallback((kind, value) => {
+    const next = toggleFollow(followsRef.current, kind, value);
+    followsRef.current = next;
+    setFollows(next);
+    saveFollows(next);
+    if (!hasFollows(next) && notifyRef.current) {
+      // niente da seguire: niente avvisi
+      notifyRef.current = false;
+      setNotify(false);
+      saveNotify(false);
+      disableNewsAlerts().catch(() => {});
+    }
+  }, []);
 
   const changeNotify = useCallback(async (enabled) => {
     if (!enabled) {
@@ -602,6 +639,81 @@ function IASTracker() {
     setTimeout(() => setSheetSpecies(item), 400);
   }, []);
 
+  // --- Impostazioni ---------------------------------------------------------------------
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [theme, setTheme] = useState('auto');
+  const [mapType, setMapType] = useState('standard');
+  const [signature, setSignature] = useState('');
+  useEffect(() => {
+    let active = true;
+    Promise.all([loadTheme(), loadMapType(), loadSignature()]).then(([t, m, sig]) => {
+      if (!active) return;
+      setTheme(t);
+      applyTheme(t);
+      setMapType(m);
+      setSignature(sig);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const changeTheme = useCallback((t) => {
+    setTheme(t);
+    saveTheme(t);
+    applyTheme(t);
+  }, []);
+  const changeMapType = useCallback((m) => {
+    setMapType(m);
+    saveMapType(m);
+  }, []);
+  const changeSignature = useCallback((text) => {
+    setSignature(text);
+    saveSignature(text);
+  }, []);
+  const resetFilters = useCallback(() => changeFilters(DEFAULT_FILTERS), [changeFilters]);
+
+  // Specie mostrata, letta dopo l'aggiornamento manuale (che può finire a schermata cambiata).
+  const speciesRef = useRef(null);
+  useEffect(() => {
+    speciesRef.current = species;
+  }, [species]);
+
+  /** Aggiornamento manuale dalle Impostazioni: se arrivano dati nuovi, la mappa li mostra subito. */
+  const updateNow = useCallback(async () => {
+    const result = await checkForUpdates({ force: true, onDownloadStart: () => setUpdatingData(true) });
+    setUpdatingData(false);
+    const latest = result.manifest;
+    if (!latest || (result.status !== 'updated' && result.status !== 'incomplete')) return result;
+    setManifest(latest);
+    const shown = speciesRef.current;
+    if (shown) {
+      setSelection(null); // i punti selezionati appartengono ai dati precedenti
+      const list = SPECIES.map((s) => withRemoteStats(s, latest));
+      const item = shown.all ? shown : (list.find((s) => s.slug === shown.slug) ?? shown);
+      if (!shown.all) setSpecies(item);
+      if (item.total) {
+        const request = ++loadRequest.current;
+        loadDatasets(item, latest, list)
+          .catch(() => null)
+          .then((loaded) => {
+            if (request === loadRequest.current && loaded) setDatasets(loaded);
+          });
+      }
+    }
+    return result;
+  }, []);
+
+  const clearData = useCallback(async () => {
+    await clearDownloadedData();
+    setManifest(null);
+  }, []);
+
+  const openWelcomeFromSettings = useCallback(() => {
+    setSettingsOpen(false);
+    setTimeout(() => setWelcomeOpen(true), 400);
+  }, []);
+
   const filtersSummary = describeFilters(filters);
   const filtersActive = activeFilterCount(filters);
 
@@ -619,6 +731,7 @@ function IASTracker() {
         style={[StyleSheet.absoluteFill, { backgroundColor: colors.mapBackground }]}
         initialRegion={ITALY_REGION}
         onRegionChangeComplete={handleRegionChange}
+        mapType={mapType}
         userInterfaceStyle={colors.scheme}
         loadingEnabled
         loadingBackgroundColor={colors.mapBackground}
@@ -632,12 +745,20 @@ function IASTracker() {
       >
         {clusters.map((f) => {
           if (f.properties.cluster) {
-            return <ClusterMarker key={`c-${f.properties.cluster_id}`} feature={f} onPress={pressCluster} />;
+            // il numero fa parte della chiave: su Android il marker è una bitmap che non si ridisegna
+            return (
+              <ClusterMarker
+                key={`c-${f.properties.cluster_id}-${f.properties.records}`}
+                feature={f}
+                onPress={pressCluster}
+              />
+            );
           }
-          // key stabile: i marker non vengono ricreati quando cambia la selezione
+          // key stabile: i marker non vengono ricreati quando cambia la selezione, ma sì quando
+          // cambia l'aspetto (filtri), perché su Android la bitmap non si ridisegnerebbe
           return (
             <DotMarker
-              key={`d-${f.properties.id}`}
+              key={`d-${f.properties.id}-${f.properties.automatic ? 1 : 0}${f.properties.approximate ? 1 : 0}`}
               feature={f}
               selected={f.properties.id === selectedId}
               onPress={selectPoint}
@@ -648,7 +769,7 @@ function IASTracker() {
           <Polygon
             key={`g-${grid.slug}-${i}`}
             coordinates={poly.esterno.map(([longitude, latitude]) => ({ latitude, longitude }))}
-            holes={poly.buchi.map((h) => h.map(([longitude, latitude]) => ({ latitude, longitude })))}
+            holes={(poly.buchi ?? []).map((h) => h.map(([longitude, latitude]) => ({ latitude, longitude })))}
             fillColor="rgba(21,101,192,0.18)"
             strokeColor="rgba(21,101,192,0.7)"
             strokeWidth={1}
@@ -683,7 +804,7 @@ function IASTracker() {
               ? `Specie mostrata: ${species.commonName}, ${
                   species.total === 0
                     ? 'nessuna segnalazione in Italia'
-                    : `${visibleCount} segnalazioni nell'area visibile`
+                    : `${visibleCount} segnalazioni${filtersActive ? ' con i filtri attivi' : ''}`
                 }`
               : 'Scegli una specie'
           }
@@ -719,16 +840,20 @@ function IASTracker() {
         )}
       </View>
 
-      {newsBadge && !selection && (
-        <Pressable
-          style={[styles.newsPill, { top: topBarBottom + 8 }]}
-          onPress={openNews}
-          accessibilityRole="button"
-          accessibilityLabel={`${newsBadge}. Apri le novità`}
-        >
-          <Text style={styles.newsPillText}>● {newsBadge}</Text>
-        </Pressable>
-      )}
+      {/* Avvisi sotto la barra superiore: dati in aggiornamento, novità */}
+      <View style={[styles.pills, { top: topBarBottom + 8 }]} pointerEvents="box-none">
+        {updatingData && <StatusPill floating label="Aggiornamento dei dati in corso…" />}
+        {newsBadge && !selection && (
+          <Pressable
+            style={styles.newsPill}
+            onPress={openNews}
+            accessibilityRole="button"
+            accessibilityLabel={`${newsBadge}. Apri le novità`}
+          >
+            <Text style={styles.newsPillText}>● {newsBadge}</Text>
+          </Pressable>
+        )}
+      </View>
 
       <PointCard
         key={selection?.key}
@@ -824,7 +949,7 @@ function IASTracker() {
         selectedSlug={species?.slug}
         onSelect={selectSpecies}
         onInfo={openSheetFromPanel}
-        onAbout={openWelcomeFromPanel}
+        onSettings={() => openFromPanel(setSettingsOpen)}
         onRegions={() => openFromPanel(setRegionsOpen)}
         onNotebook={() => openFromPanel(setNotebookOpen)}
         onNews={() => {
@@ -864,6 +989,29 @@ function IASTracker() {
 
       <WelcomeScreen visible={welcomeOpen} onDone={finishWelcome} />
 
+      <SettingsScreen
+        visible={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        dataDate={dataDate(manifest)}
+        updating={updatingData}
+        onUpdateNow={updateNow}
+        onClearData={clearData}
+        mapType={mapType}
+        onChangeMapType={changeMapType}
+        showGrid={showGrid}
+        onToggleGrid={toggleGrid}
+        filtersSummary={filtersSummary}
+        onResetFilters={resetFilters}
+        theme={theme}
+        onChangeTheme={changeTheme}
+        signature={signature}
+        onChangeSignature={changeSignature}
+        notify={notify}
+        canNotify={hasFollows(follows)}
+        onToggleNotify={changeNotify}
+        onOpenWelcome={openWelcomeFromSettings}
+      />
+
       {/* Pulsante per una nuova segnalazione (nascosto mentre è aperta la scheda di un punto) */}
       {!selection && (
         <Pressable
@@ -892,6 +1040,7 @@ function IASTracker() {
         visible={reportOpen}
         initialSpecies={species?.all ? null : species}
         initialKind={reportKind}
+        signature={signature}
         onClose={() => setReportOpen(false)}
         onOpenNotebook={openNotebookFromReport}
       />
@@ -975,9 +1124,8 @@ const createStyles = (c) => {
       ...shadow,
     },
     reportButtonText: { color: c.onPrimary, fontSize: 16, fontWeight: '700' },
+    pills: { position: 'absolute', left: 12, right: 12, alignItems: 'flex-start', gap: 8 },
     newsPill: {
-      position: 'absolute',
-      left: 12,
       backgroundColor: c.surface,
       borderRadius: 16,
       paddingHorizontal: 12,

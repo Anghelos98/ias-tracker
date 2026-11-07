@@ -45,7 +45,9 @@ export default function RegionReport({
     let active = true;
     loadAllDatasets(speciesList, manifest)
       .then((d) => {
-        if (active) setDatasets(d);
+        if (!active) return;
+        setDatasets(d);
+        setFailed(false); // riuscito dopo un errore precedente
       })
       .catch(() => {
         if (active) setFailed(true);
@@ -316,7 +318,7 @@ function Trend({ report, styles }) {
   const description =
     `Segnalazioni per anno dal ${first} al ${last}: ` +
     report.trend.map((t) => `${t.year}, ${t.count}`).join('; ') +
-    `. Anno con più segnalazioni: ${peak.year}.`;
+    (peak.count > 0 ? `. Anno con più segnalazioni: ${peak.year}.` : '. Nessuna segnalazione in questi anni.');
   return (
     <View style={styles.trend}>
       <Text style={styles.sectionTitle} accessibilityRole="header">

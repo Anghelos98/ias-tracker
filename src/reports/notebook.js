@@ -58,6 +58,7 @@ export function notebookRows(entries) {
     precisione_m: e.accuracy != null ? Math.round(e.accuracy) : null,
     origine_posizione: e.locationSource,
     note: e.note?.trim() ?? '',
+    rilevatore: e.signature?.trim() ?? '',
     foto: e.photos?.length ?? 0,
     inviata: (e.sent ?? []).map((s) => s.channel).join(' '),
   }));
@@ -74,6 +75,7 @@ const COLUMNS = [
   'precisione_m',
   'origine_posizione',
   'note',
+  'rilevatore',
   'foto',
   'inviata',
 ];
@@ -81,7 +83,7 @@ const COLUMNS = [
 function csvCell(value) {
   if (value == null) return '';
   const text = String(value);
-  return /[",\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  return /[",\r\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
 function xml(text) {
@@ -117,6 +119,7 @@ export function formatNotebook(format, entries) {
       r.intervento ? `Intervento: ${r.intervento}` : 'Presenza',
       r.precisione_m != null ? `Precisione: ± ${r.precisione_m} m` : null,
       r.note ? `Note: ${r.note}` : null,
+      r.rilevatore ? `Rilevatore: ${r.rilevatore}` : null,
     ]
       .filter(Boolean)
       .join('\n');

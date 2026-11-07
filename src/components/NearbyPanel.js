@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { loadAllDatasets } from '../data/allSpecies';
 import { formatDistance, speciesNearby } from '../data/nearby';
-import { useColors, useThemedStyles } from '../theme';
+import { useThemedStyles } from '../theme';
+import StatusPill from './StatusPill';
 import { readGpsPosition } from '../utils/location';
 
 const RADII = [1000, 5000, 10000, 25000];
@@ -15,24 +16,49 @@ const RADII = [1000, 5000, 10000, 25000];
  */
 export default function NearbyPanel({ visible, speciesList, manifest, filters, onSelect, onInfo, onClose }) {
   const insets = useSafeAreaInsets();
-  const colors = useColors();
   const styles = useThemedStyles(createStyles);
   const [radius, setRadius] = useState(5000);
-  const [state, setState] = useState({ status: 'loading' }); // loading | ready | error
+  const [position, setPosition] = useState(null); // null = posizione in aggiornamento
+  const [datasets, setDatasets] = useState(null);
+  const [error, setError] = useState(null);
   const [attempt, setAttempt] = useState(0);
 
-  // Posizione e dati di tutte le specie, letti all'apertura (o su "Riprova").
+  // A ogni apertura la posizione precedente non vale più: niente risultati finché non arriva
+  // la nuova lettura GPS (l'utente può essersi spostato). Stato aggiornato durante il render,
+  // come consigliato da React per reagire al cambio di una prop.
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
+    if (visible) {
+      setPosition(null);
+      setError(null);
+    }
+  }
+
+  // Posizione GPS, letta all'apertura (o su "Riprova").
   useEffect(() => {
     if (!visible) return undefined;
     let active = true;
-    Promise.all([readGpsPosition(), loadAllDatasets(speciesList, manifest)])
-      .then(([reading, datasets]) => {
-        if (!active) return;
-        if (reading.error) setState({ status: 'error', message: reading.error });
-        else setState({ status: 'ready', position: reading.position, datasets });
+    readGpsPosition().then((reading) => {
+      if (!active) return;
+      if (reading.error) setError(reading.error);
+      else setPosition(reading.position);
+    });
+    return () => {
+      active = false;
+    };
+  }, [visible, attempt]);
+
+  // Punti di tutte le specie (in memoria dopo il primo caricamento).
+  useEffect(() => {
+    if (!visible) return undefined;
+    let active = true;
+    loadAllDatasets(speciesList, manifest)
+      .then((d) => {
+        if (active) setDatasets(d);
       })
       .catch(() => {
-        if (active) setState({ status: 'error', message: 'Non è stato possibile caricare i dati.' });
+        if (active) setError('Non è stato possibile caricare i dati.');
       });
     return () => {
       active = false;
@@ -40,13 +66,15 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
   }, [visible, speciesList, manifest, attempt]);
 
   const retry = useCallback(() => {
-    setState({ status: 'loading' });
+    setError(null);
+    setPosition(null);
     setAttempt((a) => a + 1);
   }, []);
 
+  const ready = Boolean(!error && position && datasets);
   const results = useMemo(
-    () => (state.status === 'ready' ? speciesNearby(state.datasets, state.position, radius, filters) : []),
-    [state, radius, filters],
+    () => (ready ? speciesNearby(datasets, position, radius, filters) : []),
+    [ready, datasets, position, radius, filters],
   );
 
   return (
@@ -78,17 +106,13 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
           ))}
         </View>
 
-        {state.status === 'loading' && (
-          <View style={styles.center} accessible accessibilityLabel="Rilevo la posizione e cerco le segnalazioni">
-            <ActivityIndicator color={colors.primary} />
-            <Text style={styles.muted}>Rilevo la posizione e cerco le segnalazioni…</Text>
-          </View>
-        )}
+        {!error && !position && <StatusPill label="Aggiornamento della posizione…" style={styles.status} />}
+        {!error && position && !datasets && <StatusPill label="Cerco le segnalazioni…" style={styles.status} />}
 
-        {state.status === 'error' && (
+        {error && (
           <View style={styles.center}>
             <Text style={styles.error} accessibilityLiveRegion="polite">
-              {state.message}
+              {error}
             </Text>
             <Pressable onPress={retry} style={styles.retry} accessibilityRole="button">
               <Text style={styles.retryText}>Riprova</Text>
@@ -96,7 +120,7 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
           </View>
         )}
 
-        {state.status === 'ready' && (
+        {ready && (
           <FlatList
             data={results}
             keyExtractor={(r) => r.species.slug}
@@ -110,7 +134,7 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
             renderItem={({ item }) => (
               <Pressable
                 style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
-                onPress={() => onSelect(item, state.position, radius)}
+                onPress={() => onSelect(item, position, radius)}
                 accessibilityRole="button"
                 accessibilityLabel={`${item.species.commonName}: ${item.count} ${
                   item.count === 1 ? 'segnalazione' : 'segnalazioni'
@@ -166,7 +190,7 @@ const createStyles = (c) =>
     chipText: { fontSize: 14, color: c.primary },
     chipTextActive: { color: c.onPrimary, fontWeight: '600' },
     center: { alignItems: 'center', paddingVertical: 28, gap: 10 },
-    muted: { fontSize: 13, color: c.textMuted },
+    status: { marginTop: 4, marginBottom: 20 },
     error: { fontSize: 14, color: c.warning, textAlign: 'center' },
     retry: { borderWidth: 1.5, borderColor: c.primary, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8 },
     retryText: { color: c.primary, fontWeight: '600' },

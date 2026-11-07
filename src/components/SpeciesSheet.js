@@ -79,7 +79,12 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
         </Pressable>
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}>
+      {/* key: aprendo una specie simile la scheda riparte dall'inizio */}
+      <ScrollView
+        key={species.slug}
+        style={styles.scroll}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
+      >
         {photos.length > 0 && <PhotoGallery photos={photos} />}
 
         {/* Riepilogo */}
@@ -216,7 +221,7 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
           <Section title="Approfondimenti">
             {sheet.sezioni.map((s) => (
               <Collapsible key={s.titolo} title={s.titolo}>
-                {s.blocchi.map((b, i) => (
+                {(s.blocchi ?? []).map((b, i) => (
                   <View key={i}>
                     {b.sottotitolo ? <Text style={styles.blockSubtitle}>{b.sottotitolo}</Text> : null}
                     <Text style={styles.paragraph}>{b.testo}</Text>
@@ -249,11 +254,11 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
           {sheet ? (
             <>
               <Text style={styles.small}>
-                Testi della scheda: {sheet.fonte.attribuzione}, licenza {sheet.fonte.licenza}, consultato il{' '}
-                {formatDateIt(sheet.fonte.recuperato_il)}.
+                Testi della scheda: {sheet.fonte?.attribuzione ?? 'ISPRA'}, licenza {sheet.fonte?.licenza ?? 'CC BY 4.0'}
+                {sheet.fonte?.recuperato_il ? `, consultato il ${formatDateIt(sheet.fonte.recuperato_il)}` : ''}.
                 {sheet.completa ? '' : ' La scheda ISPRA di questa specie è incompleta.'}
               </Text>
-              <Link label="Scheda della specie sul sito ISPRA" url={sheet.fonte.url} />
+              {sheet.fonte?.url && <Link label="Scheda della specie sul sito ISPRA" url={sheet.fonte.url} />}
               {sheet.pdf_scheda && <Link label="Scheda completa (PDF)" url={sheet.pdf_scheda} />}
               {sheet.pdf_valutazione_rischio && (
                 <Link label="Valutazione del rischio (PDF, inglese)" url={sheet.pdf_valutazione_rischio} />
@@ -274,6 +279,9 @@ function EuropeSection({ europe }) {
   const styles = useThemedStyles(createStyles);
   const impactColors = { alto: colors.danger, medio: colors.orange, basso: colors.olive };
   const intro = europe.prima_introduzione_europa;
+  const countries = europe.paesi_presenza ?? [];
+  const pathways = europe.vie_introduzione ?? [];
+  const impacts = europe.impatti ?? [];
   return (
     <Section title="In Europa (EASIN)">
       {intro && (
@@ -281,26 +289,26 @@ function EuropeSection({ europe }) {
           Prima introduzione nota in Europa: {intro.anno}, {intro.paese}.
         </Text>
       )}
-      {europe.paesi_presenza.length > 0 && (
-        <Collapsible title={`Presente in ${europe.paesi_presenza.length} paesi europei e del Mediterraneo`}>
-          <Text style={styles.paragraph}>{europe.paesi_presenza.join(', ')}.</Text>
+      {countries.length > 0 && (
+        <Collapsible title={`Presente in ${countries.length} paesi europei e del Mediterraneo`}>
+          <Text style={styles.paragraph}>{countries.join(', ')}.</Text>
         </Collapsible>
       )}
-      {europe.vie_introduzione.length > 0 && (
+      {pathways.length > 0 && (
         <>
           <Text style={styles.subheading}>Come arriva e si diffonde</Text>
-          {europe.vie_introduzione.map((v) => (
+          {pathways.map((v) => (
             <Text key={v} style={styles.bullet}>
               • {v}
             </Text>
           ))}
         </>
       )}
-      {europe.impatti.length > 0 && (
+      {impacts.length > 0 && (
         <>
           <Text style={styles.subheading}>Impatti negativi</Text>
           <View style={styles.impacts}>
-            {europe.impatti.map((i) => (
+            {impacts.map((i) => (
               <View
                 key={i.settore}
                 style={[styles.impact, { borderColor: impactColors[i.livello] }]}

@@ -9,7 +9,7 @@ Formato compatto di un file specie:
     {"fonti": [{"nome": "iNaturalist ...", "licenza": "CC BY-NC 4.0",
                 "link": "https://www.inaturalist.org/observations/"}, ...],
      "punti": [[lon, lat, anno|null, indice_fonte, auto(0/1), incertezza_m|null, regione|null,
-                gbif_id, id_originale|null], ...]}
+                gbif_id, id_originale|null, giorno|null], ...]}
 
 "gbif_id" porta alla pagina del record su GBIF (https://www.gbif.org/occurrence/<gbif_id>).
 "id_originale" è il numero finale dell'indirizzo del dato nella banca dati di origine: la
@@ -20,6 +20,10 @@ fonti con prefissi diversi, come i progetti di Pl@ntNet, diventano voci distinte
 confini di scripts/data/regioni.json (da fetch_istat_regions.py). I punti appena fuori
 dalla costa (entro REGION_TOLERANCE_KM) vanno alla regione più vicina; quelli in mare
 aperto restano senza regione.
+
+"giorno" è la data dell'osservazione in giorni dal 1° gennaio 1970 (solo se GBIF la riporta
+completa, con il giorno; per un intervallo di date si usa l'inizio). Serve ai filtri "Ultimo
+mese" e "Ultimo anno". Le versioni dell'app che non conoscono il campo lo ignorano.
 
 Metro (il bundler di Expo) accetta solo require() statici: per questo il catalogo
 contiene una funzione `load` per specie con un require esplicito. Il file JSON
@@ -33,6 +37,7 @@ from __future__ import annotations
 import json
 import math
 import re
+from datetime import date
 from pathlib import Path
 
 from shapely import STRtree
@@ -176,6 +181,26 @@ def split_link(url: str | None) -> tuple[str | None, int | None]:
     return (m.group(1), int(m.group(2))) if m else (None, None)
 
 
+EPOCH = date(1970, 1, 1)
+
+
+def event_day(event_date: str | None) -> int | None:
+    """Giorni dal 1970 della data dell'osservazione, se è completa (giorno compreso).
+
+    GBIF riporta eventDate in ISO 8601: "2026-04-19T20:11:25", "2026-04-19", "2019-05" (solo
+    mese), "2019" (solo anno) o un intervallo "2019-05-01/2019-05-31" (si usa l'inizio).
+    """
+    if not event_date:
+        return None
+    first = str(event_date).split("/")[0][:10]
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", first):
+        return None
+    try:
+        return (date.fromisoformat(first) - EPOCH).days
+    except ValueError:
+        return None
+
+
 def compact(geojson: dict, locator: RegionLocator | None = None) -> dict:
     sources: list[dict] = []
     source_idx: dict[tuple, int] = {}
@@ -197,7 +222,8 @@ def compact(geojson: dict, locator: RegionLocator | None = None) -> dict:
                        round(unc) if unc is not None else None,
                        locator.locate(lon, lat) if locator else None,
                        p.get("gbifID") if p.get("gbifID") is not None else f.get("id"),
-                       original_id])
+                       original_id,
+                       event_day(p.get("data"))])
     return {"fonti": sources, "punti": points}
 
 

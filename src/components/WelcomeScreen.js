@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useThemedStyles } from '../theme';
 
-const REPO_URL = 'https://github.com/Anghelos98/ias-tracker';
+export const REPO_URL = 'https://github.com/Anghelos98/ias-tracker';
 export const PRIVACY_URL = 'https://anghelos98.github.io/ias-tracker/privacy.html';
 
 const PAGES = [
@@ -40,13 +40,28 @@ const PAGES = [
   },
 ];
 
-/** Presentazione in tre pagine, mostrata al primo avvio e riapribile da "Informazioni". */
+/**
+ * Presentazione in tre pagine, mostrata al primo avvio e riapribile dalle Impostazioni.
+ * Le pagine scorrono con lo swipe orizzontale o con i pulsanti Avanti / Indietro.
+ */
 export default function WelcomeScreen({ visible, onDone }) {
   const insets = useSafeAreaInsets();
   const styles = useThemedStyles(createStyles);
+  const { width } = useWindowDimensions();
+  const pagerRef = useRef(null);
   const [page, setPage] = useState(0);
   const last = page === PAGES.length - 1;
-  const { title, paragraphs, items } = PAGES[page];
+
+  const goTo = (index) => {
+    setPage(index);
+    pagerRef.current?.scrollTo({ x: index * width, animated: true });
+  };
+
+  // pagina in vista al termine dello swipe
+  const onSwipeEnd = (e) => {
+    const index = Math.round(e.nativeEvent.contentOffset.x / width);
+    setPage(Math.max(0, Math.min(PAGES.length - 1, index)));
+  };
 
   const finish = () => {
     setPage(0);
@@ -56,7 +71,7 @@ export default function WelcomeScreen({ visible, onDone }) {
   return (
     <Modal visible={visible} animationType="fade" onRequestClose={finish}>
       <View style={[styles.container, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]}>
-        <View style={styles.topRow}>
+        <View style={[styles.topRow, styles.padded]}>
           <Text style={styles.brand}>IAS Tracker</Text>
           {!last && (
             <Pressable
@@ -70,49 +85,76 @@ export default function WelcomeScreen({ visible, onDone }) {
           )}
         </View>
 
-        <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
-          <Text style={styles.title} accessibilityRole="header">
-            {title}
-          </Text>
-          {paragraphs?.map((p) => (
-            <Text key={p} style={styles.paragraph}>
-              {p}
-            </Text>
-          ))}
-          {items?.map(([icon, text]) => (
-            <View key={text} style={styles.item} accessible accessibilityLabel={text}>
-              <Text style={styles.itemIcon} allowFontScaling={false}>
-                {icon}
+        <ScrollView
+          ref={pagerRef}
+          testID="welcome-pager"
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={onSwipeEnd}
+          style={styles.pager}
+        >
+          {PAGES.map(({ title, paragraphs, items }, index) => (
+            <ScrollView
+              key={title}
+              style={{ width }}
+              contentContainerStyle={[styles.bodyContent, styles.padded]}
+              // le pagine fuori vista non vengono lette da VoiceOver / TalkBack
+              accessibilityElementsHidden={index !== page}
+              importantForAccessibility={index === page ? 'auto' : 'no-hide-descendants'}
+            >
+              <Text style={styles.title} accessibilityRole="header">
+                {title}
               </Text>
-              <Text style={styles.itemText}>{text}</Text>
-            </View>
+              {paragraphs?.map((p) => (
+                <Text key={p} style={styles.paragraph}>
+                  {p}
+                </Text>
+              ))}
+              {items?.map(([icon, text]) => (
+                <View key={text} style={styles.item} accessible accessibilityLabel={text}>
+                  <Text style={styles.itemIcon} allowFontScaling={false}>
+                    {icon}
+                  </Text>
+                  <Text style={styles.itemText}>{text}</Text>
+                </View>
+              ))}
+              {index === 0 && (
+                <>
+                  <Pressable onPress={() => Linking.openURL(REPO_URL).catch(() => {})} accessibilityRole="link">
+                    <Text style={styles.link}>Codice sorgente su GitHub ↗</Text>
+                  </Pressable>
+                  <Pressable onPress={() => Linking.openURL(PRIVACY_URL).catch(() => {})} accessibilityRole="link">
+                    <Text style={styles.link}>Informativa sulla privacy ↗</Text>
+                  </Pressable>
+                </>
+              )}
+            </ScrollView>
           ))}
-          {page === 0 && (
-            <>
-              <Pressable onPress={() => Linking.openURL(REPO_URL).catch(() => {})} accessibilityRole="link">
-                <Text style={styles.link}>Codice sorgente su GitHub ↗</Text>
-              </Pressable>
-              <Pressable onPress={() => Linking.openURL(PRIVACY_URL).catch(() => {})} accessibilityRole="link">
-                <Text style={styles.link}>Informativa sulla privacy ↗</Text>
-              </Pressable>
-            </>
-          )}
         </ScrollView>
 
         <View style={styles.dots} accessible accessibilityLabel={`Pagina ${page + 1} di ${PAGES.length}`}>
           {PAGES.map((p, i) => (
-            <View key={p.title} style={[styles.dot, i === page && styles.dotActive]} />
+            <Pressable
+              key={p.title}
+              onPress={() => goTo(i)}
+              hitSlop={8}
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+            >
+              <View style={[styles.dot, i === page && styles.dotActive]} />
+            </Pressable>
           ))}
         </View>
-        <View style={styles.buttons}>
+        <View style={[styles.buttons, styles.padded]}>
           {page > 0 && (
-            <Pressable style={styles.secondary} onPress={() => setPage(page - 1)} accessibilityRole="button">
+            <Pressable style={styles.secondary} onPress={() => goTo(page - 1)} accessibilityRole="button">
               <Text style={styles.secondaryText}>Indietro</Text>
             </Pressable>
           )}
           <Pressable
             style={styles.primary}
-            onPress={last ? finish : () => setPage(page + 1)}
+            onPress={last ? finish : () => goTo(page + 1)}
             accessibilityRole="button"
           >
             <Text style={styles.primaryText}>{last ? 'Inizia' : 'Avanti'}</Text>
@@ -125,11 +167,12 @@ export default function WelcomeScreen({ visible, onDone }) {
 
 const createStyles = (c) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: c.background, paddingHorizontal: 24 },
+    container: { flex: 1, backgroundColor: c.background },
+    padded: { paddingHorizontal: 24 },
+    pager: { flex: 1, marginTop: 24 },
     topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     brand: { fontSize: 13, fontWeight: '800', color: c.primary, letterSpacing: 1, textTransform: 'uppercase' },
     skip: { fontSize: 15, color: c.textMuted },
-    body: { flex: 1, marginTop: 24 },
     bodyContent: { paddingBottom: 16 },
     title: { fontSize: 26, fontWeight: '800', color: c.text, marginBottom: 18 },
     paragraph: { fontSize: 16, lineHeight: 24, color: c.text, marginBottom: 14 },

@@ -46,6 +46,14 @@ contribuire all'identificazione. Nel formato compatto dell'app l'indirizzo è di
 comune, salvato con la fonte (`link`), e un numero per segnalazione (vedi `scripts/build_app_data.py`).
 Gli stessi collegamenti sono nelle esportazioni (colonne `gbif` e `dato_originale`).
 
+### Data dell'osservazione
+
+Dal 7 novembre 2026 ogni punto porta anche la data dell'osservazione (decimo campo del formato
+compatto, in giorni dal 1° gennaio 1970), solo se GBIF la riporta completa: circa il 96% delle
+segnalazioni. Serve ai filtri "Ultimo mese" (ultimi 30 giorni) e "Ultimo anno" (ultimi 12 mesi),
+che escludono le segnalazioni senza data completa; gli altri filtri di periodo usano l'anno.
+La data compare nella scheda della segnalazione e nelle esportazioni (colonna `data`).
+
 ### Novità della settimana
 
 Ogni lunedì `scripts/build_news.py` confronta i dati appena scaricati con quelli pubblicati la
@@ -53,6 +61,18 @@ settimana prima su GitHub Pages e salva in `assets/data/news.json` le segnalazio
 per specie e regione, e le *prime segnalazioni* di una specie in una regione (ultime 12 settimane).
 Le identificazioni solo automatiche non sono contate. Una segnalazione "nuova" può riguardare un
 avvistamento di anni prima, pubblicato solo ora.
+Se GBIF reindicizza un dataset con identificativi nuovi, i record che hanno la stessa posizione,
+lo stesso anno e la stessa fonte di uno già pubblicato non contano come nuovi.
+
+### Controlli prima della pubblicazione
+
+Il download da GBIF viene ritentato fino a tre volte (lo script riprende da dove si era fermato).
+Poi `scripts/check_data.py` confronta i dati nuovi con quelli pubblicati: se una specie con almeno
+50 segnalazioni ne perde più del 30%, se una specie scende a zero o se il totale cala di più del 10%,
+la pubblicazione si ferma e le app continuano a usare i dati precedenti. Un calo reale (per esempio un
+dataset ritirato) si pubblica avviando a mano il workflow "Aggiorna dati" con l'opzione **forza**.
+Gli script di ISPRA, EASIN e iNaturalist non sostituiscono una scheda, una griglia o le foto già
+presenti con un risultato vuoto (tipico di un cambio di impaginazione del sito di origine).
 
 ## Schede delle specie (ISPRA)
 

@@ -47,10 +47,10 @@ test('righe di esportazione', () => {
 test('CSV con virgolette e campi vuoti', () => {
   const lines = formatNotebook('csv', [old]).split('\n');
   expect(lines[0]).toBe(
-    'data,tipo,intervento,specie,nome_comune,latitudine,longitudine,precisione_m,origine_posizione,note,foto,inviata',
+    'data,tipo,intervento,specie,nome_comune,latitudine,longitudine,precisione_m,origine_posizione,note,rilevatore,foto,inviata',
   );
   expect(lines[1]).toBe(
-    '2026-11-06T10:00:00.000Z,presenza,,Ailanthus altissima,Ailanto,41.9,12.5,8,gps,"vicino al fosso, ""lato nord""",1,email',
+    '2026-11-06T10:00:00.000Z,presenza,,Ailanthus altissima,Ailanto,41.9,12.5,8,gps,"vicino al fosso, ""lato nord""",,1,email',
   );
 });
 

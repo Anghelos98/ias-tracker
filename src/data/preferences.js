@@ -28,7 +28,15 @@ export function saveShowGrid(show) {
 export async function loadFilters() {
   try {
     const raw = await AsyncStorage.getItem(FILTERS_KEY);
-    return raw ? { ...DEFAULT_FILTERS, ...JSON.parse(raw) } : DEFAULT_FILTERS;
+    if (!raw) return DEFAULT_FILTERS;
+    const saved = JSON.parse(raw);
+    // solo le chiavi note, con il tipo giusto (dati di versioni precedenti o corrotti)
+    return {
+      includeAutomatic: typeof saved?.includeAutomatic === 'boolean' ? saved.includeAutomatic : DEFAULT_FILTERS.includeAutomatic,
+      minYear: Number.isFinite(saved?.minYear) ? saved.minYear : DEFAULT_FILTERS.minYear,
+      maxAgeDays: Number.isFinite(saved?.maxAgeDays) ? saved.maxAgeDays : DEFAULT_FILTERS.maxAgeDays,
+      maxUncertainty: Number.isFinite(saved?.maxUncertainty) ? saved.maxUncertainty : DEFAULT_FILTERS.maxUncertainty,
+    };
   } catch {
     return DEFAULT_FILTERS;
   }
@@ -55,7 +63,10 @@ export async function loadFollows() {
   try {
     const raw = await AsyncStorage.getItem(FOLLOWS_KEY);
     const saved = raw ? JSON.parse(raw) : {};
-    return { species: saved.species ?? [], regions: saved.regions ?? [] };
+    return {
+      species: Array.isArray(saved?.species) ? saved.species : [],
+      regions: Array.isArray(saved?.regions) ? saved.regions : [],
+    };
   } catch {
     return NO_FOLLOWS;
   }
@@ -101,4 +112,55 @@ export async function loadNotify() {
 
 export function saveNotify(enabled) {
   return AsyncStorage.setItem(NOTIFY_KEY, enabled ? '1' : '0').catch(() => {});
+}
+
+// --- Impostazioni ----------------------------------------------------------------------
+
+const THEME_KEY = 'ias-tracker/theme/v1';
+const MAP_TYPE_KEY = 'ias-tracker/map-type/v1';
+const SIGNATURE_KEY = 'ias-tracker/signature/v1';
+
+export const THEMES = ['auto', 'light', 'dark'];
+export const MAP_TYPES = ['standard', 'satellite', 'hybrid'];
+/** Lunghezza massima della firma delle segnalazioni (nome ed ente). */
+export const SIGNATURE_MAX = 120;
+
+async function loadChoice(key, allowed) {
+  try {
+    const value = await AsyncStorage.getItem(key);
+    return allowed.includes(value) ? value : allowed[0];
+  } catch {
+    return allowed[0];
+  }
+}
+
+/** Tema: 'auto' (come il telefono), 'light' o 'dark'. */
+export function loadTheme() {
+  return loadChoice(THEME_KEY, THEMES);
+}
+
+export function saveTheme(theme) {
+  return AsyncStorage.setItem(THEME_KEY, theme).catch(() => {});
+}
+
+/** Tipo di mappa: 'standard', 'satellite' o 'hybrid' (satellite con strade e nomi). */
+export function loadMapType() {
+  return loadChoice(MAP_TYPE_KEY, MAP_TYPES);
+}
+
+export function saveMapType(mapType) {
+  return AsyncStorage.setItem(MAP_TYPE_KEY, mapType).catch(() => {});
+}
+
+/** Firma facoltativa aggiunta alle segnalazioni inviate (resta solo sul telefono). */
+export async function loadSignature() {
+  try {
+    return ((await AsyncStorage.getItem(SIGNATURE_KEY)) ?? '').slice(0, SIGNATURE_MAX);
+  } catch {
+    return '';
+  }
+}
+
+export function saveSignature(signature) {
+  return AsyncStorage.setItem(SIGNATURE_KEY, signature.slice(0, SIGNATURE_MAX)).catch(() => {});
 }

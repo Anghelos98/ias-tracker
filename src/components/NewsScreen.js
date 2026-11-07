@@ -94,7 +94,7 @@ export default function NewsScreen({
                 key={`${s.slug}-${code}`}
                 species={speciesBySlug.get(s.slug)}
                 detail={`Prima segnalazione in ${regionName(code)}`}
-                count={s.regions[String(code)]}
+                count={s.regions[String(code)] ?? 0}
                 highlight
                 onPress={() => onShowSpecies(speciesBySlug.get(s.slug), REGION_BY_CODE.get(code))}
                 onInfo={onInfo}
@@ -262,7 +262,7 @@ function SpeciesRow({ species, detail, count, highlight, onPress, onInfo, styles
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${species.commonName}: ${plural(count, 'nuova', 'nuove')}. ${detail}`}
+      accessibilityLabel={`${species.commonName}: ${plural(count ?? 0, 'nuova', 'nuove')}. ${detail}`}
       accessibilityHint="Mostra la specie sulla mappa"
     >
       <View style={styles.rowText}>
@@ -270,7 +270,7 @@ function SpeciesRow({ species, detail, count, highlight, onPress, onInfo, styles
         <Text style={styles.scientific}>{species.scientificName}</Text>
         <Text style={[styles.meta, highlight && styles.metaHighlight]}>{detail}</Text>
       </View>
-      <Text style={styles.count}>+{count.toLocaleString('it-IT')}</Text>
+      <Text style={styles.count}>+{(count ?? 0).toLocaleString('it-IT')}</Text>
       <Pressable
         onPress={() => onInfo(species)}
         hitSlop={10}

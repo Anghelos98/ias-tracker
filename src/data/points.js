@@ -9,9 +9,23 @@ export const APPROXIMATE_M = 1000;
  * @typedef {Object} Filters
  * @property {boolean} includeAutomatic   includere le identificazioni solo automatiche
  * @property {number|null} minYear        solo segnalazioni da quest'anno (escluse quelle senza anno)
+ * @property {number|null} maxAgeDays     solo segnalazioni degli ultimi N giorni (escluse quelle senza
+ *                                        data completa); alternativo a minYear
  * @property {number|null} maxUncertainty solo posizioni con incertezza nota e non superiore (metri)
  */
-export const DEFAULT_FILTERS = { includeAutomatic: false, minYear: null, maxUncertainty: null };
+export const DEFAULT_FILTERS = { includeAutomatic: false, minYear: null, maxAgeDays: null, maxUncertainty: null };
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Giorno di oggi in giorni dal 1° gennaio 1970 (stessa unità del campo "giorno" dei punti). */
+export function todayDay(now = Date.now()) {
+  return Math.floor(now / DAY_MS);
+}
+
+/** Data ISO (AAAA-MM-GG) di un giorno espresso in giorni dal 1970. */
+export function dayToIso(day) {
+  return day != null ? new Date(day * DAY_MS).toISOString().slice(0, 10) : null;
+}
 
 /** Pagina del record su GBIF (i dati delle versioni precedenti non hanno l'identificativo). */
 export function gbifUrl(gbifId) {
@@ -33,17 +47,21 @@ export function originalSiteName(url) {
   return host;
 }
 
-/** Il record passa i filtri? */
-export function passesFilters({ year, automatic, uncertainty }, filters) {
+/** Il record passa i filtri? `today` serve solo ai test (giorni dal 1970). */
+export function passesFilters({ year, automatic, uncertainty, day }, filters, today = todayDay()) {
   if (!filters.includeAutomatic && automatic) return false;
   if (filters.minYear != null && (year == null || year < filters.minYear)) return false;
+  if (filters.maxAgeDays != null && (day == null || day < today - filters.maxAgeDays)) return false;
   if (filters.maxUncertainty != null && (uncertainty == null || uncertainty > filters.maxUncertainty)) return false;
   return true;
 }
 
 /** Numero di filtri diversi da quelli predefiniti (per il badge del pulsante). */
 export function activeFilterCount(filters) {
-  return Object.keys(DEFAULT_FILTERS).filter((k) => filters[k] !== DEFAULT_FILTERS[k]).length;
+  // anno minimo e ultimi giorni sono due modi di scegliere lo stesso filtro (periodo)
+  const keys = Object.keys(DEFAULT_FILTERS).filter((k) => k !== 'maxAgeDays');
+  const period = filters.maxAgeDays != null && filters.minYear == null ? 1 : 0;
+  return keys.filter((k) => filters[k] !== DEFAULT_FILTERS[k]).length + period;
 }
 
 /**
@@ -57,15 +75,17 @@ export function activeFilterCount(filters) {
  */
 export function groupDatasets(datasets, filters) {
   const byLocation = new Map();
+  const today = todayDay();
   let count = 0;
   for (const { species, data } of datasets) {
     const speciesInfo = { slug: species.slug, commonName: species.commonName, scientificName: species.scientificName };
-    data.punti.forEach(([lon, lat, year, sourceIdx, automatic, uncertainty, , gbifId, originalId], i) => {
-      const source = data.fonti[sourceIdx];
+    data.punti.forEach(([lon, lat, year, sourceIdx, automatic, uncertainty, , gbifId, originalId, day], i) => {
+      const source = data.fonti[sourceIdx] ?? { nome: 'Fonte sconosciuta', licenza: null };
       const record = {
         id: `${species.slug}:${i}`,
         species: speciesInfo,
         year,
+        day: day ?? null,
         source: source.nome,
         license: source.licenza,
         automatic: automatic === 1,
@@ -73,7 +93,7 @@ export function groupDatasets(datasets, filters) {
         gbifUrl: gbifUrl(gbifId),
         originalUrl: originalUrl(source, originalId),
       };
-      if (!passesFilters(record, filters)) return;
+      if (!passesFilters(record, filters, today)) return;
       const key = `${lon},${lat}`;
       let location = byLocation.get(key);
       if (!location) {

@@ -48,6 +48,15 @@ MAX_WEEKS = 12
 TIMEOUT = 60
 
 
+def _region(p: list) -> int:
+    return p[6] if len(p) > 6 and p[6] is not None else 0
+
+
+def _location_key(p: list, data: dict) -> tuple:
+    """Posizione, anno e fonte: identificano un record anche senza identificativo GBIF."""
+    return (p[0], p[1], p[2], data["fonti"][p[3]]["nome"])
+
+
 def record_keys(data: dict | None, by_id: bool) -> Counter:
     """Chiavi dei record verificati (non automatici) con la loro regione."""
     keys: Counter = Counter()
@@ -56,12 +65,8 @@ def record_keys(data: dict | None, by_id: bool) -> Counter:
     for p in data["punti"]:
         if p[4] == 1:
             continue
-        region = p[6] if len(p) > 6 and p[6] is not None else 0
-        if by_id:
-            key = ("id", p[7])
-        else:
-            key = (p[0], p[1], p[2], data["fonti"][p[3]]["nome"])
-        keys[(key, region)] += 1
+        key = ("id", p[7]) if by_id else _location_key(p, data)
+        keys[(key, _region(p))] += 1
     return keys
 
 
@@ -69,26 +74,48 @@ def has_ids(data: dict | None) -> bool:
     return bool(data and data["punti"] and all(len(p) > 7 and p[7] is not None for p in data["punti"]))
 
 
+def new_by_region(previous: dict | None, current: dict | None) -> Counter:
+    """Numero di segnalazioni nuove per regione.
+
+    Con gli identificativi GBIF un record è nuovo se il suo identificativo non c'era. GBIF però
+    a volte reindicizza un dataset assegnando identificativi nuovi a record già pubblicati:
+    per non annunciarli come novità, un record con identificativo nuovo conta solo se anche
+    posizione, anno e fonte non erano già presenti (stessa regola usata senza identificativi).
+    """
+    by_id = has_ids(current) and (previous is None or not previous["punti"] or has_ids(previous))
+    new = record_keys(current, by_id) - record_keys(previous, by_id)
+    regions: Counter = Counter()
+    if not by_id or not previous or not previous["punti"]:
+        for (_, region), n in new.items():
+            regions[region] += n
+        return regions
+    new_ids = {key[1] for (key, _region_code) in new}
+    surplus = record_keys(current, False) - record_keys(previous, False)  # posizioni in più
+    candidates: Counter = Counter()
+    for p in current["punti"]:
+        if p[4] != 1 and p[7] in new_ids:
+            candidates[(_location_key(p, current), _region(p))] += 1
+    for key, n in candidates.items():
+        kept = min(n, surplus[key])
+        if kept:
+            regions[key[1]] += kept
+    return regions
+
+
 def diff_species(previous: dict | None, current: dict | None) -> dict | None:
     """Segnalazioni nuove di una specie, per regione. None se non ce ne sono."""
-    by_id = has_ids(current) and (previous is None or not previous["punti"] or has_ids(previous))
-    before = record_keys(previous, by_id)
-    after = record_keys(current, by_id)
-    new = after - before
-    if not new:
+    regions = new_by_region(previous, current)
+    if not sum(regions.values()):
         return None
-    regions: Counter = Counter()
-    for (_, region), n in new.items():
-        regions[region] += n
-    before_regions = Counter()
-    for (_, region), n in before.items():
+    before_regions: Counter = Counter()
+    for (_, region), n in record_keys(previous, False).items():
         before_regions[region] += n
     first = sorted(r for r in regions if r != 0 and before_regions[r] == 0)
     return {
         "nuove": sum(regions.values()),
         "regioni": {str(r): n for r, n in sorted(regions.items())},
         "prime_regioni": first,
-        "prima_in_italia": sum(before.values()) == 0,
+        "prima_in_italia": sum(before_regions.values()) == 0,
     }
 
 

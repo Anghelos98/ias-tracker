@@ -114,6 +114,15 @@ function formatUncertainty(meters) {
   return `± ${km.toLocaleString('it-IT', { maximumFractionDigits: km < 10 ? 1 : 0 })} km`;
 }
 
+const MONTHS = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto',
+  'settembre', 'ottobre', 'novembre', 'dicembre'];
+
+/** "19 aprile 2026" da un giorno espresso in giorni dal 1970 (calcolato in UTC, senza fusi). */
+export function formatDay(day) {
+  const d = new Date(day * 24 * 60 * 60 * 1000);
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
 function SinglePoint({ point }) {
   const styles = useThemedStyles(createStyles);
   return (
@@ -122,8 +131,8 @@ function SinglePoint({ point }) {
       <Text style={styles.value}>
         {point.uncertainty != null ? formatUncertainty(point.uncertainty) : 'Non indicata dalla fonte'}
       </Text>
-      <Text style={styles.label}>{"Anno dell'avvistamento"}</Text>
-      <Text style={styles.value}>{point.year ?? 'Non indicato'}</Text>
+      <Text style={styles.label}>{point.day != null ? "Data dell'avvistamento" : "Anno dell'avvistamento"}</Text>
+      <Text style={styles.value}>{point.day != null ? formatDay(point.day) : (point.year ?? 'Non indicato')}</Text>
       <Text style={styles.label}>Fonte del dato</Text>
       <Text style={styles.value}>{point.source}</Text>
       <Text style={styles.label}>Licenza</Text>
