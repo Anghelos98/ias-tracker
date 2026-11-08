@@ -85,7 +85,7 @@ test('GeoJSON e KML', () => {
   expect(geo.features[0].properties.intervento).toBe('Taglio');
   const kml = formatNotebook('kml', [cut]);
   expect(kml).toContain('<coordinates>12.5,41.9,0</coordinates>');
-  expect(kml).toContain('&quot;lato nord&quot;');
+  expect(kml).toContain('&amp;quot;lato nord&amp;quot;'); // descrizione KML: codificata per HTML e per XML
 });
 
 test('nome del file', () => {

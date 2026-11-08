@@ -16,6 +16,7 @@ export async function sharePdf(fileName, html) {
     if (named.exists) named.delete();
     new File(uri).copy(named);
     shareUri = named.uri;
+    new File(uri).delete(); // la copia con il nome leggibile basta (la si elimina al prossimo avvio)
   } catch {
     // si condivide il file con il nome assegnato da expo-print
   }

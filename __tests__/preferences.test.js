@@ -77,3 +77,13 @@ test('"Ultimi 5 anni" salvato dalla versione precedente (anno fisso) diventa rel
   await AsyncStorage.setItem('ias-tracker/filters/v1', JSON.stringify({ ...DEFAULT_FILTERS, lastYears: 5 }));
   expect(await loadFilters()).toEqual({ ...DEFAULT_FILTERS, lastYears: 5 });
 });
+
+test('novità già viste: una data salvata nel futuro viene ignorata (non blocca le novità)', async () => {
+  const { loadNewsNotified, loadNewsSeen } = require('../src/data/preferences');
+  await AsyncStorage.setItem('ias-tracker/news-seen/v1', '9999-12-31T00:00:00Z');
+  await AsyncStorage.setItem('ias-tracker/news-notified/v1', 'non è una data');
+  expect(await loadNewsSeen()).toBeNull();
+  expect(await loadNewsNotified()).toBeNull();
+  await AsyncStorage.setItem('ias-tracker/news-seen/v1', '2026-11-02T04:12:00+00:00');
+  expect(await loadNewsSeen()).toBe('2026-11-02T04:12:00+00:00');
+});

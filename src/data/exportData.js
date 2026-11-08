@@ -5,7 +5,7 @@ import { dayToIso, gbifUrl, originalUrl, passesFilters, todayDay } from './point
 import { REGIONS } from './regions';
 import { areaPredicate } from '../utils/distance';
 import { csvCell } from '../utils/csv';
-import { escapeMarkup as xml } from '../utils/markup';
+import { escapeMarkup as xml, kmlDescription } from '../utils/markup';
 
 const REGION_NAMES = new Map(REGIONS.map((r) => [r.code, r.name]));
 
@@ -113,7 +113,7 @@ export function toKML(rows, title = 'IAS Tracker') {
     return [
       '  <Placemark>',
       `    <name>${xml(`${r.nome_comune} (${r.specie})`)}</name>`,
-      `    <description>${xml(details)}</description>`,
+      `    <description>${kmlDescription(details)}</description>`,
       `    <Point><coordinates>${r.longitudine},${r.latitudine},0</coordinates></Point>`,
       '  </Placemark>',
     ].join('\n');
@@ -123,7 +123,7 @@ export function toKML(rows, title = 'IAS Tracker') {
     '<kml xmlns="http://www.opengis.net/kml/2.2">',
     '<Document>',
     `  <name>${xml(title)}</name>`,
-    `  <description>${xml(ATTRIBUTION)}</description>`,
+    `  <description>${kmlDescription(ATTRIBUTION)}</description>`,
     ...placemarks,
     '</Document>',
     '</kml>',

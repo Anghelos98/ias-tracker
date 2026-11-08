@@ -16,10 +16,69 @@ function hasControlChars(text) {
 /**
  * Indirizzo esterno sicuro da aprire, oppure null. Linking.openURL aprirebbe qualunque schema
  * (tel:, sms:, intent:, collegamenti ad altre app), non solo pagine web.
+ * Da usare così com'è solo per gli indirizzi scritti nel codice dell'app; per quelli presi dai
+ * dati c'è safeLinkUrl, che controlla anche il sito.
  */
 export function safeWebUrl(url) {
   if (typeof url !== 'string' || url.length > 2048 || !WEB_URL.test(url) || hasControlChars(url)) return null;
   return url;
+}
+
+/** Nome del sito (in minuscolo) di un indirizzo già controllato con safeWebUrl. */
+function hostOf(url) {
+  return /^https?:\/\/([^/:?#]+)/i.exec(url)?.[1]?.toLowerCase() ?? null;
+}
+
+/** Il sito è uno di quelli indicati o un loro sottodominio ("www.gbif.org" per "gbif.org")? */
+function isHostIn(host, sites) {
+  return Boolean(host) && sites.some((site) => host === site || host.endsWith(`.${site}`));
+}
+
+/**
+ * Siti a cui possono portare i link presi dai dati, per tipo di link. Un link con un'etichetta
+ * come "Scheda completa (PDF)" o "Vedi su iNaturalist" deve portare davvero lì: i dati arrivano
+ * da siti di terzi (ISPRA, EASIN, iNaturalist, editori GBIF) attraverso la pipeline, e un
+ * indirizzo diverso non viene mostrato.
+ */
+export const LINK_SITES = {
+  ispra: ['isprambiente.it', 'isprambiente.gov.it'],
+  easin: ['easin.jrc.ec.europa.eu'],
+  inaturalist: ['inaturalist.org'],
+  gbif: ['gbif.org'],
+  // Banche dati di origine delle segnalazioni ("Vedi su …"). Una fonte nuova non in elenco resta
+  // raggiungibile dalla pagina del record su GBIF.
+  origin: ['inaturalist.org', 'plantnet.org', 'observation.org', 'enjoynature.net', 'gbif.org'],
+};
+
+/**
+ * Link preso dai dati: pagina web cifrata (https) di uno dei siti indicati, oppure null.
+ * @param {unknown} url
+ * @param {string[]} sites  uno degli elenchi di LINK_SITES
+ */
+export function safeLinkUrl(url, sites) {
+  const safe = safeWebUrl(url);
+  if (!safe || !/^https:\/\//i.test(safe)) return null;
+  return isHostIn(hostOf(safe), sites) ? safe : null;
+}
+
+/** Nome leggibile di una banca dati di origine nota, oppure il nome del sito. */
+const ORIGIN_NAMES = [
+  ['inaturalist.org', 'iNaturalist'],
+  ['plantnet.org', 'Pl@ntNet'],
+  ['observation.org', 'Observation.org'],
+  ['enjoynature.net', 'EnjoyNature'],
+  ['gbif.org', 'GBIF'],
+];
+
+/**
+ * Nome da mostrare per il sito di un indirizzo ("Vedi su iNaturalist"). Il confronto è sul nome
+ * esatto del sito: "fakeinaturalist.org" non diventa "iNaturalist".
+ */
+export function siteName(url) {
+  const host = typeof url === 'string' ? hostOf(url) : null;
+  if (!host) return null;
+  const known = ORIGIN_NAMES.find(([site]) => isHostIn(host, [site]));
+  return known ? known[1] : host.replace(/^www\./, '');
 }
 
 // Siti da cui l'app carica immagini, gli stessi elencati nell'informativa sulla privacy

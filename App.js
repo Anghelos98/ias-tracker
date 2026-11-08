@@ -90,6 +90,7 @@ import {
   screenProjector,
   shiftCenterLatitude,
 } from './src/utils/geo';
+import { clearOldExports } from './src/utils/shareFile';
 
 // Voce "Tutte le specie" dell'elenco: mostra insieme le segnalazioni di ogni specie.
 const ALL_SPECIES_SLUG = '__tutte__';
@@ -285,6 +286,11 @@ function IASTracker() {
   // mappa rallenta usano la posizione reale, non quella dell'ultimo movimento concluso.
   const trackRegion = useCallback((next) => {
     regionRef.current = next;
+  }, []);
+
+  // File esportati nelle sessioni precedenti (taccuino con coordinate e note): non servono più.
+  useEffect(() => {
+    clearOldExports();
   }, []);
 
   // "Vicino a me" come filtro della mappa: { center, radiusM } o null (tutta Italia)

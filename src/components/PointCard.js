@@ -2,7 +2,7 @@ import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-nati
 
 import { formatDay, originalSiteName, speciesOfRecords } from '../data/points';
 import { useThemedStyles } from '../theme';
-import { safeWebUrl } from '../utils/url';
+import { LINK_SITES, safeLinkUrl } from '../utils/url';
 
 /**
  * Scheda con anno e fonte delle segnalazioni selezionate.
@@ -143,9 +143,9 @@ function SinglePoint({ point }) {
  */
 function SourceLinks({ point, compact = false }) {
   const styles = useThemedStyles(createStyles);
-  // controllati di nuovo qui, all'apertura: si apre solo una pagina web (vedi safeWebUrl)
-  const original = safeWebUrl(point.originalUrl);
-  const gbif = safeWebUrl(point.gbifUrl);
+  // controllati di nuovo qui, all'apertura: solo pagine https dei siti attesi (vedi safeLinkUrl)
+  const original = safeLinkUrl(point.originalUrl, LINK_SITES.origin);
+  const gbif = safeLinkUrl(point.gbifUrl, LINK_SITES.gbif);
   const site = originalSiteName(original);
   const links = [
     original && site ? { url: original, label: `Vedi su ${site}` } : null,

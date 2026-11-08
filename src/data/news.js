@@ -6,6 +6,18 @@
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Data dei dati plausibile: ISO ("AAAA-MM-GGT…"), valida e non nel futuro (tolleranza di due
+ * giorni per gli orologi sbagliati). Le date arrivano dai dati scaricati e vengono salvate sul
+ * telefono ("novità già viste/annunciate"): una data come "9999-…" farebbe sembrare vecchie, e
+ * quindi già viste, tutte le novità successive, per sempre.
+ */
+export function isPlausibleIsoDate(value, now = Date.now()) {
+  if (typeof value !== 'string' || value.length > 40 || !/^\d{4}-\d{2}-\d{2}T/.test(value)) return false;
+  const time = Date.parse(value);
+  return Number.isFinite(time) && time <= now + 2 * DAY_MS;
+}
+
 /** Aggiornamenti dell'ultima settimana (più di uno se i dati sono stati rigenerati a mano). */
 export function latestWeeks(news, days = 7) {
   const weeks = news?.settimane ?? [];

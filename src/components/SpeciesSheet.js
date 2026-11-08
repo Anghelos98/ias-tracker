@@ -15,7 +15,7 @@ import {
 import { readEasin, readLookalikes, readPhotos, readSpeciesSheet } from '../data/remote';
 import { SPECIES } from '../data/species';
 import { useColors, useThemedStyles } from '../theme';
-import { safeImageUrl, safeWebUrl } from '../utils/url';
+import { LINK_SITES, safeImageUrl, safeLinkUrl, safeWebUrl } from '../utils/url';
 
 function presenceColor(text, c) {
   const colors = { diffusa: c.danger, localizzata: c.orange, assente: c.primary };
@@ -23,10 +23,16 @@ function presenceColor(text, c) {
   return key ? colors[key] : c.neutral;
 }
 
-// Link e immagini della scheda vengono dai dati scaricati: si apre solo una pagina web e si
-// caricano solo immagini dai siti indicati nell'informativa sulla privacy (vedi utils/url.js).
-function openUrl(url) {
-  const safe = safeWebUrl(url);
+// Link e immagini della scheda vengono dai dati scaricati: un link si apre solo se porta al sito
+// atteso (`sites`, vedi LINK_SITES) e si caricano solo immagini dai siti indicati nell'informativa
+// sulla privacy (vedi utils/url.js). Senza `sites` (solo indirizzi scritti nel codice, come le fonti
+// normative) basta che sia una pagina web.
+function checkedUrl(url, sites) {
+  return sites ? safeLinkUrl(url, sites) : safeWebUrl(url);
+}
+
+function openUrl(url, sites) {
+  const safe = checkedUrl(url, sites);
   if (safe) Linking.openURL(safe).catch(() => {});
 }
 
@@ -263,10 +269,18 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
                 {sheet.fonte?.recuperato_il ? `, consultato il ${formatDateIt(sheet.fonte.recuperato_il)}` : ''}.
                 {sheet.completa ? '' : ' La scheda ISPRA di questa specie è incompleta.'}
               </Text>
-              {sheet.fonte?.url && <Link label="Scheda della specie sul sito ISPRA" url={sheet.fonte.url} />}
-              {sheet.pdf_scheda && <Link label="Scheda completa (PDF)" url={sheet.pdf_scheda} />}
+              {sheet.fonte?.url && (
+                <Link label="Scheda della specie sul sito ISPRA" url={sheet.fonte.url} sites={LINK_SITES.ispra} />
+              )}
+              {sheet.pdf_scheda && (
+                <Link label="Scheda completa (PDF)" url={sheet.pdf_scheda} sites={LINK_SITES.ispra} />
+              )}
               {sheet.pdf_valutazione_rischio && (
-                <Link label="Valutazione del rischio (PDF, inglese)" url={sheet.pdf_valutazione_rischio} />
+                <Link
+                  label="Valutazione del rischio (PDF, inglese)"
+                  url={sheet.pdf_valutazione_rischio}
+                  sites={LINK_SITES.ispra}
+                />
               )}
             </>
           ) : (
@@ -331,7 +345,7 @@ function EuropeSection({ europe }) {
       <Text style={styles.small}>
         Fonte: European Commission – JRC – European Alien Species Information Network (EASIN).
       </Text>
-      <Link label="Scheda EASIN della specie" url={europe.url} />
+      <Link label="Scheda EASIN della specie" url={europe.url} sites={LINK_SITES.easin} />
     </Section>
   );
 }
@@ -345,7 +359,7 @@ function PhotoGallery({ photos }) {
         {photos.map((p) => (
           <Pressable
             key={p.pagina}
-            onPress={() => openUrl(p.pagina)}
+            onPress={() => openUrl(p.pagina, LINK_SITES.inaturalist)}
             accessibilityRole="link"
             accessibilityLabel={`Foto di ${p.autore}, licenza ${p.licenza}. Apre la pagina originale su iNaturalist`}
           >
@@ -409,11 +423,11 @@ function Badge({ color, label }) {
   );
 }
 
-function Link({ label, url }) {
+function Link({ label, url, sites }) {
   const styles = useThemedStyles(createStyles);
-  if (!safeWebUrl(url)) return null; // indirizzo mancante o non web: nessun link
+  if (!checkedUrl(url, sites)) return null; // indirizzo mancante, non web o di un altro sito: nessun link
   return (
-    <Pressable onPress={() => openUrl(url)} accessibilityRole="link" hitSlop={6}>
+    <Pressable onPress={() => openUrl(url, sites)} accessibilityRole="link" hitSlop={6}>
       <Text style={styles.link}>{label} ↗</Text>
     </Pressable>
   );

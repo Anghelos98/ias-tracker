@@ -3,7 +3,7 @@
 // dai test in __tests__/.
 
 import { areaPredicate } from '../utils/distance';
-import { safeWebUrl } from '../utils/url';
+import { LINK_SITES, safeLinkUrl, siteName } from '../utils/url';
 
 /** Oltre questa incertezza (metri) una posizione è considerata approssimativa. */
 export const APPROXIMATE_M = 1000;
@@ -87,19 +87,20 @@ export function gbifUrl(gbifId) {
   return gbifId != null && /^\d+$/.test(String(gbifId)) ? `https://www.gbif.org/occurrence/${gbifId}` : null;
 }
 
-/** Pagina del dato nella banca dati di origine (iNaturalist, Pl@ntNet…), se nota. */
+/**
+ * Pagina del dato nella banca dati di origine (iNaturalist, Pl@ntNet…), se nota.
+ * La prima parte dell'indirizzo ("link" della fonte) viene dal campo "references" dei record GBIF,
+ * scritto da chi pubblica il dataset: si accettano solo le banche dati note (LINK_SITES.origin),
+ * via https, e un identificativo numerico come quelli prodotti dalla pipeline.
+ */
 export function originalUrl(source, originalId) {
-  return source?.link && originalId != null ? safeWebUrl(`${source.link}${originalId}`) : null;
+  if (!source?.link || originalId == null || !/^\d{1,15}$/.test(String(originalId))) return null;
+  return safeLinkUrl(`${source.link}${originalId}`, LINK_SITES.origin);
 }
 
 /** Nome leggibile della banca dati di origine a partire dall'indirizzo. */
 export function originalSiteName(url) {
-  const host = /^https?:\/\/([^/]+)/.exec(url ?? '')?.[1]?.replace(/^www\./, '');
-  if (!host) return null;
-  if (host.endsWith('inaturalist.org')) return 'iNaturalist';
-  if (host.endsWith('plantnet.org')) return 'Pl@ntNet';
-  if (host.endsWith('observation.org')) return 'Observation.org';
-  return host;
+  return siteName(url);
 }
 
 /**

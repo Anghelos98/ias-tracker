@@ -50,7 +50,7 @@ test('KML con testo protetto per XML', () => {
   const kml = toKML(exportRows(DATASETS, DEFAULT_FILTERS), 'Prova & test');
   expect(kml).toContain('<name>Prova &amp; test</name>');
   expect(kml).toContain('<coordinates>12.5,41.9,0</coordinates>');
-  expect(kml).toContain('Herbarium, &quot;Roma&quot;');
+  expect(kml).toContain('Herbarium, &amp;quot;Roma&amp;quot;'); // descrizione KML: codificata per HTML e per XML
   expect((kml.match(/<Placemark>/g) || []).length).toBe(2);
 });
 

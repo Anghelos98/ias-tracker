@@ -7,6 +7,7 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 
 jest.mock('expo-file-system', () => {
   const files = new Map();
+  const sizes = new Map(); // dimensioni finte (byte) per alcuni file, vedi __setSize
   class File {
     constructor(...parts) {
       this.uri = parts.map((p) => (typeof p === 'string' ? p : p.uri)).join('/');
@@ -26,6 +27,9 @@ jest.mock('expo-file-system', () => {
     text() {
       return Promise.resolve(files.get(this.uri));
     }
+    get size() {
+      return sizes.get(this.uri) ?? files.get(this.uri)?.length;
+    }
     digest(algorithm) {
       if (algorithm !== 'SHA-256') throw new Error('algoritmo non previsto');
       const text = files.get(this.uri);
@@ -43,8 +47,12 @@ jest.mock('expo-file-system', () => {
       return true;
     }
   }
-  return { File, Directory, Paths: { document: { uri: 'doc' } } };
+  return { File, Directory, Paths: { document: { uri: 'doc' } }, __setSize: (uri, n) => sizes.set(uri, n) };
 });
+
+// I manifest di prova sono datati 2030, più recenti dei dati inclusi nell'app. Le date nel futuro
+// vengono rifiutate, quindi l'orologio dei test è spostato avanti.
+jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2031-01-01T00:00:00Z'));
 
 const { createHash } = require('crypto');
 const AsyncStorage = require('@react-native-async-storage/async-storage');
@@ -99,13 +107,13 @@ test('i file non scaricati vengono ritentati al controllo successivo', async () 
 test('i file comuni (foto, simili, EASIN) si leggono una volta per versione', async () => {
   const { File } = require('expo-file-system');
   const { clearDownloadedData, readPhotos } = require('../src/data/remote');
-  const file = new File({ uri: 'doc' }, 'data-v1', 'root', 'foto.json');
+  const file = new File({ uri: 'doc' }, 'data-v1', 'root', 'photos.json');
   file.write(JSON.stringify({ specie: { a: [] } }));
-  const m = { ...manifest, foto: { file: 'foto.json', sha: 'f1' } };
+  const m = { ...manifest, foto: { file: 'photos.json', sha: 'f1' } };
   expect(await readPhotos(m)).toEqual({ specie: { a: [] } });
   file.write(JSON.stringify({ specie: { b: [] } }));
   expect(await readPhotos(m)).toEqual({ specie: { a: [] } }); // stessa impronta: dalla memoria
-  expect(await readPhotos({ ...m, foto: { file: 'foto.json', sha: 'f2' } })).toEqual({ specie: { b: [] } });
+  expect(await readPhotos({ ...m, foto: { file: 'photos.json', sha: 'f2' } })).toEqual({ specie: { b: [] } });
   await clearDownloadedData();
   file.write(JSON.stringify({ specie: { c: [] } }));
   expect(await readPhotos(m)).toEqual({ specie: { c: [] } }); // dopo l'eliminazione si rilegge
@@ -304,4 +312,114 @@ test("novità: le specie che l'app non conosce non arrivano a notifiche e conteg
   const result = knownSpeciesOnly(news);
   expect(Object.keys(result.settimane[0].specie)).toEqual(['ailanthus-altissima']);
   expect(result.settimane[1]).toEqual(news.settimane[1]);
+});
+
+// --- Limiti di spazio e manifest ripulito ----------------------------------------------------
+
+test('manifest con la data dei dati nel futuro: rifiutato, restano i dati salvati', async () => {
+  const before = await checkForUpdates({ force: true, onDownloadStart: () => {} }).then((r) => r.manifest);
+  const fetchMock = mockSite(
+    { ...manifest, generato_il: '2030-07-01T00:00:00Z', dati_gbif_al: '9999-01-01T00:00:00Z' },
+    {},
+  );
+  const result = await checkForUpdates({ force: true });
+  expect(result.status).toBe('offline');
+  expect(result.manifest).toEqual(before);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+test('voce della specie nel manifest salvata solo con i campi noti e validi', async () => {
+  mockSite(
+    {
+      ...manifest,
+      generato_il: '2030-07-08T00:00:00Z',
+      specie: {
+        'ailanthus-altissima': {
+          totale: 1,
+          identificazioni_automatiche: -1,
+          bbox: [7, 36, 18, 47],
+          anni: { min: 1990, max: 2030, extra: 'x'.repeat(1000) },
+          ingombro: 'x'.repeat(100000),
+          punti: { file: 'species/ailanthus-altissima.json', sha: POINTS_SHA, byte: 99, altro: 'x' },
+        },
+      },
+    },
+    { 'species/ailanthus-altissima.json': POINTS },
+  );
+  const result = await checkForUpdates({ force: true });
+  expect(result.manifest.specie['ailanthus-altissima']).toEqual({
+    totale: 1,
+    bbox: [7, 36, 18, 47],
+    anni: { min: 1990, max: 2030 },
+    punti: { file: 'species/ailanthus-altissima.json', sha: POINTS_SHA },
+  });
+});
+
+test('limite per tipo di file: una scheda enorme non viene salvata', async () => {
+  const sheet = JSON.stringify({ descrizione: ['x'.repeat(600 * 1024)] });
+  mockSite(
+    {
+      ...manifest,
+      generato_il: '2030-07-15T00:00:00Z',
+      specie: {
+        'ailanthus-altissima': { totale: 1, scheda: { file: 'sheets/ailanthus-altissima.json', sha: sha(sheet) } },
+      },
+    },
+    { 'sheets/ailanthus-altissima.json': sheet },
+  );
+  const result = await checkForUpdates({ force: true });
+  expect(result.status).toBe('incomplete');
+  expect(result.manifest.specie['ailanthus-altissima'].scheda).toBeNull();
+});
+
+test('dimensione dichiarata dal sito oltre il limite: il file non viene nemmeno letto', async () => {
+  const text = jest.fn(async () => POINTS);
+  global.fetch = jest.fn(async (url) =>
+    url.endsWith('manifest.json')
+      ? { ok: true, text: async () => JSON.stringify({ ...manifest, generato_il: '2030-07-22T00:00:00Z' }) }
+      : { ok: true, headers: { get: () => String(500 * 1024 * 1024) }, text },
+  );
+  const result = await checkForUpdates({ force: true });
+  expect(result.status).toBe('incomplete');
+  expect(text).not.toHaveBeenCalled();
+});
+
+test('spazio totale: oltre il limite i file nuovi non vengono scaricati', async () => {
+  const { __setSize } = require('expo-file-system');
+  // i punti dell'ailanto sono già aggiornati ma occupano quasi tutto lo spazio ammesso
+  siteWithAilanto('2030-07-26T00:00:00Z', POINTS);
+  const kept = await checkForUpdates({ force: true }).then((r) => r.manifest);
+  expect(kept.specie['ailanthus-altissima'].punti.sha).toBe(POINTS_SHA);
+  __setSize(AILANTO, 50 * 1024 * 1024 - 10);
+  const sheet = JSON.stringify({ descrizione: ['Una scheda normale, ma oltre lo spazio rimasto.'] });
+  mockSite(
+    {
+      ...manifest,
+      generato_il: '2030-07-29T00:00:00Z',
+      specie: {
+        'ailanthus-altissima': {
+          totale: 1,
+          punti: { file: 'species/ailanthus-altissima.json', sha: POINTS_SHA },
+          scheda: { file: 'sheets/ailanthus-altissima.json', sha: sha(sheet) },
+        },
+      },
+    },
+    { 'sheets/ailanthus-altissima.json': sheet },
+  );
+  const result = await checkForUpdates({ force: true });
+  expect(result.status).toBe('incomplete');
+  expect(result.manifest.specie['ailanthus-altissima'].punti.sha).toBe(POINTS_SHA); // il file già salvato resta
+  expect(result.manifest.specie['ailanthus-altissima'].scheda).toBeNull();
+  __setSize(AILANTO, undefined);
+});
+
+test('file comuni solo con il loro nome fisso (nessun file nuovo a ogni aggiornamento)', async () => {
+  const photos = JSON.stringify({ specie: {} });
+  const fetchMock = mockSite(
+    { ...manifest, generato_il: '2030-08-05T00:00:00Z', foto: { file: 'photos-2.json', sha: sha(photos) } },
+    { 'photos-2.json': photos },
+  );
+  const result = await checkForUpdates({ force: true });
+  expect(result.manifest.foto).toBeNull();
+  expect(fetchMock.mock.calls.map(([u]) => u.split('/').pop())).not.toContain('photos-2.json');
 });

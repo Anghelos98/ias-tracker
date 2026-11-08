@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { NO_FOLLOWS } from './news';
+import { NO_FOLLOWS, isPlausibleIsoDate } from './news';
 import { DEFAULT_FILTERS } from './points';
 
 // Preferenze dell'utente salvate sul telefono.
@@ -89,13 +89,22 @@ export function saveFollows(follows) {
   return AsyncStorage.setItem(FOLLOWS_KEY, JSON.stringify(follows)).catch(() => {});
 }
 
-/** Data (ISO) dell'ultimo aggiornamento di cui l'utente ha visto le novità. */
-export async function loadNewsSeen() {
+/**
+ * Data salvata (ISO) solo se plausibile: una data nel futuro, salvata da una versione precedente
+ * con dati scaricati sbagliati, farebbe considerare già viste tutte le novità successive.
+ */
+async function loadDate(key) {
   try {
-    return await AsyncStorage.getItem(NEWS_SEEN_KEY);
+    const value = await AsyncStorage.getItem(key);
+    return isPlausibleIsoDate(value) ? value : null;
   } catch {
     return null;
   }
+}
+
+/** Data (ISO) dell'ultimo aggiornamento di cui l'utente ha visto le novità. */
+export function loadNewsSeen() {
+  return loadDate(NEWS_SEEN_KEY);
 }
 
 export function saveNewsSeen(isoDate) {
@@ -103,12 +112,8 @@ export function saveNewsSeen(isoDate) {
 }
 
 /** Data (ISO) dell'ultimo aggiornamento già annunciato con una notifica. */
-export async function loadNewsNotified() {
-  try {
-    return await AsyncStorage.getItem(NEWS_NOTIFIED_KEY);
-  } catch {
-    return null;
-  }
+export function loadNewsNotified() {
+  return loadDate(NEWS_NOTIFIED_KEY);
 }
 
 export function saveNewsNotified(isoDate) {

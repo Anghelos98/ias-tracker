@@ -2,7 +2,7 @@
 // o interventi di gestione (taglio, eradicazione…). Funzioni pure, testate in __tests__/.
 
 import { csvCell } from '../utils/csv';
-import { escapeMarkup as xml } from '../utils/markup';
+import { escapeMarkup as xml, kmlDescription } from '../utils/markup';
 
 /** Tipi di intervento di gestione. */
 export const INTERVENTIONS = [
@@ -144,7 +144,7 @@ export function formatNotebook(format, entries) {
     return [
       '  <Placemark>',
       `    <name>${xml(`${r.nome_comune} (${r.specie})`)}</name>`,
-      `    <description>${xml(details)}</description>`,
+      `    <description>${kmlDescription(details)}</description>`,
       `    <Point><coordinates>${r.longitudine},${r.latitudine},0</coordinates></Point>`,
       '  </Placemark>',
     ].join('\n');

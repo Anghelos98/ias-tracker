@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Directory, File, Paths } from 'expo-file-system';
 
+import { isPlausibleIsoDate } from './news';
 import { DATA_UPDATED_AT, SPECIES } from './species';
 
 // Aggiornamento dei dati senza nuova versione dell'app.
@@ -16,21 +17,41 @@ const MANIFEST_KEY = 'ias-tracker/remote-manifest/v1';
 const LAST_CHECK_KEY = 'ias-tracker/remote-last-check/v1';
 const CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000; // al massimo un controllo ogni 12 ore
 const TIMEOUT_MS = 15000;
-const GLOBAL_FILES = ['foto', 'simili', 'europa', 'novita']; // file del manifest comuni a tutte le specie
+// File del manifest comuni a tutte le specie, con il loro nome fisso (scripts/build_site.py):
+// un nome diverso a ogni aggiornamento lascerebbe sul telefono i file vecchi, senza limite.
+const GLOBAL_FILES = {
+  foto: 'photos.json',
+  simili: 'lookalikes.json',
+  europa: 'easin.json',
+  novita: 'news.json',
+};
 
 // Difesa in profondità sui dati scaricati. Il sito è del progetto, ma ciò che arriva dalla rete
 // viene salvato sul telefono e riletto a ogni avvio: un errore della pipeline (o un account
 // compromesso) non deve poter scrivere fuori dalla cartella dei dati, riempire la memoria o
 // bloccare l'app a ogni apertura con un file dalla forma inattesa.
-const MAX_FILE_CHARS = 20 * 1024 * 1024; // oggi il file più grande è ~0,7 MB
+//
+// Dimensione massima per tipo di file (caratteri del testo scaricato), con ampio margine sulle
+// dimensioni di oggi, e in tutto: con un solo limite per file, 49 specie × 3 file arriverebbero a
+// gigabyte. Il manifest, le schede e i file comuni sono piccoli; i punti crescono con GBIF.
+const MAX_CHARS = {
+  manifest: 1024 * 1024, // oggi ~20 KB
+  punti: 10 * 1024 * 1024, // oggi il più grande è ~0,7 MB
+  scheda: 512 * 1024, // ~11 KB
+  griglia: 2 * 1024 * 1024, // ~92 KB
+  foto: 1024 * 1024, // ~63 KB
+  simili: 1024 * 1024, // ~9 KB
+  europa: 1024 * 1024, // ~60 KB
+  novita: 1024 * 1024,
+};
+const TOTAL_MAX_CHARS = 50 * 1024 * 1024; // tutti i file salvati insieme (oggi ~2 MB)
 const KNOWN_SLUGS = new Set(SPECIES.map((s) => s.slug)); // solo le specie che l'app sa mostrare
 const SPECIES_FOLDERS = { punti: 'species', scheda: 'sheets', griglia: 'grid' };
 // Percorso relativo ammesso: una cartella nota e un nome semplice (niente "..", "/" o "\").
 const CACHE_PATH = /^(species|sheets|grid|root)\/[a-z0-9][a-z0-9_-]*\.json$/;
-const GLOBAL_NAME = /^[a-z0-9][a-z0-9_-]*\.json$/;
 
 const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
-const isIsoDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(v) && !Number.isNaN(Date.parse(v));
+const isCount = (v) => Number.isInteger(v) && v >= 0;
 // Impronta del file nel manifest: sha256 abbreviato (scripts/build_site.py ne usa 16 cifre).
 const isSha = (v) => typeof v === 'string' && /^[0-9a-f]{16,64}$/.test(v);
 
@@ -175,17 +196,17 @@ export function isValidNews(data) {
   return data.settimane.every(
     (w) =>
       isPlainObject(w) &&
-      typeof w.dati_al === 'string' &&
+      // date valide e non nel futuro: la più recente viene salvata come "già vista/annunciata"
+      isPlausibleIsoDate(w.dati_al) &&
+      (w.precedenti_al == null || isPlausibleIsoDate(w.precedenti_al)) &&
       (w.specie === undefined ||
         (isPlainObject(w.specie) &&
           Object.values(w.specie).every(
             (s) =>
               isPlainObject(s) &&
-              Number.isFinite(s.nuove) &&
-              (s.regioni === undefined ||
-                (isPlainObject(s.regioni) && Object.values(s.regioni).every(Number.isFinite))) &&
-              (s.prime_regioni === undefined ||
-                (Array.isArray(s.prime_regioni) && s.prime_regioni.every(Number.isFinite))),
+              isCount(s.nuove) &&
+              (s.regioni === undefined || (isPlainObject(s.regioni) && Object.values(s.regioni).every(isCount))) &&
+              (s.prime_regioni === undefined || (Array.isArray(s.prime_regioni) && s.prime_regioni.every(isCount))),
           ))),
   );
 }
@@ -210,9 +231,19 @@ export function isValidDataFile(kind, data) {
   return Boolean(VALIDATORS[kind]?.(data));
 }
 
-/** Manifest con i campi su cui si basano il confronto delle date e lo scaricamento. */
+/**
+ * Manifest con i campi su cui si basano il confronto delle date e lo scaricamento. La data dei
+ * dati non può essere nel futuro: farebbe preferire i dati scaricati a quelli di qualsiasi
+ * versione futura dell'app.
+ */
 function isValidManifest(m) {
-  return isPlainObject(m) && typeof m.generato_il === 'string' && isIsoDate(m.dati_gbif_al) && isPlainObject(m.specie);
+  return (
+    isPlainObject(m) &&
+    typeof m.generato_il === 'string' &&
+    m.generato_il.length <= 40 &&
+    isPlausibleIsoDate(m.dati_gbif_al) &&
+    isPlainObject(m.specie)
+  );
 }
 
 /**
@@ -225,10 +256,9 @@ function isValidManifest(m) {
  * servita dalla cache del sito subito dopo un aggiornamento (verrebbe salvata con l'impronta
  * nuova e non più riscaricata fino all'aggiornamento successivo).
  */
-async function downloadTo(local, relPath, isValid, sha) {
+async function downloadTo(local, relPath, isValid, sha, maxChars) {
   if (!isSha(sha)) throw new Error('Impronta non valida');
-  const text = await fetchWithTimeout(`${DATA_BASE_URL}/${relPath}`);
-  if (text.length > MAX_FILE_CHARS) throw new Error('File troppo grande');
+  const text = await fetchWithTimeout(`${DATA_BASE_URL}/${relPath}`, maxChars);
   if (!isValid(JSON.parse(text))) throw new Error('Formato non valido'); // anche file troncati o corrotti
   const tmp = new File(`${local.uri}.tmp`);
   if (tmp.exists) tmp.delete();
@@ -239,15 +269,30 @@ async function downloadTo(local, relPath, isValid, sha) {
     throw new Error('Impronta diversa da quella del manifest');
   }
   await tmp.move(local, { overwrite: true });
+  return text.length;
 }
 
-async function fetchWithTimeout(url) {
+/**
+ * Testo di un indirizzo, al massimo `maxChars` caratteri. Se il sito dichiara una dimensione
+ * maggiore (Content-Length) il file non viene nemmeno letto; altrimenti si controlla dopo.
+ */
+async function fetchWithTimeout(url, maxChars) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const response = await fetch(url, { signal: controller.signal, cache: 'no-store' });
+    const response = await fetch(url, {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.text();
+    const declared = Number(response.headers?.get?.('content-length'));
+    if (declared > maxChars) {
+      controller.abort();
+      throw new Error('File troppo grande');
+    }
+    const text = await response.text();
+    if (text.length > maxChars) throw new Error('File troppo grande');
+    return text;
   } finally {
     clearTimeout(timer);
   }
@@ -265,8 +310,9 @@ export async function loadStoredManifest() {
 
 /** true se i dati scaricati sono più recenti di quelli inclusi nell'app. */
 function remoteIsNewer(manifest) {
-  // data controllata: è anche mostrata nell'interfaccia (dataDate)
-  return isIsoDate(manifest?.dati_gbif_al) && manifest.dati_gbif_al > DATA_UPDATED_AT;
+  // data controllata (anche nei manifest salvati da versioni precedenti): è mostrata
+  // nell'interfaccia (dataDate) e non può essere nel futuro
+  return isPlausibleIsoDate(manifest?.dati_gbif_al) && manifest.dati_gbif_al > DATA_UPDATED_AT;
 }
 
 // I controlli (all'avvio, manuale dalle Impostazioni) si eseguono uno alla volta: due
@@ -294,7 +340,7 @@ async function runCheck({ force = false, onDownloadStart } = {}) {
     const last = Number(await AsyncStorage.getItem(LAST_CHECK_KEY)) || 0;
     if (!force && Date.now() - last < CHECK_INTERVAL_MS) return { manifest: stored, downloaded: 0, status: 'skipped' };
 
-    const remote = JSON.parse(await fetchWithTimeout(`${DATA_BASE_URL}/manifest.json`));
+    const remote = JSON.parse(await fetchWithTimeout(`${DATA_BASE_URL}/manifest.json`, MAX_CHARS.manifest));
     // dati in un formato più recente: servirà un aggiornamento dell'app
     if (remote?.schema !== SCHEMA) return { manifest: stored, downloaded: 0, status: 'unsupported' };
     // manifest malformato: si tengono i dati attuali (come senza rete)
@@ -306,12 +352,7 @@ async function runCheck({ force = false, onDownloadStart } = {}) {
       return { manifest: stored, downloaded: 0, status: 'current' };
     }
 
-    // Scarica i file cambiati. Se un file non si scarica, nel manifest salvato resta
-    // l'impronta vecchia, così verrà ritentato al prossimo controllo.
-    onDownloadStart?.();
-    let downloaded = 0;
-    let failed = 0;
-    // Solo i campi usati dall'app: il manifest salvato non cresce con campi estranei.
+    // Solo i campi usati dall'app, controllati: il manifest salvato non cresce con campi estranei.
     const saved = {
       schema: remote.schema,
       generato_il: remote.generato_il,
@@ -319,52 +360,99 @@ async function runCheck({ force = false, onDownloadStart } = {}) {
       specie: {},
     };
 
-    // File comuni a tutte le specie (foto, specie simili, EASIN, novità)
-    for (const key of GLOBAL_FILES) {
+    // File da tenere o da scaricare: prima i file comuni a tutte le specie (foto, specie simili,
+    // EASIN, novità), poi quelli delle specie. Un file non valido (nome, percorso) conta come
+    // non scaricato: nel manifest salvato resta la voce precedente, e si ritenterà.
+    const tasks = [];
+    let failed = 0;
+    for (const [key, name] of Object.entries(GLOBAL_FILES)) {
       const file = remote[key];
       if (!file) continue;
-      try {
-        if (typeof file.file !== 'string' || !GLOBAL_NAME.test(file.file)) throw new Error('Nome non valido');
-        saved[key] = { file: file.file, sha: file.sha };
-        const local = cacheFile(`root/${file.file}`);
-        if (stored?.[key]?.sha === file.sha && local.exists) continue;
-        await downloadTo(local, file.file, VALIDATORS[key], file.sha);
-        downloaded += 1;
-      } catch {
+      const fallback = () => {
         saved[key] = stored?.[key] ?? null;
+      };
+      try {
+        if (file.file !== name) throw new Error('Nome non valido');
+        tasks.push({
+          kind: key,
+          file,
+          local: cacheFile(`root/${name}`),
+          previousSha: stored?.[key]?.sha,
+          apply: (entry) => (saved[key] = entry),
+          fallback,
+        });
+      } catch {
+        fallback();
         failed += 1;
       }
     }
-
     // Solo le specie note: un manifest con migliaia di voci inventate non provoca migliaia di
     // scaricamenti (né file sul telefono). Le specie che questa versione non conosce non
     // sarebbero comunque mostrate.
     for (const [slug, entry] of Object.entries(remote.specie)) {
       if (!KNOWN_SLUGS.has(slug) || !isPlainObject(entry)) continue;
       const previous = stored?.specie?.[slug];
-      const next = { ...entry };
+      const next = speciesStats(entry);
+      saved.specie[slug] = next;
       for (const kind of ['punti', 'scheda', 'griglia']) {
         const file = entry[kind];
         if (!file) continue;
+        const fallback = () => {
+          next[kind] = previous?.[kind] ?? null;
+        };
         try {
           // il percorso deve essere esattamente quello della specie (vedi readCached)
           if (file.file !== speciesPath(slug, kind)) throw new Error('Percorso non valido');
-          const local = cacheFile(file.file);
-          if (previous?.[kind]?.sha === file.sha && local.exists) continue;
-          await downloadTo(local, file.file, VALIDATORS[kind], file.sha);
-          downloaded += 1;
+          tasks.push({
+            kind,
+            file,
+            local: cacheFile(file.file),
+            previousSha: previous?.[kind]?.sha,
+            apply: (e) => (next[kind] = e),
+            fallback,
+          });
         } catch {
-          next[kind] = previous?.[kind] ?? null;
+          fallback();
           failed += 1;
         }
       }
-      saved.specie[slug] = next;
+    }
+
+    // File già aggiornati: restano, e occupano parte dello spazio totale.
+    let budget = TOTAL_MAX_CHARS;
+    const toDownload = [];
+    for (const task of tasks) {
+      if (isSha(task.file.sha) && task.previousSha === task.file.sha && task.local.exists) {
+        task.apply({ file: task.file.file, sha: task.file.sha });
+        budget -= task.local.size ?? 0;
+      } else toDownload.push(task);
+    }
+
+    // Scarica i file cambiati. Se un file non si scarica, nel manifest salvato resta
+    // l'impronta vecchia, così verrà ritentato al prossimo controllo.
+    if (toDownload.length) onDownloadStart?.();
+    let downloaded = 0;
+    for (const task of toDownload) {
+      try {
+        const maxChars = Math.min(MAX_CHARS[task.kind], budget);
+        const chars = await downloadTo(task.local, task.file.file, VALIDATORS[task.kind], task.file.sha, maxChars);
+        budget -= chars;
+        task.apply({ file: task.file.file, sha: task.file.sha });
+        downloaded += 1;
+      } catch {
+        task.fallback();
+        failed += 1;
+      }
     }
 
     if (failed) saved.incompleto = true;
     await AsyncStorage.setItem(MANIFEST_KEY, JSON.stringify(saved));
     await AsyncStorage.setItem(LAST_CHECK_KEY, String(Date.now()));
-    return { manifest: saved, downloaded, status: failed ? 'incomplete' : 'updated' };
+    return {
+      manifest: saved,
+      downloaded,
+      status: failed ? 'incomplete' : 'updated',
+    };
   } catch {
     return { manifest: stored, downloaded: 0, status: 'offline' };
   }
@@ -449,7 +537,7 @@ export async function readSpeciesSheet(species, manifest) {
 const globalCache = new Map();
 
 async function readGlobal(manifest, key) {
-  if (remoteIsNewer(manifest) && manifest[key]) {
+  if (remoteIsNewer(manifest) && manifest[key]?.file === GLOBAL_FILES[key]) {
     const { file: name, sha } = manifest[key];
     const cacheKey = `${key}|${name}|${sha}`;
     const cached = globalCache.get(cacheKey);
@@ -511,7 +599,10 @@ export function knownSpeciesOnly(news) {
     ...news,
     settimane: news.settimane.map((week) =>
       week.specie
-        ? { ...week, specie: Object.fromEntries(Object.entries(week.specie).filter(([slug]) => KNOWN_SLUGS.has(slug))) }
+        ? {
+            ...week,
+            specie: Object.fromEntries(Object.entries(week.specie).filter(([slug]) => KNOWN_SLUGS.has(slug))),
+          }
         : week,
     ),
   };
@@ -523,8 +614,7 @@ export function withRemoteStats(species, manifest) {
   const stats = manifest.specie?.[species.slug];
   if (!isPlainObject(stats)) return species;
   // campi mancanti o non validi: si tengono quelli inclusi nell'app
-  const validYears =
-    stats.anni === null || (isPlainObject(stats.anni) && Number.isFinite(stats.anni.min) && Number.isFinite(stats.anni.max));
+  const validYears = stats.anni === null || isValidYears(stats.anni);
   return {
     ...species,
     total: isCount(stats.totale) ? stats.totale : species.total,
@@ -533,8 +623,6 @@ export function withRemoteStats(species, manifest) {
     bbox: isValidBbox(stats.bbox) ? stats.bbox : species.total ? species.bbox : null,
   };
 }
-
-const isCount = (v) => Number.isInteger(v) && v >= 0;
 
 /**
  * Riquadro [ovest, sud, est, nord] in gradi validi. La mappa vi si sposta (animateToRegion):
@@ -553,6 +641,22 @@ function isValidBbox(b) {
     b[3] <= 90 &&
     b[1] <= b[3]
   );
+}
+
+const isValidYears = (y) => isPlainObject(y) && Number.isFinite(y.min) && Number.isFinite(y.max);
+
+/**
+ * Statistiche di una specie dal manifest scaricato, solo se valide (le altre si prendono dai dati
+ * inclusi nell'app, vedi withRemoteStats). I file della specie si aggiungono a parte.
+ */
+function speciesStats(entry) {
+  const stats = {};
+  if (isCount(entry.totale)) stats.totale = entry.totale;
+  if (isCount(entry.identificazioni_automatiche)) stats.identificazioni_automatiche = entry.identificazioni_automatiche;
+  if (entry.anni === null) stats.anni = null;
+  else if (isValidYears(entry.anni)) stats.anni = { min: entry.anni.min, max: entry.anni.max };
+  if (isValidBbox(entry.bbox)) stats.bbox = [...entry.bbox];
+  return stats;
 }
 
 /** Data dei dati effettivamente in uso (ISO). */
