@@ -52,6 +52,10 @@ const NOTE = {
   sent: [],
 };
 
+// Il primo test carica tutti i moduli dell'interfaccia: ~2,5 s in locale, più del doppio sui
+// server di GitHub Actions, oltre il limite predefinito di 5 s.
+jest.setTimeout(20000);
+
 const ailanto = SPECIES.find((s) => s.slug === 'ailanthus-altissima');
 const noop = () => {};
 
