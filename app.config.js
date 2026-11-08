@@ -11,8 +11,8 @@
 //   "preview" e "production" (selezionati da "environment" in eas.json).
 // La chiave finisce comunque dentro l'app installata: va protetta limitandola, nella console
 // Google Cloud, al pacchetto io.github.anghelos98.iastracker e all'impronta SHA-1 del certificato.
-// Senza chiave l'app funziona su iOS (Apple Maps) e in Expo Go; nelle build Android la mappa
-// resterebbe grigia, per questo il comando di build avvisa.
+// Senza chiave l'app funziona su iOS (Apple Maps) e in Expo Go; nelle build Android si chiude
+// appena apre la mappa ("API key not found"), per questo il comando di build avvisa.
 
 const KEY = process.env.GOOGLE_MAPS_ANDROID_API_KEY;
 const OWNER = process.env.EXPO_OWNER;
@@ -25,7 +25,7 @@ module.exports = ({ config }) => {
   if (KEY) {
     result.plugins = [...(config.plugins ?? []), ['react-native-maps', { androidGoogleMapsApiKey: KEY }]];
   } else if (process.env.EAS_BUILD_PLATFORM === 'android') {
-    console.warn('Attenzione: GOOGLE_MAPS_ANDROID_API_KEY non impostata, la mappa Android non funzionerà.');
+    console.warn("Attenzione: GOOGLE_MAPS_ANDROID_API_KEY non impostata, l'app Android si chiuderà all'apertura della mappa.");
   }
   return result;
 };

@@ -69,7 +69,15 @@
           "color": "#2E7D32"
         }
       ],
-      "expo-background-task"
+      "expo-background-task",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraProguardRules": "# WorkManager (expo-background-task) crea il suo database Room per riflessione: R8 deve tenerne il costruttore, altrimenti l'app si chiude all'avvio.\n-keep class * extends androidx.room.RoomDatabase { <init>(); }"
+          }
+        }
+      ]
     ],
     "description": "Mappa delle segnalazioni in Italia delle piante esotiche invasive di rilevanza unionale. Gratuita e open source."
   }
