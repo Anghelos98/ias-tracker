@@ -118,11 +118,12 @@ Gli stessi controlli girano su GitHub a ogni push (workflow [`Controlli`](.githu
 
 ## Aggiornare i dati
 
-Requisiti: Python 3.10+.
+Requisiti: Python 3.12 o successivo (quello usato da GitHub Actions). Le versioni dei pacchetti sono
+fissate in `requirements.txt`, le stesse del workflow che pubblica i dati.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install requests beautifulsoup4 pyshp pyproj shapely
+.venv/bin/pip install -r requirements.txt
 .venv/bin/python sync_ias_data.py --all          # scarica/aggiorna le segnalazioni da GBIF
 .venv/bin/python scripts/fetch_ispra_sheets.py   # scarica/aggiorna le schede ISPRA
 .venv/bin/python scripts/build_lookalikes.py     # specie simili dalle schede ISPRA

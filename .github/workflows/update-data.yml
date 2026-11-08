@@ -20,10 +20,11 @@ on:
         type: boolean
         default: false
 
+# Permessi minimi: il job "build" esegue codice di terzi (pacchetti Python) e scarica dati da
+# siti esterni, quindi può solo leggere il repository. Il permesso di pubblicare il sito è dato
+# solo al job "deploy", che non esegue altro.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -41,7 +42,8 @@ jobs:
           python-version: "3.12"
 
       - name: Installa dipendenze
-        run: pip install requests beautifulsoup4 pyshp pyproj shapely
+        # versioni fissate in requirements.txt (vedi il commento in quel file)
+        run: pip install -r requirements.txt
 
       - name: Scarica le segnalazioni da GBIF
         # GBIF a volte risponde con errori temporanei: lo script riprende da dove si era fermato,
@@ -94,6 +96,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write # pubblicare su GitHub Pages
+      id-token: write # dimostrare che la pubblicazione viene da questo workflow
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

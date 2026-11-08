@@ -15,6 +15,7 @@ import {
 import { readEasin, readLookalikes, readPhotos, readSpeciesSheet } from '../data/remote';
 import { SPECIES } from '../data/species';
 import { useColors, useThemedStyles } from '../theme';
+import { safeImageUrl, safeWebUrl } from '../utils/url';
 
 function presenceColor(text, c) {
   const colors = { diffusa: c.danger, localizzata: c.orange, assente: c.primary };
@@ -22,8 +23,11 @@ function presenceColor(text, c) {
   return key ? colors[key] : c.neutral;
 }
 
+// Link e immagini della scheda vengono dai dati scaricati: si apre solo una pagina web e si
+// caricano solo immagini dai siti indicati nell'informativa sulla privacy (vedi utils/url.js).
 function openUrl(url) {
-  if (url) Linking.openURL(url).catch(() => {});
+  const safe = safeWebUrl(url);
+  if (safe) Linking.openURL(safe).catch(() => {});
 }
 
 /** Scheda completa di una specie: riconoscimento, legge, cosa fare, schede ISPRA. */
@@ -46,7 +50,7 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
       setLoaded({
         slug: species.slug,
         sheet: s,
-        photos: photos?.specie?.[species.slug] ?? [],
+        photos: (photos?.specie?.[species.slug] ?? []).filter((p) => safeImageUrl(p.url)),
         lookalikes: lookalikes?.specie?.[species.slug] ?? null,
         europe: easin?.specie?.[species.slug] ?? null,
       });
@@ -60,6 +64,7 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
   const photos = current ? loaded.photos : [];
   const lookalikes = current ? loaded.lookalikes : null;
   const europe = current ? loaded.europe : null;
+  const distributionMap = safeImageUrl(sheet?.mappa_distribuzione);
 
   if (!species) return null;
   const { listing } = species;
@@ -234,10 +239,10 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
 
         {europe && <EuropeSection europe={europe} />}
 
-        {sheet?.mappa_distribuzione && (
+        {distributionMap && (
           <Section title="Distribuzione in Italia (ISPRA)">
             <Image
-              source={{ uri: sheet.mappa_distribuzione }}
+              source={{ uri: distributionMap }}
               style={styles.map}
               resizeMode="contain"
               accessibilityLabel="Mappa di distribuzione ISPRA"
@@ -406,6 +411,7 @@ function Badge({ color, label }) {
 
 function Link({ label, url }) {
   const styles = useThemedStyles(createStyles);
+  if (!safeWebUrl(url)) return null; // indirizzo mancante o non web: nessun link
   return (
     <Pressable onPress={() => openUrl(url)} accessibilityRole="link" hitSlop={6}>
       <Text style={styles.link}>{label} ↗</Text>

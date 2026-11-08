@@ -3,6 +3,7 @@
 // dai test in __tests__/.
 
 import { areaPredicate } from '../utils/distance';
+import { safeWebUrl } from '../utils/url';
 
 /** Oltre questa incertezza (metri) una posizione è considerata approssimativa. */
 export const APPROXIMATE_M = 1000;
@@ -82,12 +83,13 @@ export function dayToIso(day) {
 
 /** Pagina del record su GBIF (i dati delle versioni precedenti non hanno l'identificativo). */
 export function gbifUrl(gbifId) {
-  return gbifId != null ? `https://www.gbif.org/occurrence/${gbifId}` : null;
+  // solo identificativi numerici: l'indirizzo resta una pagina di gbif.org
+  return gbifId != null && /^\d+$/.test(String(gbifId)) ? `https://www.gbif.org/occurrence/${gbifId}` : null;
 }
 
 /** Pagina del dato nella banca dati di origine (iNaturalist, Pl@ntNet…), se nota. */
 export function originalUrl(source, originalId) {
-  return source?.link && originalId != null ? `${source.link}${originalId}` : null;
+  return source?.link && originalId != null ? safeWebUrl(`${source.link}${originalId}`) : null;
 }
 
 /** Nome leggibile della banca dati di origine a partire dall'indirizzo. */

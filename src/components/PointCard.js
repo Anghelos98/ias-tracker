@@ -2,6 +2,7 @@ import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-nati
 
 import { formatDay, originalSiteName, speciesOfRecords } from '../data/points';
 import { useThemedStyles } from '../theme';
+import { safeWebUrl } from '../utils/url';
 
 /**
  * Scheda con anno e fonte delle segnalazioni selezionate.
@@ -142,10 +143,13 @@ function SinglePoint({ point }) {
  */
 function SourceLinks({ point, compact = false }) {
   const styles = useThemedStyles(createStyles);
-  const site = originalSiteName(point.originalUrl);
+  // controllati di nuovo qui, all'apertura: si apre solo una pagina web (vedi safeWebUrl)
+  const original = safeWebUrl(point.originalUrl);
+  const gbif = safeWebUrl(point.gbifUrl);
+  const site = originalSiteName(original);
   const links = [
-    point.originalUrl && site ? { url: point.originalUrl, label: `Vedi su ${site}` } : null,
-    point.gbifUrl ? { url: point.gbifUrl, label: 'Vedi su GBIF' } : null,
+    original && site ? { url: original, label: `Vedi su ${site}` } : null,
+    gbif ? { url: gbif, label: 'Vedi su GBIF' } : null,
   ].filter(Boolean);
   if (!links.length) return null;
   return (

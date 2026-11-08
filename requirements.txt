@@ -1,0 +1,18 @@
+# Pacchetti Python della pipeline dati (sync_ias_data.py e scripts/), con versioni fissate
+# comprese le dipendenze indirette: il workflow "Aggiorna dati" li esegue con il permesso di
+# pubblicare il sito da cui l'app scarica i dati, quindi una versione nuova (o compromessa) di
+# un pacchetto non deve entrare da sola. Versioni usate dall'ultima esecuzione riuscita.
+# Per aggiornarle: cambiare qui le versioni e verificare con i test (pytest) e un avvio
+# manuale del workflow.
+beautifulsoup4==4.15.0
+certifi==2026.10.23
+charset-normalizer==3.5.2
+idna==3.20
+numpy==2.5.4
+pyproj==3.8.0
+pyshp==3.1.7
+requests==2.34.2
+shapely==2.2.0
+soupsieve==4.0.1
+typing_extensions==4.16.0
+urllib3==2.8.0

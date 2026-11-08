@@ -16,6 +16,7 @@ import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import ErrorBoundary from './src/components/ErrorBoundary';
 import { ClusterMarker, DotMarker, clusterSize } from './src/components/MapMarkers';
 import PointCard from './src/components/PointCard';
 import FiltersPanel, { describeFilters } from './src/components/FiltersPanel';
@@ -173,10 +174,13 @@ function zoomToRegion([longitude, latitude], zoom) {
 }
 
 export default function App() {
+  // ErrorBoundary: un errore imprevisto mostra un messaggio invece di chiudere l'app.
   return (
-    <SafeAreaProvider>
-      <IASTracker />
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <IASTracker />
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
 
