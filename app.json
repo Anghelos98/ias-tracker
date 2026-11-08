@@ -20,7 +20,11 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "io.github.anghelos98.iastracker"
+      "package": "io.github.anghelos98.iastracker",
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,7 +33,11 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "IAS Tracker usa la tua posizione per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni."
+          "locationWhenInUsePermission": "IAS Tracker usa la tua posizione per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni.",
+          "locationAlwaysAndWhenInUsePermission": "IAS Tracker usa la tua posizione solo mentre l’app è aperta, per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni. Non la usa in background.",
+          "locationAlwaysPermission": "IAS Tracker usa la tua posizione solo mentre l’app è aperta, per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni. Non la usa in background.",
+          "locationFullAccuracyPermission": "IAS Tracker chiede la posizione precisa per registrare le coordinate esatte delle tue segnalazioni.",
+          "motionUsagePermission": false
         }
       ],
       [

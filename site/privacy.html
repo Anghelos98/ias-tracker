@@ -40,10 +40,12 @@ Per domande puoi aprire una segnalazione su
 <p>La posizione non viene inviata allo sviluppatore. L'app non usa la posizione in background.
 Puoi negare o revocare il permesso dalle impostazioni del telefono: la mappa e le schede funzionano comunque.</p>
 
-<h2>Fotocamera e foto</h2>
+<h2 id="foto">Fotocamera e foto</h2>
 <p>Se aggiungi foto a una segnalazione, l'app ne salva una copia nella propria cartella sul telefono.
-Le foto possono contenere dati come la posizione e la data dello scatto (metadati EXIF): l'app li legge
-solo per proporti la posizione della foto.</p>
+Le foto originali possono contenere dati come la posizione e la data dello scatto o la marca e il modello
+del telefono (metadati EXIF): l'app ne legge solo la posizione, per proporti quella della foto, e salva
+una copia <strong>senza metadati</strong> (al massimo 4096 pixel per lato). Le foto che invii o condividi
+sono queste copie: contengono l'immagine, non i metadati.</p>
 
 <h2>Taccuino di campo</h2>
 <p>Segnalazioni e interventi che salvi (specie, coordinate, data, note, foto) sono conservati sul
@@ -61,7 +63,7 @@ sono conservati nel tuo account Apple o Google (o sul tuo computer) e gestiti da
 le loro regole: lo sviluppatore non vi ha accesso.</p>
 <ul>
 <li><strong>iPhone</strong> (backup su iCloud o sul computer): sono incluse le foto salvate con le
-segnalazioni, che possono contenere la posizione dello scatto. Le voci del taccuino, la firma e le
+segnalazioni (senza metadati, vedi <a href="#foto">Fotocamera e foto</a>). Le voci del taccuino, la firma e le
 preferenze non sono incluse: ripristinando un iPhone da un backup tornano le foto, ma non le voci del
 taccuino.</li>
 <li><strong>Android</strong> (backup su Google): il sistema può includere tutti i dati dell'app (voci del
@@ -86,7 +88,7 @@ dall'app o dalle impostazioni del telefono.</p>
 <ul>
 <li><strong>Invio al Ministero dell'Ambiente:</strong> l'app prepara un'email all'indirizzo
 <code>esoticheinvasive@mase.gov.it</code> nella tua app di posta, con il testo della segnalazione
-(specie, data, coordinate, note, firma se l'hai impostata) e le foto. L'email parte dal tuo account, solo se la invii.
+(specie, data, coordinate, note, firma se l'hai impostata) e le foto, senza metadati. L'email parte dal tuo account, solo se la invii.
 Da quel momento i dati sono trattati dal Ministero secondo la sua informativa.</li>
 <li><strong>Invio alla Regione:</strong> allo stesso modo, se lo scegli, l'email è indirizzata all'ufficio
 regionale competente per le specie esotiche invasive, individuato in base alla posizione della segnalazione
@@ -108,8 +110,10 @@ le regole di Apple o Google.</li>
 <li><strong>iNaturalist</strong> (archivio su Amazon Web Services): foto delle specie.</li>
 <li><strong>ISPRA</strong> (specieinvasive.isprambiente.it): mappe di distribuzione nelle schede.</li>
 </ul>
-<p>I link presenti nell'app (fonti, schede, foto originali, pagine dei dati su GBIF, iNaturalist e
-Pl@ntNet) si aprono nel browser del telefono.</p>
+<p>I link presenti nell'app (fonti, schede, foto originali, pagine dei dati su GBIF, iNaturalist,
+Pl@ntNet e altre banche dati naturalistiche) si aprono nel browser del telefono. Quelli che arrivano con i
+dati portano solo ai siti attesi (per esempio una scheda ISPRA solo al sito di ISPRA): un link verso un altro
+sito non viene mostrato.</p>
 
 <h2>Bambini</h2>
 <p>L'app non raccoglie dati personali e non è rivolta in modo specifico ai minori.</p>

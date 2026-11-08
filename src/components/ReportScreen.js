@@ -23,6 +23,7 @@ import { INTERVENTIONS, NOTE_MAX } from '../reports/notebook';
 import { alertDraft, isRecorded, sendByEmail, shareReport } from '../reports/send';
 import { addReport, newReportId, persistPhotos } from '../reports/storage';
 import { useColors, useThemedStyles } from '../theme';
+import { photoWithoutMetadata } from '../utils/cleanPhoto';
 import { readGpsPosition } from '../utils/location';
 
 // Confini delle regioni (~100 KB), letti solo quando serve la prima volta (posizione nota):
@@ -82,7 +83,7 @@ export default function ReportScreen({
   const [position, setPosition] = useState(null); // { latitude, longitude, accuracy, source }
   const [locating, setLocating] = useState(true);
   const [locationError, setLocationError] = useState(null);
-  const [photos, setPhotos] = useState([]); // { uri, gps }
+  const [photos, setPhotos] = useState([]); // { uri, gps, source }
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
   const isIntervention = kind === 'intervento';
@@ -135,16 +136,29 @@ export default function ReportScreen({
           return;
         }
       }
-      const options = { mediaTypes: ['images'], quality: 0.7, exif: true };
+      // Qualità piena: la foto viene compressa una sola volta, quando si tolgono i metadati.
+      const options = { mediaTypes: ['images'], quality: 1, exif: true };
       const result = fromCamera
         ? await ImagePicker.launchCameraAsync(options)
         : await ImagePicker.launchImageLibraryAsync(options);
       if (result.canceled || !result.assets?.length) return;
       const asset = result.assets[0];
+      const source = asset.assetId ?? asset.uri;
+      // La posizione si legge dai metadati restituiti dal selettore; la foto salvata e inviata è
+      // una copia senza metadati (vedi utils/cleanPhoto.js).
+      const gps = gpsFromExif(asset.exif);
+      let uri;
+      try {
+        uri = await photoWithoutMetadata(asset.uri);
+      } catch {
+        // mai la foto originale al suo posto: conterrebbe i metadati
+        Alert.alert('Foto non disponibile', 'Non è stato possibile preparare la foto. Riprova o scegline un’altra.');
+        return;
+      }
       setPhotos((prev) =>
-        prev.some((p) => p.uri === asset.uri)
+        prev.some((p) => p.source === source)
           ? prev // stessa foto scelta due volte
-          : [...prev, { uri: asset.uri, gps: gpsFromExif(asset.exif) }].slice(0, MAX_PHOTOS),
+          : [...prev, { uri, gps, source }].slice(0, MAX_PHOTOS),
       );
     } catch {
       // es. simulatore senza fotocamera, galleria non accessibile
