@@ -39,24 +39,35 @@ export function bboxToRegion([west, south, east, north], padding = 1.3) {
 const toMercator = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
 const fromMercator = (y) => (Math.atan(Math.exp(y)) * 360) / Math.PI - 90;
 
+const DEG = Math.PI / 180;
+
 /**
  * Bordi superiore e inferiore della regione, in coordinate di Mercatore.
  * La mappa mette il centro della regione al centro dello schermo, quindi i bordi sono
  * simmetrici in Mercatore (non in gradi) e distano in gradi esattamente latitudeDelta.
- * Si trova la semi-ampiezza k con merc(top) = c + k, merc(bottom) = c - k per bisezione.
+ *
+ * Formula chiusa: con i bordi a latitudine m ± Δ/2 e merc(φ) = atanh(sin φ), la condizione
+ * merc(alto) + merc(basso) = 2·merc(centro) si riduce a sin m = cos(Δ/2) · sin(centro).
+ * (Sostituisce una bisezione di 60 passi, ripetuta per ogni marker a ogni tocco.)
  */
 function verticalBounds(region) {
-  const c = toMercator(region.latitude);
-  const span = (k) => fromMercator(c + k) - fromMercator(c - k);
-  let lo = 0;
-  let hi = 10;
-  for (let i = 0; i < 60; i += 1) {
-    const mid = (lo + hi) / 2;
-    if (span(mid) < region.latitudeDelta) lo = mid;
-    else hi = mid;
-  }
-  const k = (lo + hi) / 2;
-  return { top: c + k, bottom: c - k };
+  const half = region.latitudeDelta / 2;
+  const middle = Math.asin(Math.cos(half * DEG) * Math.sin(region.latitude * DEG)) / DEG;
+  return { top: toMercator(middle + half), bottom: toMercator(middle - half) };
+}
+
+/**
+ * Conversione da coordinate geografiche a punti dello schermo per una regione e una mappa
+ * di date dimensioni (nord in alto, senza inclinazione). I bordi si calcolano una volta sola:
+ * conviene quando si proiettano molti punti con la stessa regione.
+ */
+export function screenProjector(region, { width, height }) {
+  const { top, bottom } = verticalBounds(region);
+  const west = region.longitude - region.longitudeDelta / 2;
+  return {
+    x: (longitude) => ((longitude - west) / region.longitudeDelta) * width,
+    y: (latitude) => ((top - toMercator(latitude)) / (top - bottom)) * height,
+  };
 }
 
 /** Posizione verticale (in punti dello schermo) di una latitudine dentro la regione visibile. */
@@ -97,16 +108,14 @@ export function longitudeToScreenX(longitude, region, mapWidth) {
  *   un numero equivale a { visual: 0, slop: numero }
  * @returns {object|null}
  */
-export function findFeatureAtPoint(features, point, region, { width, height }, hitArea) {
+export function findFeatureAtPoint(features, point, region, size, hitArea) {
+  const project = screenProjector(region, size);
   let best = null;
   let bestScore = Infinity;
   let bestDistance = Infinity;
   for (const f of features) {
     const [lon, lat] = f.geometry.coordinates;
-    const distance = Math.hypot(
-      longitudeToScreenX(lon, region, width) - point.x,
-      latitudeToScreenY(lat, region, height) - point.y,
-    );
+    const distance = Math.hypot(project.x(lon) - point.x, project.y(lat) - point.y);
     const area = hitArea(f);
     const { visual, slop } = typeof area === 'number' ? { visual: 0, slop: area } : area;
     const score = Math.max(0, distance - visual); // distanza dal bordo (0 = dentro)

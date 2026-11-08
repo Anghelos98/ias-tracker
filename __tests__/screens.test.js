@@ -345,4 +345,11 @@ test('filtri: periodo relativo e dall’anno si escludono a vicenda', async () =
   expect(screen.getByText(/escluse le segnalazioni senza data completa/)).toBeTruthy();
   await fireEvent.press(screen.getByLabelText('Dal 2020'));
   expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_FILTERS, minYear: 2020, maxAgeDays: null });
+  // "Ultimi 5 anni" è relativo a oggi, non un anno fisso
+  await fireEvent.press(screen.getByText('Ultimi 5 anni'));
+  expect(onChange).toHaveBeenLastCalledWith({ ...DEFAULT_FILTERS, lastYears: 5 });
+  await rerender(<FiltersPanel {...props} filters={{ ...DEFAULT_FILTERS, lastYears: 5 }} />);
+  expect(screen.getByText(/a oggi, in base alla data dell’osservazione/)).toBeTruthy();
+  await rerender(<FiltersPanel {...props} filters={{ ...DEFAULT_FILTERS, minYear: 2020 }} />);
+  expect(screen.getByText(/Dal 1° gennaio 2020/)).toBeTruthy();
 });

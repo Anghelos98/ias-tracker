@@ -2,19 +2,28 @@ import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MARKER_COLORS } from './markerColors';
-import { APPROXIMATE_M, DEFAULT_FILTERS } from '../data/points';
+import { APPROXIMATE_M, DEFAULT_FILTERS, formatDay, lastYearsStartDay, todayDay } from '../data/points';
 import { useThemedStyles } from '../theme';
-
-const CURRENT_YEAR = new Date().getFullYear();
 
 // Periodo: scelte relative a oggi (prima riga) e anni di partenza (seconda riga).
 // "Ultimo mese" e "Ultimo anno" usano la data completa dell'osservazione, le altre l'anno.
+// "Ultimi 5 anni" parte dalla data di oggi di 5 anni fa (lastYears, relativo: salvato oggi resta
+// "ultimi 5 anni" anche l'anno prossimo); "Dall'anno" parte dal 1° gennaio dell'anno scelto.
 const RECENT_PERIODS = [
-  { label: 'Tutti', minYear: null, maxAgeDays: null },
-  { label: 'Ultimo mese', minYear: null, maxAgeDays: 30 },
-  { label: 'Ultimo anno', minYear: null, maxAgeDays: 365 },
-  { label: 'Ultimi 5 anni', minYear: CURRENT_YEAR - 4, maxAgeDays: null },
+  { label: 'Tutti', minYear: null, maxAgeDays: null, lastYears: null },
+  { label: 'Ultimo mese', minYear: null, maxAgeDays: 30, lastYears: null },
+  { label: 'Ultimo anno', minYear: null, maxAgeDays: 365, lastYears: null },
+  { label: 'Ultimi 5 anni', minYear: null, maxAgeDays: null, lastYears: 5 },
 ];
+
+/** Il periodo scelto corrisponde a questa voce della prima riga? */
+function isPeriod(p, filters) {
+  return (
+    p.minYear === (filters.minYear ?? null) &&
+    p.maxAgeDays === (filters.maxAgeDays ?? null) &&
+    p.lastYears === (filters.lastYears ?? null)
+  );
+}
 const FROM_YEARS = [2000, 2005, 2010, 2015, 2020];
 
 const PRECISIONS = [
@@ -27,8 +36,8 @@ const PRECISIONS = [
 /** Breve descrizione dei filtri attivi, per il pulsante sulla mappa. */
 export function describeFilters(filters) {
   const parts = [];
-  const recent = RECENT_PERIODS.find((p) => p.minYear === filters.minYear && p.maxAgeDays === filters.maxAgeDays);
-  if (filters.maxAgeDays != null || filters.minYear != null) {
+  const recent = RECENT_PERIODS.find((p) => isPeriod(p, filters));
+  if (filters.maxAgeDays != null || filters.minYear != null || filters.lastYears != null) {
     parts.push(recent ? recent.label.toLowerCase() : `dal ${filters.minYear}`);
   }
   const precision = PRECISIONS.find((p) => p.value === filters.maxUncertainty);
@@ -78,8 +87,8 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
                 <Chip
                   key={p.label}
                   label={p.label}
-                  active={p.minYear === (filters.minYear ?? null) && p.maxAgeDays === (filters.maxAgeDays ?? null)}
-                  onPress={() => set({ minYear: p.minYear, maxAgeDays: p.maxAgeDays })}
+                  active={isPeriod(p, filters)}
+                  onPress={() => set({ minYear: p.minYear, maxAgeDays: p.maxAgeDays, lastYears: p.lastYears })}
                 />
               ))}
             </View>
@@ -87,12 +96,12 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
               <Text style={styles.fromLabel}>Dall’anno</Text>
               <View style={styles.segmented} accessibilityRole="radiogroup" accessibilityLabel="Dall'anno">
                 {FROM_YEARS.map((year) => {
-                  const active = filters.minYear === year && filters.maxAgeDays == null;
+                  const active = filters.minYear === year && filters.maxAgeDays == null && filters.lastYears == null;
                   return (
                     <Pressable
                       key={year}
                       style={[styles.segment, active && styles.segmentActive]}
-                      onPress={() => set({ minYear: year, maxAgeDays: null })}
+                      onPress={() => set({ minYear: year, maxAgeDays: null, lastYears: null })}
                       accessibilityRole="radio"
                       accessibilityState={{ checked: active }}
                       accessibilityLabel={`Dal ${year}`}
@@ -109,8 +118,17 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
                 escluse le segnalazioni senza data completa.
               </Text>
             )}
-            {filters.minYear != null && filters.maxAgeDays == null && (
-              <Text style={styles.note}>Escluse le segnalazioni senza anno.</Text>
+            {filters.lastYears != null && filters.maxAgeDays == null && (
+              <Text style={styles.note}>
+                Dal {formatDay(lastYearsStartDay(todayDay(), filters.lastYears))} a oggi, in base alla data
+                dell’osservazione. Le segnalazioni con il solo anno contano se l’anno è tutto nel periodo.
+              </Text>
+            )}
+            {filters.minYear != null && filters.maxAgeDays == null && filters.lastYears == null && (
+              <Text style={styles.note}>
+                Dal 1° gennaio {filters.minYear}, in base all’anno dell’osservazione. Escluse le segnalazioni senza
+                anno.
+              </Text>
             )}
 
             <Text style={styles.label} accessibilityRole="header">

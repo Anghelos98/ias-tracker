@@ -11,7 +11,9 @@ let cache = { key: null, promise: null };
  * @returns {Promise<{species: object, data: object}[]>}
  */
 export function loadAllDatasets(speciesList, manifest) {
-  const key = dataDate(manifest);
+  // Non basta la data dei dati: uno scaricamento incompleto e il suo completamento successivo
+  // hanno la stessa data ma file diversi (prima alcune specie usavano ancora i dati inclusi).
+  const key = `${dataDate(manifest)}|${manifest?.generato_il ?? ''}|${manifest?.incompleto ? 1 : 0}`;
   if (cache.key !== key || !cache.promise) {
     const promise = Promise.all(
       speciesList

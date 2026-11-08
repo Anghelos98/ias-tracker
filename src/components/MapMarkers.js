@@ -45,6 +45,31 @@ export function clusterSize(count) {
   return 54;
 }
 
+/**
+ * Stesso elemento della mappa? supercluster crea un oggetto nuovo per ogni elemento (anche per
+ * i singoli punti) a ogni getClusters, cioè a ogni spostamento della mappa: con il confronto
+ * per riferimento di memo tutti i marker si ridisegnavano ogni volta. Si confrontano posizione
+ * e contenuto: per un punto le proprietà sono lo stesso oggetto finché non cambiano dati o
+ * filtri; per un cluster contano identificativo e numero di segnalazioni.
+ */
+export function sameFeature(a, b) {
+  if (a === b) return true;
+  const [lonA, latA] = a.geometry.coordinates;
+  const [lonB, latB] = b.geometry.coordinates;
+  if (lonA !== lonB || latA !== latB) return false;
+  if (a.properties === b.properties) return true;
+  return (
+    Boolean(a.properties.cluster) &&
+    Boolean(b.properties.cluster) &&
+    a.properties.cluster_id === b.properties.cluster_id &&
+    a.properties.records === b.properties.records
+  );
+}
+
+const sameClusterProps = (prev, next) => prev.onPress === next.onPress && sameFeature(prev.feature, next.feature);
+const sameDotProps = (prev, next) =>
+  prev.onPress === next.onPress && prev.selected === next.selected && sameFeature(prev.feature, next.feature);
+
 /** Cluster numerato. */
 export const ClusterMarker = memo(function ClusterMarker({ feature, onPress }) {
   const tracking = useInitialTracking();
@@ -66,7 +91,7 @@ export const ClusterMarker = memo(function ClusterMarker({ feature, onPress }) {
       </View>
     </Marker>
   );
-});
+}, sameClusterProps);
 
 /**
  * Segnalazione isolata: pallino leggero; il tocco apre la scheda.
@@ -78,7 +103,6 @@ export const ClusterMarker = memo(function ClusterMarker({ feature, onPress }) {
  */
 const DOT_SELECTED_SCALE = 1.5;
 const DOT_BOX = 40; // lato del marker (px); i pallini distano almeno 40 px
-export const DOT_HIT_RADIUS = DOT_BOX / 2; // raggio (px) entro cui un tocco seleziona il pallino
 const RING = 30; // diametro dell'anello di selezione (px)
 
 export const DotMarker = memo(function DotMarker({ feature, selected, onPress }) {
@@ -128,7 +152,7 @@ export const DotMarker = memo(function DotMarker({ feature, selected, onPress })
       </View>
     </Marker>
   );
-});
+}, sameDotProps);
 
 const styles = StyleSheet.create({
   cluster: {

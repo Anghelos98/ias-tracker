@@ -1,6 +1,6 @@
 import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { originalSiteName, speciesOfRecords } from '../data/points';
+import { formatDay, originalSiteName, speciesOfRecords } from '../data/points';
 import { useThemedStyles } from '../theme';
 
 /**
@@ -112,15 +112,6 @@ function formatUncertainty(meters) {
   if (meters < 1000) return `± ${Math.max(1, Math.round(meters))} m`;
   const km = meters / 1000;
   return `± ${km.toLocaleString('it-IT', { maximumFractionDigits: km < 10 ? 1 : 0 })} km`;
-}
-
-const MONTHS = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto',
-  'settembre', 'ottobre', 'novembre', 'dicembre'];
-
-/** "19 aprile 2026" da un giorno espresso in giorni dal 1970 (calcolato in UTC, senza fusi). */
-export function formatDay(day) {
-  const d = new Date(day * 24 * 60 * 60 * 1000);
-  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
 function SinglePoint({ point }) {

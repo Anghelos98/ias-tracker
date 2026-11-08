@@ -31,12 +31,25 @@ export async function loadFilters() {
     if (!raw) return DEFAULT_FILTERS;
     const saved = JSON.parse(raw);
     // solo le chiavi note, con il tipo giusto (dati di versioni precedenti o corrotti)
-    return {
-      includeAutomatic: typeof saved?.includeAutomatic === 'boolean' ? saved.includeAutomatic : DEFAULT_FILTERS.includeAutomatic,
+    const filters = {
+      includeAutomatic:
+        typeof saved?.includeAutomatic === 'boolean' ? saved.includeAutomatic : DEFAULT_FILTERS.includeAutomatic,
       minYear: Number.isFinite(saved?.minYear) ? saved.minYear : DEFAULT_FILTERS.minYear,
       maxAgeDays: Number.isFinite(saved?.maxAgeDays) ? saved.maxAgeDays : DEFAULT_FILTERS.maxAgeDays,
+      lastYears: Number.isFinite(saved?.lastYears) ? saved.lastYears : DEFAULT_FILTERS.lastYears,
       maxUncertainty: Number.isFinite(saved?.maxUncertainty) ? saved.maxUncertainty : DEFAULT_FILTERS.maxUncertainty,
     };
+    // Versione precedente: "Ultimi 5 anni" era salvato come anno fisso (anno in corso - 4).
+    if (
+      saved &&
+      typeof saved === 'object' &&
+      !('lastYears' in saved) &&
+      filters.minYear === new Date().getFullYear() - 4 &&
+      filters.maxAgeDays == null
+    ) {
+      return { ...filters, minYear: null, lastYears: 5 };
+    }
+    return filters;
   } catch {
     return DEFAULT_FILTERS;
   }

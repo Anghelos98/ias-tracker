@@ -5,6 +5,7 @@ import {
   latitudeToScreenY,
   longitudeToScreenX,
   regionToZoom,
+  screenProjector,
   shiftCenterLatitude,
 } from '../src/utils/geo';
 
@@ -101,5 +102,44 @@ describe('findFeatureAtPoint: bordo più vicino', () => {
     expect(findFeatureAtPoint([a, b], { x: 228, y: 400 }, REGION, SIZE, area)).toBe(b);
     expect(findFeatureAtPoint([a], { x: 200, y: 432 }, REGION, SIZE, area)).toBe(a); // 32 px: ancora preso
     expect(findFeatureAtPoint([a], { x: 200, y: 440 }, REGION, SIZE, area)).toBeNull();
+  });
+});
+
+describe('bordi della regione in Mercatore', () => {
+  // Riferimento: la bisezione usata prima della formula chiusa.
+  const toM = (lat) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+  const fromM = (y) => (Math.atan(Math.exp(y)) * 360) / Math.PI - 90;
+  function referenceY(lat, region, height) {
+    const c = toM(region.latitude);
+    let lo = 0;
+    let hi = 10;
+    for (let i = 0; i < 100; i += 1) {
+      const mid = (lo + hi) / 2;
+      if (fromM(c + mid) - fromM(c - mid) < region.latitudeDelta) lo = mid;
+      else hi = mid;
+    }
+    const k = (lo + hi) / 2;
+    return ((c + k - toM(lat)) / (2 * k)) * height;
+  }
+
+  test.each([
+    [41.9, 0.005],
+    [41.9, 1],
+    [41.9, 11],
+    [0, 20],
+    [-33, 4],
+    [60, 30],
+  ])('formula chiusa uguale alla bisezione (centro %p, ampiezza %p)', (latitude, latitudeDelta) => {
+    const region = { latitude, longitude: 12.5, latitudeDelta, longitudeDelta: latitudeDelta };
+    for (const f of [-0.5, -0.3, 0, 0.2, 0.5]) {
+      const lat = latitude + f * latitudeDelta;
+      expect(latitudeToScreenY(lat, region, SIZE.height)).toBeCloseTo(referenceY(lat, region, SIZE.height), 5);
+    }
+  });
+
+  test('screenProjector coincide con le conversioni singole', () => {
+    const project = screenProjector(REGION, SIZE);
+    expect(project.x(12.7)).toBeCloseTo(longitudeToScreenX(12.7, REGION, SIZE.width), 9);
+    expect(project.y(42.1)).toBeCloseTo(latitudeToScreenY(42.1, REGION, SIZE.height), 9);
   });
 });

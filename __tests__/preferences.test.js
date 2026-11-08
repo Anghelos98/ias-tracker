@@ -65,3 +65,15 @@ test('esportazione: una fonte mancante non blocca il file', () => {
   const [row] = exportRows([{ species: { scientificName: 'A b', commonName: 'A' }, data }], DEFAULT_FILTERS);
   expect(row.fonte).toBe('Fonte sconosciuta');
 });
+
+test('"Ultimi 5 anni" salvato dalla versione precedente (anno fisso) diventa relativo', async () => {
+  const year = new Date().getFullYear();
+  const old = { includeAutomatic: false, minYear: year - 4, maxAgeDays: null, maxUncertainty: null };
+  await AsyncStorage.setItem('ias-tracker/filters/v1', JSON.stringify(old));
+  expect(await loadFilters()).toEqual({ ...DEFAULT_FILTERS, lastYears: 5 });
+  // salvato dalla versione attuale: il campo lastYears c'è, l'anno resta quello scelto
+  await AsyncStorage.setItem('ias-tracker/filters/v1', JSON.stringify({ ...DEFAULT_FILTERS, minYear: year - 4 }));
+  expect(await loadFilters()).toEqual({ ...DEFAULT_FILTERS, minYear: year - 4 });
+  await AsyncStorage.setItem('ias-tracker/filters/v1', JSON.stringify({ ...DEFAULT_FILTERS, lastYears: 5 }));
+  expect(await loadFilters()).toEqual({ ...DEFAULT_FILTERS, lastYears: 5 });
+});

@@ -25,7 +25,9 @@ import { addReport, newReportId, persistPhotos } from '../reports/storage';
 import { useColors, useThemedStyles } from '../theme';
 import { readGpsPosition } from '../utils/location';
 
-const REGION_SHAPES = require('../../assets/data/region_shapes.json');
+// Confini delle regioni (~100 KB), letti solo quando serve la prima volta (posizione nota):
+// all'avvio dell'app non servono.
+const regionShapes = () => require('../../assets/data/region_shapes.json');
 
 const MAX_PHOTOS = 3;
 const POOR_ACCURACY_M = 50; // oltre questa incertezza suggeriamo di riprovare all'aperto
@@ -216,7 +218,7 @@ export default function ReportScreen({
   // Ufficio regionale competente per il luogo della segnalazione
   const offices = useMemo(() => {
     if (!position) return [];
-    const code = locateRegion(position.latitude, position.longitude, REGION_SHAPES, REGIONS);
+    const code = locateRegion(position.latitude, position.longitude, regionShapes(), REGIONS);
     return code ? (REGIONAL_OFFICES[code] ?? []) : [];
   }, [position]);
   let missing = null;

@@ -8,14 +8,65 @@ export const APPROXIMATE_M = 1000;
 /**
  * @typedef {Object} Filters
  * @property {boolean} includeAutomatic   includere le identificazioni solo automatiche
- * @property {number|null} minYear        solo segnalazioni da quest'anno (escluse quelle senza anno)
+ * @property {number|null} minYear        solo segnalazioni dal 1° gennaio di quest'anno (escluse quelle
+ *                                        senza anno)
  * @property {number|null} maxAgeDays     solo segnalazioni degli ultimi N giorni (escluse quelle senza
  *                                        data completa); alternativo a minYear
+ * @property {number|null} lastYears      solo segnalazioni degli ultimi N anni contati dalla data di oggi
+ *                                        (dall'8/11/2021 se oggi è l'8/11/2026), vedi lastYearsStartDay;
+ *                                        alternativo a minYear
  * @property {number|null} maxUncertainty solo posizioni con incertezza nota e non superiore (metri)
  */
-export const DEFAULT_FILTERS = { includeAutomatic: false, minYear: null, maxAgeDays: null, maxUncertainty: null };
+export const DEFAULT_FILTERS = {
+  includeAutomatic: false,
+  minYear: null,
+  maxAgeDays: null,
+  lastYears: null,
+  maxUncertainty: null,
+};
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Primo giorno (giorni dal 1970) del periodo "ultimi N anni": la data di oggi di N anni fa
+ * (8 novembre 2026, 5 anni -> 8 novembre 2021). Il 29 febbraio di un anno non bisestile
+ * diventa il 1° marzo.
+ */
+export function lastYearsStartDay(today, years) {
+  const d = new Date(today * DAY_MS);
+  return Math.floor(Date.UTC(d.getUTCFullYear() - years, d.getUTCMonth(), d.getUTCDate()) / DAY_MS);
+}
+
+// Inizio del periodo "ultimi N anni", memorizzato: passesFilters lo chiede per ogni record.
+let startCache = { today: null, years: null, day: null, year: null };
+function lastYearsStart(today, years) {
+  if (startCache.today !== today || startCache.years !== years) {
+    const day = lastYearsStartDay(today, years);
+    startCache = { today, years, day, year: new Date(day * DAY_MS).getUTCFullYear() };
+  }
+  return startCache;
+}
+
+const MONTHS = [
+  'gennaio',
+  'febbraio',
+  'marzo',
+  'aprile',
+  'maggio',
+  'giugno',
+  'luglio',
+  'agosto',
+  'settembre',
+  'ottobre',
+  'novembre',
+  'dicembre',
+];
+
+/** "19 aprile 2026" da un giorno espresso in giorni dal 1970 (calcolato in UTC, senza fusi). */
+export function formatDay(day) {
+  const d = new Date(day * DAY_MS);
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
 
 /** Giorno di oggi in giorni dal 1° gennaio 1970 (stessa unità del campo "giorno" dei punti). */
 export function todayDay(now = Date.now()) {
@@ -47,21 +98,33 @@ export function originalSiteName(url) {
   return host;
 }
 
-/** Il record passa i filtri? `today` serve solo ai test (giorni dal 1970). */
+/**
+ * Il record passa i filtri? `today` serve solo ai test (giorni dal 1970).
+ *
+ * Periodo:
+ * - "dal <anno>" (minYear): dal 1° gennaio di quell'anno, in base all'anno dell'osservazione;
+ * - "ultimi N anni" (lastYears): dalla data di oggi di N anni fa. Con la data completa si
+ *   confronta il giorno; con il solo anno il record conta se l'anno cade tutto nel periodo
+ *   (successivo a quello di inizio), altrimenti non si può sapere ed è escluso;
+ * - "ultimo mese / anno" (maxAgeDays): solo record con la data completa.
+ */
 export function passesFilters({ year, automatic, uncertainty, day }, filters, today = todayDay()) {
   if (!filters.includeAutomatic && automatic) return false;
   if (filters.minYear != null && (year == null || year < filters.minYear)) return false;
   if (filters.maxAgeDays != null && (day == null || day < today - filters.maxAgeDays)) return false;
+  if (filters.lastYears != null) {
+    const start = lastYearsStart(today, filters.lastYears);
+    if (day != null ? day < start.day : year == null || year <= start.year) return false;
+  }
   if (filters.maxUncertainty != null && (uncertainty == null || uncertainty > filters.maxUncertainty)) return false;
   return true;
 }
 
 /** Numero di filtri diversi da quelli predefiniti (per il badge del pulsante). */
 export function activeFilterCount(filters) {
-  // anno minimo e ultimi giorni sono due modi di scegliere lo stesso filtro (periodo)
-  const keys = Object.keys(DEFAULT_FILTERS).filter((k) => k !== 'maxAgeDays');
-  const period = filters.maxAgeDays != null && filters.minYear == null ? 1 : 0;
-  return keys.filter((k) => filters[k] !== DEFAULT_FILTERS[k]).length + period;
+  // anno minimo, ultimi giorni e ultimi anni sono modi diversi di scegliere lo stesso filtro (periodo)
+  const period = filters.minYear != null || filters.maxAgeDays != null || filters.lastYears != null;
+  return (period ? 1 : 0) + (filters.includeAutomatic ? 1 : 0) + (filters.maxUncertainty != null ? 1 : 0);
 }
 
 /**

@@ -82,7 +82,7 @@ import {
   bboxToRegion,
   findFeatureAtPoint,
   latitudeToScreenY,
-  longitudeToScreenX,
+  screenProjector,
   shiftCenterLatitude,
 } from './src/utils/geo';
 
@@ -121,11 +121,12 @@ function hitArea(feature) {
 
 /** Diagnostica: marker più vicino al punto toccato, con la distanza e la direzione (px). */
 function describeNearest(features, point, region, width, height) {
+  const project = screenProjector(region, { width, height });
   let nearest = null;
   for (const f of features) {
     const [lon, lat] = f.geometry.coordinates;
-    const dx = longitudeToScreenX(lon, region, width) - point.x;
-    const dy = latitudeToScreenY(lat, region, height) - point.y;
+    const dx = project.x(lon) - point.x;
+    const dy = project.y(lat) - point.y;
     const d = Math.hypot(dx, dy);
     if (!nearest || d < nearest.d) nearest = { f, d, dx, dy };
   }
@@ -223,28 +224,9 @@ function IASTracker() {
     clustersRef.current = clusters;
   }, [clusters]);
 
-  // Dati aggiornati: prima quelli già scaricati, poi (al massimo ogni 12 ore) controllo online.
-  // Mentre si scaricano i file nuovi compare un avviso discreto sotto la barra superiore.
+  // Manifest dei dati scaricati (null = dati inclusi nell'app); vedi applyNewData più sotto.
   const [manifest, setManifest] = useState(null);
   const [updatingData, setUpdatingData] = useState(false);
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      const stored = await loadStoredManifest();
-      if (active && stored) setManifest(stored);
-      const { manifest: latest } = await checkForUpdates({
-        onDownloadStart: () => {
-          if (active) setUpdatingData(true);
-        },
-      });
-      if (!active) return;
-      setUpdatingData(false);
-      if (latest) setManifest(latest);
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
   const speciesList = useMemo(() => SPECIES.map((s) => withRemoteStats(s, manifest)), [manifest]);
   const allSpeciesItem = useMemo(() => {
     const withData = speciesList.filter((s) => s.total > 0);
@@ -411,6 +393,11 @@ function IASTracker() {
    * Tocco sulla mappa (evento della mappa). Su Android arrivano qui solo i tocchi fuori dai
    * marker (i marker gestiscono il proprio tocco). Su iOS arriva circa 0,3 s dopo il tocco
    * (react-native-maps aspetta di escludere un doppio tocco): fa da riserva agli eventi di tocco.
+   *
+   * `position` si usa solo su iOS, dove è in punti dello schermo come le dimensioni della mappa.
+   * Su Android è in pixel fisici (Projection.toScreenLocation di Google Maps): confrontata con
+   * misure in punti indicherebbe un altro posto della mappa (×2-3) e selezionerebbe un marker
+   * lontano dal dito. Lì si parte dalle coordinate geografiche del tocco.
    */
   const handleMapPress = useCallback(
     (e) => {
@@ -418,13 +405,11 @@ function IASTracker() {
       const width = mapWidthRef.current;
       const height = mapHeightRef.current;
       if (!width || !height) return;
-      let point = position && Number.isFinite(position.x) ? { x: position.x, y: position.y } : null;
+      let point =
+        Platform.OS === 'ios' && position && Number.isFinite(position.x) ? { x: position.x, y: position.y } : null;
       if (!point && coordinate) {
-        const region = regionRef.current;
-        point = {
-          x: longitudeToScreenX(coordinate.longitude, region, width),
-          y: latitudeToScreenY(coordinate.latitude, region, height),
-        };
+        const project = screenProjector(regionRef.current, { width, height });
+        point = { x: project.x(coordinate.longitude), y: project.y(coordinate.latitude) };
       }
       if (point) handleTapAt(point, 'mappa');
     },
@@ -710,12 +695,16 @@ function IASTracker() {
       setPanelOpen(false);
       setTimeout(openNews, 400);
     };
-    Notifications.getLastNotificationResponseAsync()
-      .then((response) => {
+    // versioni sincrone: quelle *Async sono deprecate in expo-notifications (SDK 58)
+    try {
+      const response = Notifications.getLastNotificationResponse();
+      if (response) {
         handle(response);
-        Notifications.clearLastNotificationResponseAsync().catch(() => {});
-      })
-      .catch(() => {});
+        Notifications.clearLastNotificationResponse();
+      }
+    } catch {
+      // modulo non disponibile (es. alcune versioni di Expo Go): niente apertura dalla notifica
+    }
     const subscription = Notifications.addNotificationResponseReceivedListener(handle);
     return () => subscription.remove();
   }, [openNews]);
@@ -812,47 +801,88 @@ function IASTracker() {
   }, []);
   const resetFilters = useCallback(() => changeFilters(DEFAULT_FILTERS), [changeFilters]);
 
-  // Specie mostrata, letta dopo l'aggiornamento manuale (che può finire a schermata cambiata).
+  // Specie mostrata, letta quando cambiano i dati (a fine scaricamento la schermata può essere cambiata).
   const speciesRef = useRef(null);
   useEffect(() => {
     speciesRef.current = species;
   }, [species]);
 
+  /**
+   * Nuovi dati in uso (scaricati all'avvio o dalle Impostazioni, oppure eliminati): statistiche
+   * e punti della specie mostrata si ricaricano subito, invece di restare quelli precedenti
+   * finché non si sceglie di nuovo la specie.
+   */
+  const applyNewData = useCallback((latest) => {
+    setManifest(latest);
+    const shown = speciesRef.current;
+    if (!shown) return;
+    setSelection(null); // i punti selezionati appartengono ai dati precedenti
+    const list = SPECIES.map((s) => withRemoteStats(s, latest));
+    const item = shown.all ? shown : (list.find((s) => s.slug === shown.slug) ?? shown);
+    if (!shown.all) setSpecies(item);
+    // Nuova richiesta: un caricamento ancora in corso (es. una specie appena scelta) viene
+    // superato, quindi è questa richiesta a spegnere lo spinner (prima restava acceso).
+    const request = ++loadRequest.current;
+    if (!item.total) {
+      setDatasets(null);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    loadDatasets(item, latest, list)
+      .catch(() => null)
+      .then((loaded) => {
+        if (request !== loadRequest.current) return;
+        setLoading(false);
+        if (loaded) setDatasets(loaded); // se non si leggono, restano i punti già mostrati
+      });
+  }, []);
+
+  // Dati aggiornati: prima quelli già scaricati, poi (al massimo ogni 12 ore) controllo online.
+  // Mentre si scaricano i file nuovi compare un avviso discreto sotto la barra superiore.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const stored = await loadStoredManifest();
+      if (active && stored) setManifest(stored);
+      const { manifest: latest, status } = await checkForUpdates({
+        onDownloadStart: () => {
+          if (active) setUpdatingData(true);
+        },
+      });
+      if (!active) return;
+      setUpdatingData(false);
+      // negli altri casi il manifest è quello già salvato, appena impostato
+      if (latest && (status === 'updated' || status === 'incomplete')) applyNewData(latest);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [applyNewData]);
+
   /** Aggiornamento manuale dalle Impostazioni: se arrivano dati nuovi, la mappa li mostra subito. */
   const updateNow = useCallback(async () => {
     const result = await checkForUpdates({ force: true, onDownloadStart: () => setUpdatingData(true) });
     setUpdatingData(false);
-    const latest = result.manifest;
-    if (!latest || (result.status !== 'updated' && result.status !== 'incomplete')) return result;
-    setManifest(latest);
-    const shown = speciesRef.current;
-    if (shown) {
-      setSelection(null); // i punti selezionati appartengono ai dati precedenti
-      const list = SPECIES.map((s) => withRemoteStats(s, latest));
-      const item = shown.all ? shown : (list.find((s) => s.slug === shown.slug) ?? shown);
-      if (!shown.all) setSpecies(item);
-      if (item.total) {
-        const request = ++loadRequest.current;
-        loadDatasets(item, latest, list)
-          .catch(() => null)
-          .then((loaded) => {
-            if (request === loadRequest.current && loaded) setDatasets(loaded);
-          });
-      }
+    if (result.manifest && (result.status === 'updated' || result.status === 'incomplete')) {
+      applyNewData(result.manifest);
     }
     return result;
-  }, []);
+  }, [applyNewData]);
 
+  // Dopo l'eliminazione la specie mostrata torna ai dati inclusi nell'app.
   const clearData = useCallback(async () => {
     await clearDownloadedData();
-    setManifest(null);
-  }, []);
+    applyNewData(null);
+  }, [applyNewData]);
 
   const openWelcomeFromSettings = useCallback(() => {
     setSettingsOpen(false);
     setTimeout(() => setWelcomeOpen(true), 400);
   }, []);
 
+  // "Tutte le specie": la voce si aggiorna con i dati (numero di specie e totale correnti)
+  const topSpecies = species?.all ? allSpeciesItem : species;
   const filtersSummary = describeFilters(filters);
   const filtersActive = activeFilterCount(filters);
 
@@ -961,9 +991,9 @@ function IASTracker() {
           onPress={() => setPanelOpen(true)}
           accessibilityRole="button"
           accessibilityLabel={
-            species
-              ? `Specie mostrata: ${species.commonName}, ${
-                  species.total === 0
+            topSpecies
+              ? `Specie mostrata: ${topSpecies.commonName}, ${
+                  topSpecies.total === 0
                     ? 'nessuna segnalazione in Italia'
                     : `${visibleCount} segnalazioni${filtersActive ? ' con i filtri attivi' : ''}`
                 }`
@@ -973,12 +1003,12 @@ function IASTracker() {
         >
           <Text style={styles.appName}>IAS Tracker</Text>
           <Text style={styles.speciesName} numberOfLines={1}>
-            {species ? species.commonName : 'Scegli una specie'}
+            {topSpecies ? topSpecies.commonName : 'Scegli una specie'}
           </Text>
-          {species && (
+          {topSpecies && (
             <Text style={styles.speciesMeta} numberOfLines={1}>
-              <Text style={styles.italic}>{species.scientificName}</Text>
-              {species.total === 0
+              <Text style={styles.italic}>{topSpecies.scientificName}</Text>
+              {topSpecies.total === 0
                 ? ' · nessuna segnalazione in Italia'
                 : ` · ${visibleCount.toLocaleString('it-IT')} segnalazioni`}
             </Text>

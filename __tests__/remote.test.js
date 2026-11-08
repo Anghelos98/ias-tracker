@@ -78,3 +78,18 @@ test('i file non scaricati vengono ritentati al controllo successivo', async () 
   expect(idle).not.toHaveBeenCalled(); // niente da scaricare: nessun avviso
   expect(JSON.parse(await AsyncStorage.getItem('ias-tracker/remote-manifest/v1')).incompleto).toBeUndefined();
 });
+
+test('i file comuni (foto, simili, EASIN) si leggono una volta per versione', async () => {
+  const { File } = require('expo-file-system');
+  const { clearDownloadedData, readPhotos } = require('../src/data/remote');
+  const file = new File({ uri: 'doc' }, 'data-v1', 'root', 'foto.json');
+  file.write(JSON.stringify({ specie: { a: 1 } }));
+  const m = { ...manifest, foto: { file: 'foto.json', sha: 'f1' } };
+  expect(await readPhotos(m)).toEqual({ specie: { a: 1 } });
+  file.write(JSON.stringify({ specie: { a: 2 } }));
+  expect(await readPhotos(m)).toEqual({ specie: { a: 1 } }); // stessa impronta: dalla memoria
+  expect(await readPhotos({ ...m, foto: { file: 'foto.json', sha: 'f2' } })).toEqual({ specie: { a: 2 } });
+  await clearDownloadedData();
+  file.write(JSON.stringify({ specie: { a: 3 } }));
+  expect(await readPhotos(m)).toEqual({ specie: { a: 3 } }); // dopo l'eliminazione si rilegge
+});

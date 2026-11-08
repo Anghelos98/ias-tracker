@@ -161,6 +161,7 @@ export async function lastCheckTime() {
  */
 export function clearDownloadedData() {
   const run = checkQueue.then(async () => {
+    globalCache.clear();
     const dir = new Directory(Paths.document, 'data-v1');
     if (dir.exists) dir.delete();
     await AsyncStorage.multiRemove([MANIFEST_KEY, LAST_CHECK_KEY]);
@@ -204,11 +205,24 @@ export async function readSpeciesSheet(species, manifest) {
   return species.sheet ? species.sheet() : null;
 }
 
+// File comuni già letti, per impronta (sha): foto, specie simili ed EASIN servono a ogni
+// apertura di una scheda specie, e rileggerli e decodificarli ogni volta era lavoro sprecato.
+// Si conservano solo le letture riuscite; la cache si svuota con clearDownloadedData.
+const globalCache = new Map();
+
 async function readGlobal(manifest, key) {
   if (remoteIsNewer(manifest) && manifest[key]) {
+    const { file: name, sha } = manifest[key];
+    const cacheKey = `${key}|${name}|${sha}`;
+    const cached = globalCache.get(cacheKey);
+    if (cached) return cached;
     try {
-      const file = cacheFile(`root/${manifest[key].file}`);
-      if (file.exists) return JSON.parse(await file.text());
+      const file = cacheFile(`root/${name}`);
+      if (file.exists) {
+        const data = JSON.parse(await file.text());
+        globalCache.set(cacheKey, data);
+        return data;
+      }
     } catch {
       // si usa il file incluso nell'app
     }

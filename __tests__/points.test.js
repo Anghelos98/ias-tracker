@@ -3,6 +3,7 @@ import {
   DEFAULT_FILTERS,
   activeFilterCount,
   groupDatasets,
+  lastYearsStartDay,
   originalSiteName,
   passesFilters,
   speciesOfRecords,
@@ -139,4 +140,38 @@ test('periodo per data: ultimo mese e ultimo anno', () => {
   expect(activeFilterCount(filters(30))).toBe(1);
   expect(describeFilters(filters(30))).toBe('ultimo mese');
   expect(describeFilters({ ...DEFAULT_FILTERS, minYear: 2010 })).toBe('dal 2010');
+});
+
+test('ultimi 5 anni: dalla data di oggi di 5 anni fa', () => {
+  const day = (y, m, d) => Math.floor(Date.UTC(y, m - 1, d) / 86400000);
+  const filters = { ...DEFAULT_FILTERS, lastYears: 5 };
+  const today = day(2026, 11, 8);
+  const rec = (year, d = null) => ({ year, automatic: false, uncertainty: null, day: d });
+  expect(lastYearsStartDay(today, 5)).toBe(day(2021, 11, 8));
+  // con la data completa conta il giorno
+  expect(passesFilters(rec(2021, day(2021, 11, 8)), filters, today)).toBe(true);
+  expect(passesFilters(rec(2021, day(2021, 11, 7)), filters, today)).toBe(false);
+  expect(passesFilters(rec(2021, day(2021, 12, 31)), filters, today)).toBe(true);
+  // con il solo anno: dentro solo se l'anno è tutto nel periodo
+  expect(passesFilters(rec(2022), filters, today)).toBe(true);
+  expect(passesFilters(rec(2021), filters, today)).toBe(false);
+  expect(passesFilters(rec(null), filters, today)).toBe(false);
+  // relativo a oggi: lo stesso filtro un anno dopo parte dall'8 novembre 2022
+  expect(passesFilters(rec(2022, day(2022, 11, 7)), filters, day(2027, 11, 8))).toBe(false);
+  expect(passesFilters(rec(2022), filters, day(2027, 11, 8))).toBe(false);
+  // 29 febbraio -> 1° marzo dell'anno non bisestile
+  expect(lastYearsStartDay(day(2028, 2, 29), 5)).toBe(day(2023, 3, 1));
+  expect(activeFilterCount(filters)).toBe(1);
+  expect(activeFilterCount({ ...filters, includeAutomatic: true, maxUncertainty: 100 })).toBe(3);
+  expect(describeFilters(filters)).toBe('ultimi 5 anni');
+});
+
+test('dal 2020: dal 1° gennaio, in base all’anno', () => {
+  const filters = { ...DEFAULT_FILTERS, minYear: 2020 };
+  const rec = (year, d = null) => ({ year, automatic: false, uncertainty: null, day: d });
+  const jan1 = Math.floor(Date.UTC(2020, 0, 1) / 86400000);
+  expect(passesFilters(rec(2020, jan1), filters)).toBe(true);
+  expect(passesFilters(rec(2020), filters)).toBe(true);
+  expect(passesFilters(rec(2019, jan1 - 1), filters)).toBe(false);
+  expect(passesFilters(rec(null), filters)).toBe(false);
 });
