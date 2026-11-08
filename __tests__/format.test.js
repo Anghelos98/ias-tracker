@@ -84,3 +84,10 @@ test('firma facoltativa nel testo della segnalazione', () => {
     'Rilevatore: Mario Rossi, Parco del Ticino',
   );
 });
+
+test('gpsFromExif: coordinate impossibili scartate (EXIF scritti male)', () => {
+  expect(gpsFromExif({ '{GPS}': { Latitude: 200, LatitudeRef: 'N', Longitude: 12, LongitudeRef: 'E' } })).toBeNull();
+  expect(gpsFromExif({ '{GPS}': { Latitude: 41, Longitude: 999 } })).toBeNull();
+  expect(gpsFromExif({ GPSLatitude: '1e999/1,0/1,0/1', GPSLongitude: '12/1,0/1,0/1' })).toBeNull();
+  expect(gpsFromExif({ '{GPS}': { Latitude: 90, Longitude: -180 } })).toEqual({ latitude: 90, longitude: -180 });
+});

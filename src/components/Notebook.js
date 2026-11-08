@@ -9,9 +9,10 @@ import {
   filterEntries,
   formatNotebook,
   notebookFileName,
+  sendStatus,
 } from '../reports/notebook';
-import { sendByEmail, shareReport } from '../reports/send';
-import { deleteReport, loadReports } from '../reports/storage';
+import { alertDraft, sendByEmail, shareReport } from '../reports/send';
+import { NOTEBOOK_WARN, deleteReport, loadNotebook } from '../reports/storage';
 import { useColors, useThemedStyles } from '../theme';
 import { shareTextFile } from '../utils/shareFile';
 
@@ -30,18 +31,20 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
   const insets = useSafeAreaInsets();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
-  const [entries, setEntries] = useState([]);
+  // problem 'unreadable': il taccuino salvato non si legge; fill: spazio usato (solo Android)
+  const [notebook, setNotebook] = useState({ entries: [], problem: null, fill: 0 });
+  const entries = notebook.entries;
   const [kind, setKind] = useState('tutte');
   const [format, setFormat] = useState('csv');
   const [exporting, setExporting] = useState(false);
 
-  const reload = useCallback(async () => setEntries(await loadReports()), []);
+  const reload = useCallback(async () => setNotebook(await loadNotebook()), []);
 
   useEffect(() => {
     if (!visible) return undefined;
     let active = true;
-    loadReports().then((r) => {
-      if (active) setEntries(r);
+    loadNotebook().then((n) => {
+      if (active) setNotebook(n);
     });
     return () => {
       active = false;
@@ -58,7 +61,8 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
         style: 'destructive',
         onPress: async () => {
           try {
-            setEntries(await deleteReport(entry.id));
+            await deleteReport(entry.id);
+            await reload(); // anche lo spazio usato
           } catch {
             Alert.alert('Eliminazione non riuscita', 'Non è stato possibile eliminare la voce. Riprova.');
           }
@@ -69,7 +73,8 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
   // Reinvio per email o condivisione di una voce già salvata.
   const resend = async (send) => {
     try {
-      if (await send()) await reload();
+      if ((await send()) === 'draft') alertDraft();
+      await reload();
     } catch {
       Alert.alert('Invio non riuscito', 'Non è stato possibile aprire l’email o la condivisione.');
     }
@@ -88,6 +93,26 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
 
   const header = (
     <View>
+      {notebook.problem === 'unreadable' && (
+        <View style={styles.warning} accessibilityRole="alert">
+          <Text style={styles.warningTitle}>Taccuino non leggibile</Text>
+          <Text style={styles.warningText}>
+            Non è stato possibile leggere le voci salvate su questo telefono. Non sono state cancellate, ma finché il
+            problema resta non se ne possono aggiungere di nuove: le segnalazioni si possono comunque inviare per email.
+          </Text>
+        </View>
+      )}
+      {notebook.fill >= NOTEBOOK_WARN && (
+        <View style={styles.warning} accessibilityRole="alert">
+          <Text style={styles.warningTitle}>
+            Taccuino quasi pieno ({Math.min(100, Math.round(notebook.fill * 100))}%)
+          </Text>
+          <Text style={styles.warningText}>
+            Su questo telefono il taccuino ha uno spazio limitato. Esporta le voci e poi elimina quelle che non ti
+            servono più, altrimenti non sarà possibile salvarne di nuove.
+          </Text>
+        </View>
+      )}
       <View style={styles.chips}>
         {KIND_FILTERS.map((k) => (
           <Chip
@@ -150,23 +175,28 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 24 }]}
         ListHeaderComponent={header}
         ListEmptyComponent={
-          <Text style={styles.empty}>
-            {kind === 'intervento'
-              ? 'Nessun intervento registrato. Usa “＋ Intervento” per annotare tagli, eradicazioni e controlli.'
-              : 'Nessuna voce. Usa il pulsante “Segnala” sulla mappa quando trovi una specie invasiva.'}
-          </Text>
+          notebook.problem ? null : (
+            <Text style={styles.empty}>
+              {kind === 'intervento'
+                ? 'Nessun intervento registrato. Usa “＋ Intervento” per annotare tagli, eradicazioni e controlli.'
+                : 'Nessuna voce. Usa il pulsante “Segnala” sulla mappa quando trovi una specie invasiva.'}
+            </Text>
+          )
         }
         renderItem={({ item }) => {
           const isIntervention = entryKind(item) === 'intervento';
           const date = new Date(item.createdAt).toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' });
+          const sent = sendStatus(item);
+          const channels = (list) => list.map((c) => CHANNEL_LABEL[c] ?? c).join(', ');
+          let sentA11y = '';
+          if (sent.confirmed.length) sentA11y = ', inviata';
+          else if (sent.unconfirmed.length) sentA11y = ', invio non confermato';
           return (
             <View style={styles.card}>
               <View
                 style={styles.cardRow}
                 accessible
-                accessibilityLabel={`${entryTitle(item)}, ${item.commonName}, ${date}${
-                  item.sent?.length ? ', inviata' : ''
-                }`}
+                accessibilityLabel={`${entryTitle(item)}, ${item.commonName}, ${date}${sentA11y}`}
               >
                 {item.photos[0] ? (
                   <Image source={{ uri: item.photos[0] }} style={styles.thumb} />
@@ -189,13 +219,11 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
                       {item.note.trim()}
                     </Text>
                   ) : null}
-                  {item.sent?.length ? (
-                    <Text style={styles.sent}>
-                      Inviata: {[...new Set(item.sent.map((s) => CHANNEL_LABEL[s.channel]))].join(', ')}
-                    </Text>
-                  ) : (
-                    !isIntervention && <Text style={styles.notSent}>Non ancora inviata</Text>
+                  {sent.confirmed.length > 0 && <Text style={styles.sent}>Inviata: {channels(sent.confirmed)}</Text>}
+                  {sent.unconfirmed.length > 0 && (
+                    <Text style={styles.notSent}>Invio non confermato: {channels(sent.unconfirmed)}</Text>
                   )}
+                  {!item.sent?.length && !isIntervention && <Text style={styles.notSent}>Non ancora inviata</Text>}
                 </View>
               </View>
               <View style={styles.actions}>
@@ -296,6 +324,9 @@ const createStyles = (c) =>
     exportButtonText: { color: c.onPrimary, fontWeight: '700' },
     disabled: { opacity: 0.4 },
     empty: { textAlign: 'center', color: c.textMuted, marginTop: 40, lineHeight: 20 },
+    warning: { backgroundColor: c.hintImportantBg, borderRadius: 10, padding: 12, marginBottom: 12 },
+    warningTitle: { color: c.hintImportantText, fontWeight: '700', fontSize: 14, marginBottom: 4 },
+    warningText: { color: c.hintImportantText, fontSize: 13, lineHeight: 18 },
     card: {
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: c.border,

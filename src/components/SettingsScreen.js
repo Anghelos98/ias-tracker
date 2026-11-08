@@ -235,7 +235,7 @@ export default function SettingsScreen({
           />
           <Text style={styles.description}>
             Nome ed eventuale ente, aggiunti in fondo alle segnalazioni e nel taccuino: chi le riceve sa chi
-            contattare. Resta solo sul telefono.
+            contattare. È salvata sul telefono e non viene inviata allo sviluppatore.
           </Text>
         </Section>
 

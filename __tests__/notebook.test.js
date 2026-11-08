@@ -6,6 +6,7 @@ import {
   formatNotebook,
   notebookFileName,
   notebookRows,
+  sendStatus,
 } from '../src/reports/notebook';
 
 const base = {
@@ -40,17 +41,41 @@ test('filtro per tipo', () => {
 
 test('righe di esportazione', () => {
   const [p, i] = notebookRows([old, cut]);
-  expect(p).toMatchObject({ tipo: 'presenza', intervento: '', precisione_m: 8, foto: 1, inviata: 'email' });
-  expect(i).toMatchObject({ tipo: 'intervento', intervento: 'Taglio', foto: 0, inviata: '' });
+  // invio annotato da una versione precedente (senza `confirmed`): non confermato
+  expect(p).toMatchObject({
+    tipo: 'presenza',
+    intervento: '',
+    precisione_m: 8,
+    foto: 1,
+    inviata: '',
+    invio_non_confermato: 'email',
+  });
+  expect(i).toMatchObject({ tipo: 'intervento', intervento: 'Taglio', foto: 0, inviata: '', invio_non_confermato: '' });
+});
+
+test('invii confermati e non confermati', () => {
+  const at = '2026-11-08T10:00:00.000Z';
+  const entry = {
+    ...base,
+    sent: [
+      { channel: 'regione', at, confirmed: false }, // app di posta aperta (Android, mailto)
+      { channel: 'email', at, confirmed: false },
+      { channel: 'email', at, confirmed: true }, // poi confermata da Mail (iOS)
+      { channel: 'condivisione', at }, // versione precedente
+    ],
+  };
+  expect(sendStatus(entry)).toEqual({ confirmed: ['email'], unconfirmed: ['regione', 'condivisione'] });
+  expect(notebookRows([entry])[0]).toMatchObject({ inviata: 'email', invio_non_confermato: 'regione condivisione' });
+  expect(sendStatus({ ...base, sent: undefined })).toEqual({ confirmed: [], unconfirmed: [] });
 });
 
 test('CSV con virgolette e campi vuoti', () => {
   const lines = formatNotebook('csv', [old]).split('\n');
   expect(lines[0]).toBe(
-    'data,tipo,intervento,specie,nome_comune,latitudine,longitudine,precisione_m,origine_posizione,note,rilevatore,foto,inviata',
+    'data,tipo,intervento,specie,nome_comune,latitudine,longitudine,precisione_m,origine_posizione,note,rilevatore,foto,inviata,invio_non_confermato',
   );
   expect(lines[1]).toBe(
-    '2026-11-06T10:00:00.000Z,presenza,,Ailanthus altissima,Ailanto,41.9,12.5,8,gps,"vicino al fosso, ""lato nord""",,1,email',
+    '2026-11-06T10:00:00.000Z,presenza,,Ailanthus altissima,Ailanto,41.9,12.5,8,gps,"vicino al fosso, ""lato nord""",,1,,email',
   );
 });
 

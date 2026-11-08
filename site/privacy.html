@@ -14,12 +14,13 @@ a{color:var(--accent)}h1{font-size:1.6em}h2{font-size:1.15em;margin-top:1.8em}
 </head>
 <body>
 <h1>Informativa sulla privacy di IAS Tracker</h1>
-<p class="muted">Ultimo aggiornamento: 7 novembre 2026</p>
+<p class="muted">Ultimo aggiornamento: 8 novembre 2026</p>
 
 <div class="box">
 <p><strong>In breve:</strong> IAS Tracker non ha account, non ha un proprio server, non contiene
 pubblicità né strumenti di analisi o tracciamento. Posizione, foto e segnalazioni restano sul tuo
-telefono e lasciano il dispositivo solo quando sei tu a inviarle o condividerle.</p>
+telefono: lo lasciano solo quando sei tu a inviarle o condividerle, oppure nei backup del telefono,
+se li hai attivati (vedi <a href="#backup">Backup del telefono</a>).</p>
 </div>
 
 <h2>Chi è responsabile dell'app</h2>
@@ -45,16 +46,35 @@ Le foto possono contenere dati come la posizione e la data dello scatto (metadat
 solo per proporti la posizione della foto.</p>
 
 <h2>Taccuino di campo</h2>
-<p>Segnalazioni e interventi che salvi (specie, coordinate, data, note, foto) sono conservati solo
-sul telefono, nella memoria dell'app. Puoi eliminarli in qualsiasi momento dal taccuino; disinstallando
-l'app vengono cancellati.</p>
-<p>Nelle Impostazioni puoi indicare una firma facoltativa (per esempio nome ed ente): resta solo sul
-telefono e viene aggiunta alle segnalazioni e alle voci del taccuino che salvi, quindi ai messaggi e
-ai file che scegli di inviare o esportare. Puoi cambiarla o cancellarla in qualsiasi momento.</p>
+<p>Segnalazioni e interventi che salvi (specie, coordinate, data, note, foto) sono conservati sul
+telefono, nella memoria dell'app, e non vengono inviati allo sviluppatore. Puoi eliminarli in qualsiasi
+momento dal taccuino; disinstallando l'app vengono cancellati dal telefono, mentre le eventuali copie
+nei backup del telefono restano finché esiste il backup (vedi <a href="#backup">Backup del telefono</a>).</p>
+<p>Nelle Impostazioni puoi indicare una firma facoltativa (per esempio nome ed ente): è salvata sul
+telefono, non viene inviata allo sviluppatore e viene aggiunta alle segnalazioni e alle voci del taccuino
+che salvi, quindi ai messaggi e ai file che scegli di inviare o esportare. Puoi cambiarla o cancellarla
+in qualsiasi momento.</p>
+
+<h2 id="backup">Backup del telefono</h2>
+<p>Se hai attivato il backup del telefono, il sistema può copiarvi anche alcuni dati dell'app. I backup
+sono conservati nel tuo account Apple o Google (o sul tuo computer) e gestiti da Apple o Google secondo
+le loro regole: lo sviluppatore non vi ha accesso.</p>
+<ul>
+<li><strong>iPhone</strong> (backup su iCloud o sul computer): sono incluse le foto salvate con le
+segnalazioni, che possono contenere la posizione dello scatto. Le voci del taccuino, la firma e le
+preferenze non sono incluse: ripristinando un iPhone da un backup tornano le foto, ma non le voci del
+taccuino.</li>
+<li><strong>Android</strong> (backup su Google): il sistema può includere tutti i dati dell'app (voci del
+taccuino con coordinate e note, foto, firma e preferenze), entro i limiti di spazio previsti da Android,
+e ripristinarli quando reinstalli l'app con lo stesso account.</li>
+</ul>
+<p>Puoi disattivare il backup dalle impostazioni del telefono. Per conservare il taccuino indipendentemente
+dal backup, esportalo (CSV, GeoJSON o KML) e salva il file dove preferisci: l'esportazione contiene le
+voci, non le foto.</p>
 
 <h2>Specie e regioni seguite, notifiche</h2>
 <p>Le specie e le regioni che scegli di seguire, e la data delle ultime novità che hai visto, sono
-salvate solo sul telefono. Se attivi "Avvisami delle novità", l'app chiede il permesso di mostrare
+salvate sul telefono. Se attivi "Avvisami delle novità", l'app chiede il permesso di mostrare
 notifiche e registra un controllo periodico in background: di tanto in tanto (il sistema decide quando)
 scarica il riepilogo dei dati aggiornati da GitHub Pages e, se ci sono novità su ciò che segui, mostra
 una notifica generata sul telefono. Non usa la posizione, non riceve notifiche da server esterni e non

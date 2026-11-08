@@ -151,6 +151,15 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
     await render(<Notebook visible onClose={noop} onShowOnMap={noop} onNewEntry={noop} />);
     expect(await screen.findByText('Intervento: Taglio')).toBeTruthy();
     expect(screen.getByText('Esporta 1 voce')).toBeTruthy();
+    expect(screen.queryByText('Taccuino non leggibile')).toBeNull();
+  });
+
+  test('taccuino che non si legge: avviso, non "nessuna voce"', async () => {
+    const AsyncStorage = require('@react-native-async-storage/async-storage');
+    await AsyncStorage.setItem('ias-tracker/reports/v1', '{rovinato');
+    await render(<Notebook visible onClose={noop} onShowOnMap={noop} onNewEntry={noop} />);
+    expect(await screen.findByText('Taccuino non leggibile')).toBeTruthy();
+    expect(screen.queryByText(/Nessuna voce/)).toBeNull();
   });
 
   test('rapporto per regione e vicino a me', async () => {

@@ -19,8 +19,8 @@ import { REPORT_EMAIL } from '../data/legal';
 import { REGIONS } from '../data/regions';
 import { SPECIES } from '../data/species';
 import { gpsFromExif } from '../reports/format';
-import { INTERVENTIONS } from '../reports/notebook';
-import { sendByEmail, shareReport } from '../reports/send';
+import { INTERVENTIONS, NOTE_MAX } from '../reports/notebook';
+import { alertDraft, isRecorded, sendByEmail, shareReport } from '../reports/send';
 import { addReport, newReportId, persistPhotos } from '../reports/storage';
 import { useColors, useThemedStyles } from '../theme';
 import { readGpsPosition } from '../utils/location';
@@ -28,6 +28,21 @@ import { readGpsPosition } from '../utils/location';
 // Confini delle regioni (~100 KB), letti solo quando serve la prima volta (posizione nota):
 // all'avvio dell'app non servono.
 const regionShapes = () => require('../../assets/data/region_shapes.json');
+
+// Taccuino che non accetta la voce (errori di addReport con `code`, vedi reports/storage.js).
+// La segnalazione si può comunque inviare: chi è sul campo non deve perderla.
+const NOTEBOOK_PROBLEMS = {
+  full: {
+    title: 'Taccuino pieno',
+    text:
+      'Su questo telefono il taccuino ha esaurito lo spazio, quindi la voce non è stata salvata. ' +
+      'Esporta il taccuino ed elimina le voci che non ti servono più.',
+  },
+  unreadable: {
+    title: 'Taccuino non leggibile',
+    text: 'Non è stato possibile leggere il taccuino salvato: per non rischiare di cancellarlo, la voce non è stata salvata.',
+  },
+};
 
 const MAX_PHOTOS = 3;
 const POOR_ACCURACY_M = 50; // oltre questa incertezza suggeriamo di riprovare all'aperto
@@ -158,7 +173,12 @@ export default function ReportScreen({
       if (!ready || busyRef.current) return;
       busyRef.current = true;
       setSending(true);
+      const unlock = () => {
+        busyRef.current = false;
+        setSending(false);
+      };
       let report;
+      let problem = null; // voce non salvata nel taccuino (pieno o non leggibile)
       try {
         const id = newReportId();
         report = {
@@ -182,12 +202,16 @@ export default function ReportScreen({
           sent: [],
         };
         await addReport(report); // salvata comunque, anche se l'invio viene annullato
-      } catch {
-        // niente è stato salvato: il modulo resta aperto per riprovare
-        Alert.alert('Errore', 'Non è stato possibile salvare. Riprova.');
-        busyRef.current = false;
-        setSending(false);
-        return;
+      } catch (error) {
+        problem = NOTEBOOK_PROBLEMS[error?.code] ?? null;
+        if (!problem || channel === 'save') {
+          // niente è stato salvato: il modulo resta aperto per riprovare o per inviare
+          if (problem) {
+            Alert.alert(problem.title, `${problem.text}\n\nPuoi comunque inviarla per email o condividerla.`);
+          } else Alert.alert('Errore', 'Non è stato possibile salvare. Riprova.');
+          unlock();
+          return;
+        }
       }
       // Da qui la voce è nel taccuino: un errore nell'invio non deve farla salvare di nuovo,
       // quindi il modulo si chiude comunque. L'email (o la condivisione) si apre prima della
@@ -197,17 +221,34 @@ export default function ReportScreen({
         Alert.alert('Salvato nel taccuino', 'Puoi esportare le voci del taccuino in CSV, GeoJSON o KML.');
         return;
       }
-      let done = false;
+      let result = 'cancelled';
       try {
-        if (channel === 'email') done = await sendByEmail(report);
+        if (channel === 'email') result = await sendByEmail(report);
         else if (channel?.office) {
-          done = await sendByEmail(report, { address: officeAddress(channel.office), channel: 'regione' });
-        } else done = await shareReport(report);
+          result = await sendByEmail(report, { address: officeAddress(channel.office), channel: 'regione' });
+        } else result = await shareReport(report);
       } catch {
-        done = false;
+        result = 'cancelled';
+      }
+      if (problem) {
+        if (!isRecorded(result) && result !== 'draft') {
+          // né salvata né inviata: il modulo resta aperto, così non si perde nulla
+          Alert.alert(problem.title, `${problem.text}\n\nNon è stata nemmeno inviata: il modulo resta aperto.`);
+          unlock();
+          return;
+        }
+        onClose();
+        Alert.alert(
+          problem.title,
+          result === 'draft'
+            ? `${problem.text}\n\nL’email è tra le bozze dell’app Mail: inviala da lì.`
+            : `${problem.text}\n\nLa segnalazione è stata comunque passata all’app di posta o di condivisione.`,
+        );
+        return;
       }
       onClose();
-      if (!done) {
+      if (result === 'draft') alertDraft();
+      else if (!isRecorded(result)) {
         Alert.alert('Salvato nel taccuino', 'Non è stato inviato: lo trovi nel taccuino di campo.');
       }
     },
@@ -444,8 +485,14 @@ export default function ReportScreen({
             value={note}
             onChangeText={setNote}
             multiline
+            maxLength={NOTE_MAX}
             accessibilityLabel="Note"
           />
+          {note.length > NOTE_MAX * 0.9 && (
+            <Text style={styles.noteCount}>
+              {note.length.toLocaleString('it-IT')} / {NOTE_MAX.toLocaleString('it-IT')} caratteri
+            </Text>
+          )}
         </Step>
 
         {/* Invio */}
@@ -610,6 +657,7 @@ const createStyles = (c) =>
       fontSize: 15,
     },
     noteInput: { minHeight: 80, textAlignVertical: 'top' },
+    noteCount: { fontSize: 12, color: c.textMuted, textAlign: 'right', marginTop: 4 },
     speciesList: { marginTop: 6 },
     speciesRow: { paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: c.border },
     chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

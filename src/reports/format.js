@@ -65,8 +65,12 @@ export function gpsFromExif(exif) {
   if (lat == null || lon == null || (lat === 0 && lon === 0)) return null;
   const latRef = gps.LatitudeRef ?? gps.GPSLatitudeRef;
   const lonRef = gps.LongitudeRef ?? gps.GPSLongitudeRef;
-  return {
-    latitude: latRef === 'S' ? -Math.abs(lat) : lat,
-    longitude: lonRef === 'W' ? -Math.abs(lon) : lon,
-  };
+  const latitude = latRef === 'S' ? -Math.abs(lat) : lat;
+  const longitude = lonRef === 'W' ? -Math.abs(lon) : lon;
+  // Dati EXIF scritti male (app di terzi, foto modificate): coordinate impossibili finirebbero
+  // nelle segnalazioni inviate e nei file esportati, e "Mappa" del taccuino chiederebbe alla
+  // mappa una regione non valida (Apple Maps la rifiuta con un errore che chiude l'app).
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return null;
+  return { latitude, longitude };
 }

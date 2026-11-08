@@ -165,7 +165,7 @@ export function saveMapType(mapType) {
   return AsyncStorage.setItem(MAP_TYPE_KEY, mapType).catch(() => {});
 }
 
-/** Firma facoltativa aggiunta alle segnalazioni inviate (resta solo sul telefono). */
+/** Firma facoltativa aggiunta alle segnalazioni inviate (salvata sul telefono, mai inviata allo sviluppatore). */
 export async function loadSignature() {
   try {
     return ((await AsyncStorage.getItem(SIGNATURE_KEY)) ?? '').slice(0, SIGNATURE_MAX);

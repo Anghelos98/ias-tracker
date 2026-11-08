@@ -1,6 +1,7 @@
 // Taccuino di campo: le voci salvate sul telefono sono presenze (segnalazioni di una specie)
 // o interventi di gestione (taglio, eradicazione…). Funzioni pure, testate in __tests__/.
 
+
 /** Tipi di intervento di gestione. */
 export const INTERVENTIONS = [
   { value: 'taglio', label: 'Taglio' },
@@ -12,6 +13,13 @@ export const INTERVENTIONS = [
   { value: 'monitoraggio', label: 'Controllo / monitoraggio' },
   { value: 'altro', label: 'Altro' },
 ];
+
+/**
+ * Lunghezza massima delle note (caratteri), circa una pagina. Il taccuino è salvato come un
+ * unico testo con spazio limitato su Android (vedi NOTEBOOK_MAX_BYTES in storage.js): una nota
+ * enorme incollata per sbaglio non deve poterlo riempire.
+ */
+export const NOTE_MAX = 2000;
 
 /** Le voci salvate prima del taccuino non hanno il campo `kind`: sono presenze. */
 export function entryKind(entry) {
@@ -32,6 +40,20 @@ export function filterEntries(entries, kind) {
   return kind === 'tutte' ? entries : entries.filter((e) => entryKind(e) === kind);
 }
 
+/**
+ * Canali di invio di una voce, divisi tra invii confermati dal sistema e invii solo avviati
+ * (app di posta o condivisione aperte; vedi reports/send.js). Le voci delle versioni
+ * precedenti non hanno il campo `confirmed`: invio non confermato.
+ * @returns {{confirmed: string[], unconfirmed: string[]}} canali distinti, nell'ordine
+ */
+export function sendStatus(entry) {
+  const confirmed = new Set();
+  const unconfirmed = new Set();
+  for (const s of entry.sent ?? []) (s.confirmed === true ? confirmed : unconfirmed).add(s.channel);
+  for (const channel of confirmed) unconfirmed.delete(channel); // confermato almeno una volta
+  return { confirmed: [...confirmed], unconfirmed: [...unconfirmed] };
+}
+
 // ------------------------------------------------------------------ esportazione
 
 export const NOTEBOOK_FORMATS = {
@@ -45,23 +67,30 @@ export const NOTEBOOK_FORMATS = {
   },
 };
 
-/** Una riga per voce, con nomi di colonna in italiano. */
+/**
+ * Una riga per voce, con nomi di colonna in italiano. "inviata": canali con invio confermato;
+ * "invio_non_confermato": app di posta o condivisione aperte, invio non verificabile.
+ */
 export function notebookRows(entries) {
-  return entries.map((e) => ({
-    data: e.createdAt,
-    tipo: entryKind(e),
-    intervento: entryKind(e) === 'intervento' ? interventionLabel(e.intervention) : '',
-    specie: e.scientificName,
-    nome_comune: e.commonName,
-    latitudine: e.latitude,
-    longitudine: e.longitude,
-    precisione_m: e.accuracy != null ? Math.round(e.accuracy) : null,
-    origine_posizione: e.locationSource,
-    note: e.note?.trim() ?? '',
-    rilevatore: e.signature?.trim() ?? '',
-    foto: e.photos?.length ?? 0,
-    inviata: (e.sent ?? []).map((s) => s.channel).join(' '),
-  }));
+  return entries.map((e) => {
+    const sent = sendStatus(e);
+    return {
+      data: e.createdAt,
+      tipo: entryKind(e),
+      intervento: entryKind(e) === 'intervento' ? interventionLabel(e.intervention) : '',
+      specie: e.scientificName,
+      nome_comune: e.commonName,
+      latitudine: e.latitude,
+      longitudine: e.longitude,
+      precisione_m: e.accuracy != null ? Math.round(e.accuracy) : null,
+      origine_posizione: e.locationSource,
+      note: e.note?.trim() ?? '',
+      rilevatore: e.signature?.trim() ?? '',
+      foto: e.photos?.length ?? 0,
+      inviata: sent.confirmed.join(' '),
+      invio_non_confermato: sent.unconfirmed.join(' '),
+    };
+  });
 }
 
 const COLUMNS = [
@@ -78,6 +107,7 @@ const COLUMNS = [
   'rilevatore',
   'foto',
   'inviata',
+  'invio_non_confermato',
 ];
 
 function csvCell(value) {

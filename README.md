@@ -34,7 +34,7 @@ professionisti (enti parco, comuni, agronomi, vivaisti).
   Ministero dell'Ambiente (casella prevista dall'art. 18 del D.Lgs. 230/2017), all'ufficio della
   Regione in cui ci si trova (riconosciuta dalla posizione) o condivisione con qualsiasi app
 - Taccuino di campo: presenze e interventi di gestione (taglio, sfalcio, eradicazione,
-  cercinatura, trattamento, smaltimento, controllo) salvati solo sul telefono, con foto e note,
+  cercinatura, trattamento, smaltimento, controllo) salvati sul telefono, con foto e note,
   esportabili in CSV, GeoJSON o KML
 - Rapporto per regione (confini ISTAT): segnalazioni e specie di ogni regione, andamento negli
   ultimi 15 anni, rapporto in PDF (grafico, tabella, fonti) o tabella in CSV, uffici regionali
