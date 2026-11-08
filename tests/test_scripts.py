@@ -2,6 +2,7 @@
 
 import json
 
+import pytest
 from bs4 import BeautifulSoup
 
 import build_app_data
@@ -480,3 +481,81 @@ def test_controllo_di_plausibilita():
     assert any(p.startswith("totale") for p in check_data.check(previous, index(700, 60, 10)))
     missing = {"totale_segnalazioni": 970, "specie": [{"slug": "a", "totale": 910}, {"slug": "b", "totale": 60}]}
     assert any("assente" in p for p in check_data.check(previous, missing))
+
+
+# --------------------------------------------------------------------------- difese della pipeline
+
+def test_link_ispra_solo_verso_il_sito_ispra():
+    import net_safety
+
+    base = "https://www.specieinvasive.isprambiente.it"
+    assert net_safety.ispra_url("/images/schede-specie/A.pdf") == f"{base}/images/schede-specie/A.pdf"
+    assert net_safety.ispra_url("http://www.specieinvasive.isprambiente.it/x") == f"{base}/x"  # diventa https
+    for bad in ["https://sito-falso.it/images/schede-specie/A.pdf",      # stesso percorso, altro sito
+                "//sito-falso.it/images/schede-specie/A.pdf",            # indirizzo senza schema
+                "https://www.specieinvasive.isprambiente.it.sito-falso.it/x",
+                "https://utente@www.specieinvasive.isprambiente.it/x",
+                "https://www.specieinvasive.isprambiente.it:8443/x",
+                "javascript:alert(1)", "", None]:
+        assert net_safety.ispra_url(bad) is None, bad
+
+
+def test_scheda_ispra_ignora_i_link_ad_altri_siti():
+    html = SHEET_HTML.replace(
+        '<a href="/images/schede-specie/Prova.pdf">PDF</a>',
+        '<a href="https://sito-falso.it/images/schede-specie/Prova.pdf">PDF falso</a>'
+        '<a href="/images/schede-specie/Prova.pdf">PDF</a>')
+    sheet = ispra.parse_sheet(BeautifulSoup(html, "html.parser"))
+    assert sheet["pdf_scheda"] == "https://www.specieinvasive.isprambiente.it/images/schede-specie/Prova.pdf"
+    only_fake = SHEET_HTML.replace('href="/images/schede-specie/Prova.pdf"',
+                                   'href="https://sito-falso.it/images/schede-specie/Prova.pdf"')
+    assert ispra.parse_sheet(BeautifulSoup(only_fake, "html.parser"))["pdf_scheda"] is None
+
+
+def test_zip_con_limiti(tmp_path):
+    import io
+    import zipfile
+
+    import net_safety
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("a.txt", "0" * 10_000)                      # si comprime in pochi byte
+        archive.writestr("../fuori.txt", "x")                        # percorso fuori dalla cartella
+    data = buffer.getvalue()
+    with pytest.raises(ValueError):
+        net_safety.extract_zip_limited(data, tmp_path / "1", max_files=10, max_total_bytes=5_000)
+    with pytest.raises(ValueError):
+        net_safety.extract_zip_limited(data, tmp_path / "2", max_files=1, max_total_bytes=1_000_000)
+    net_safety.extract_zip_limited(data, tmp_path / "3", max_files=10, max_total_bytes=1_000_000)
+    assert (tmp_path / "3" / "a.txt").exists() and not (tmp_path / "fuori.txt").exists()
+
+
+def test_novita_pubblicate_controllate_prima_di_ripubblicarle():
+    now = build_news.datetime(2026, 11, 9, tzinfo=build_news.timezone.utc)
+    assert build_news.plausible_date("2026-11-09T04:10:00+00:00", now)
+    for bad in ["9999-12-31T00:00:00+00:00", "2027-01-01T00:00:00Z", "2026-11-09", "ieri", None, 5]:
+        assert not build_news.plausible_date(bad, now), bad
+    good = {"dati_al": "2026-11-02T04:10:00+00:00", "precedenti_al": "2026-10-26T04:10:00+00:00", "nuove": 3,
+            "specie": {"ailanthus-altissima": {"nuove": 3, "regioni": {"9": 3}, "prime_regioni": [9],
+                                               "prima_in_italia": False}}}
+    future = {**good, "dati_al": "9999-12-31T00:00:00+00:00"}
+    bad_count = {**good, "specie": {"ailanthus-altissima": {"nuove": -1}}}
+    bad_slug = {**good, "specie": {"Aggiorna l'app su sito-falso.it": {"nuove": 1}}}
+    assert build_news.valid_weeks([good, future, bad_count, bad_slug, "x"]) == [good]
+    assert build_news.valid_weeks({"non": "un elenco"}) == []
+
+
+def test_controllo_di_plausibilita_aumenti_anomali():
+    import check_data
+
+    previous = {"totale_segnalazioni": 1000, "specie": {"a": {"totale": 900}, "b": {"totale": 60}, "c": {"totale": 40}}}
+
+    def index(a, b, c):
+        return {"totale_segnalazioni": a + b + c,
+                "specie": [{"slug": "a", "totale": a}, {"slug": "b", "totale": b}, {"slug": "c", "totale": c}]}
+
+    assert check_data.check(previous, index(950, 70, 130)) == []        # crescita normale; "c" è piccola
+    problems = check_data.check(previous, index(905, 200, 40))
+    assert len(problems) == 1 and problems[0].startswith("b:") and "anomalo" in problems[0]
+    assert any(p.startswith("totale") and "anomalo" in p for p in check_data.check(previous, index(1600, 60, 40)))

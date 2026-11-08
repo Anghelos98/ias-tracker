@@ -19,11 +19,9 @@ Richiede: requests, pyshp, pyproj, shapely
 
 from __future__ import annotations
 
-import io
 import json
 import sys
 import tempfile
-import zipfile
 from datetime import date
 from pathlib import Path
 
@@ -34,12 +32,19 @@ import shapely
 from pyproj import Transformer
 from shapely.geometry import MultiPolygon, Polygon, shape
 
+from net_safety import extract_zip_limited, get_limited
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DATA = ROOT / "scripts" / "data" / "regioni.json"
 OUT_JS = ROOT / "src" / "data" / "regions.js"
 URL = "https://www.istat.it/storage/cartografia/confini_amministrativi/generalizzati/{y}/Limiti0101{y}_g.zip"
 PAGE = "https://www.istat.it/notizia/confini-delle-unita-amministrative-a-fini-statistici-al-1-gennaio-2018-2/"
 SIMPLIFY_M = 50
+# Archivio ISTAT dei confini generalizzati: oggi qualche decina di MB. Limiti larghi contro file
+# enormi o zip bomb.
+MAX_ZIP_BYTES = 300 * 1024 * 1024
+MAX_ZIP_FILES = 500
+MAX_ZIP_EXTRACTED = 2 * 1024 * 1024 * 1024
 
 # Nomi brevi in italiano (il file ISTAT riporta anche le denominazioni bilingui).
 SHORT_NAMES = {
@@ -94,10 +99,10 @@ def regions_js(regions: list[dict], source: dict) -> str:
 def main(year: int) -> None:
     url = URL.format(y=year)
     print(f"Scarico {url}")
-    response = requests.get(url, timeout=(10, 180))
-    response.raise_for_status()
+    with requests.Session() as session:
+        response = get_limited(session, url, MAX_ZIP_BYTES, timeout=(10, 180))
     with tempfile.TemporaryDirectory() as tmp:
-        zipfile.ZipFile(io.BytesIO(response.content)).extractall(tmp)
+        extract_zip_limited(response.content, tmp, max_files=MAX_ZIP_FILES, max_total_bytes=MAX_ZIP_EXTRACTED)
         shp = next(Path(tmp).rglob(f"Reg0101{year}_g_WGS84.shp"))
         reader = shapefile.Reader(str(shp), encoding="utf-8")
         fields = [f[0] for f in reader.fields[1:]]

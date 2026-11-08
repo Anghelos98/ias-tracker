@@ -119,7 +119,7 @@ Gli stessi controlli girano su GitHub a ogni push (workflow [`Controlli`](.githu
 ## Aggiornare i dati
 
 Requisiti: Python 3.12 o successivo (quello usato da GitHub Actions). Le versioni dei pacchetti sono
-fissate in `requirements.txt`, le stesse del workflow che pubblica i dati.
+fissate (con le impronte) in `requirements.txt`, le stesse del workflow che pubblica i dati.
 
 ```bash
 python3 -m venv .venv

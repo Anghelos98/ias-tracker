@@ -1,56 +1,32 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# File inviati a EAS per le build: SOLO quelli elencati qui sotto, tutto il resto è escluso.
+#
+# Quando esiste questo file, EAS non usa .gitignore né .git/info/exclude e copia la cartella di
+# lavoro così com'è: con un elenco di esclusioni, qualsiasi file locale non previsto (note, log,
+# file esportati, prove) finirebbe sui server di Expo. Per questo l'elenco è al contrario: si
+# esclude tutto (/*) e si riammette solo ciò che serve alla build.
+# Se una build ha bisogno di un altro file, aggiungere qui una riga "!/nome".
+/*
 
-# dependencies
-node_modules/
+!/.git
+!/App.js
+!/index.js
+!/app.json
+!/app.config.js
+!/eas.json
+!/package.json
+!/package-lock.json
+!/assets
+!/src
 
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
+# Account Expo e progetto EAS (EXPO_OWNER, EAS_PROJECT_ID): escluso da git, ma serve alla build
+# (vedi app.config.js).
+!/.env.local
 
-# Native
-.kotlin/
-*.orig.*
+# Anche dentro le cartelle riammesse
+.DS_Store
 *.jks
 *.p8
 *.p12
 *.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
 *.pem
-
-# local env files: .env.local NON è escluso qui, perché EAS deve riceverlo (vedi app.config.js)
-
-# typescript
-*.tsbuildinfo
-
-# generated native folders
-/ios
-/android
-
-# Python
-.venv/
-__pycache__/
-*.pyc
-
-# Playwright
-.browser-profile/
-timeout_screenshot.png
-
-# Dati scaricati da GBIF (rigenerabili con sync_ias_data.py; l'app usa assets/data/)
-/data/
-
-# Test
-.pytest_cache/
-coverage/
+*.mobileprovision

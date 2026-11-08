@@ -6,8 +6,12 @@ Pages. Se GBIF ha restituito molti meno dati del solito (errore temporaneo, risp
 cambio dell'API) lo script termina con codice 1 e il workflow non pubblica: le app continuano
 a usare i dati della settimana prima invece di perdere segnalazioni.
 
-Un calo reale (per esempio un dataset ritirato da GBIF) si pubblica avviando il workflow a mano
-con l'opzione "forza" (o `--forza` da riga di comando).
+Vale anche al contrario: un aumento improvviso e molto grande (per esempio un dataset con migliaia
+di segnalazioni inventate pubblicato su GBIF) ferma la pubblicazione, perché qualcuno lo controlli
+prima che arrivi a tutte le app.
+
+Un cambiamento reale (un dataset ritirato o uno nuovo molto grande) si pubblica avviando il
+workflow a mano con l'opzione "forza" (o `--forza` da riga di comando).
 
 Legge:  data/index.json                      dati appena scaricati (da sync_ias_data.py)
         <DATA_BASE_URL>/manifest.json         dati pubblicati l'ultima volta
@@ -32,6 +36,10 @@ TIMEOUT = 60
 MIN_RECORDS = 50
 MAX_SPECIES_DROP = 0.30
 MAX_TOTAL_DROP = 0.10
+# Aumenti: in una settimana GBIF aggiunge di solito pochi punti percentuali. Una specie con almeno
+# MIN_RECORDS segnalazioni non può più che triplicare, il totale non può crescere oltre il 50%.
+MAX_SPECIES_RISE = 2.0
+MAX_TOTAL_RISE = 0.50
 
 
 def check(previous: dict, index: dict) -> list[str]:
@@ -49,10 +57,15 @@ def check(previous: dict, index: dict) -> list[str]:
             problems.append(f"{slug}: 0 segnalazioni (prima {before})")
         elif before >= MIN_RECORDS and now < before * (1 - MAX_SPECIES_DROP):
             problems.append(f"{slug}: {now} segnalazioni (prima {before}, -{1 - now / before:.0%})")
+        elif before >= MIN_RECORDS and now > before * (1 + MAX_SPECIES_RISE):
+            problems.append(f"{slug}: {now} segnalazioni (prima {before}, +{now / before - 1:.0%}): aumento anomalo")
     before_total = previous.get("totale_segnalazioni") or 0
     now_total = index.get("totale_segnalazioni") or 0
     if before_total and now_total < before_total * (1 - MAX_TOTAL_DROP):
         problems.append(f"totale: {now_total} segnalazioni (prima {before_total}, -{1 - now_total / before_total:.0%})")
+    elif before_total and now_total > before_total * (1 + MAX_TOTAL_RISE):
+        problems.append(f"totale: {now_total} segnalazioni (prima {before_total}, "
+                        f"+{now_total / before_total - 1:.0%}): aumento anomalo")
     return problems
 
 
@@ -78,8 +91,8 @@ def main(argv: list[str]) -> int:
     if force:
         print("Calo accettato con --forza: i dati vengono pubblicati")
         return 0
-    print("Pubblicazione fermata: i dati nuovi sembrano incompleti. Se il calo è reale, avvia il "
-          "workflow a mano con l'opzione \"forza\".")
+    print("Pubblicazione fermata: i dati nuovi sono molto diversi da quelli pubblicati. Se il cambiamento è "
+          "reale, avvia il workflow a mano con l'opzione \"forza\".")
     return 1
 
 

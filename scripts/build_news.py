@@ -32,9 +32,10 @@ Uso:  python scripts/build_news.py
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -46,6 +47,7 @@ OUT = ROOT / "assets" / "data" / "news.json"
 DATA_BASE_URL = "https://anghelos98.github.io/ias-tracker/data/v1"
 MAX_WEEKS = 12
 TIMEOUT = 60
+SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
 
 def _region(p: list) -> int:
@@ -148,6 +150,60 @@ def is_real_update(previous_date: str, current_date: str) -> bool:
     return delta.total_seconds() >= 24 * 3600
 
 
+def plausible_date(value: object, now: datetime | None = None) -> bool:
+    """Data ISO con l'ora ("AAAA-MM-GGT…"), valida e non nel futuro (tolleranza di due giorni).
+
+    Le date dei dati pubblicati vengono riprese a ogni esecuzione e l'app salva l'ultima come
+    "novità già viste": una data come "9999-…" bloccherebbe le novità successive.
+    """
+    if not isinstance(value, str) or len(value) > 40 or not re.match(r"\d{4}-\d{2}-\d{2}T", value):
+        return False
+    try:
+        moment = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=timezone.utc)
+    return moment <= (now or datetime.now(timezone.utc)) + timedelta(days=2)
+
+
+def _count(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def valid_week(week: object) -> bool:
+    """Settimana delle novità con la forma prodotta da build_week (e attesa dall'app)."""
+    if not isinstance(week, dict) or not plausible_date(week.get("dati_al")):
+        return False
+    if week.get("precedenti_al") is not None and not plausible_date(week["precedenti_al"]):
+        return False
+    if not _count(week.get("nuove", 0)) or not isinstance(week.get("specie", {}), dict):
+        return False
+    for slug, s in week.get("specie", {}).items():
+        if not SLUG_RE.match(slug) or not isinstance(s, dict) or not _count(s.get("nuove")):
+            return False
+        regions, firsts = s.get("regioni", {}), s.get("prime_regioni", [])
+        if not isinstance(regions, dict) or not all(_count(n) for n in regions.values()):
+            return False
+        if not isinstance(firsts, list) or not all(_count(r) for r in firsts):
+            return False
+    return True
+
+
+def valid_weeks(weeks: object) -> list[dict]:
+    """Settimane precedenti prese dal sito pubblicato, solo quelle con la forma attesa.
+
+    Vengono ripubblicate a ogni esecuzione: senza controllo, un file alterato una volta si
+    ripresenterebbe per le dodici settimane successive.
+    """
+    if not isinstance(weeks, list):
+        return []
+    kept = [w for w in weeks if valid_week(w)]
+    if len(kept) < len(weeks):
+        print(f"::warning::Novità pubblicate: {len(weeks) - len(kept)} settimane scartate perché non valide")
+    return kept
+
+
 def fetch_json(session: requests.Session, url: str):
     r = session.get(url, timeout=TIMEOUT)
     r.raise_for_status()
@@ -176,16 +232,25 @@ def main() -> int:
         manifest = fetch_json(session, f"{DATA_BASE_URL}/manifest.json")
         old_weeks = local_weeks
         if manifest.get("novita"):
-            old_weeks = fetch_json(session, f"{DATA_BASE_URL}/{manifest['novita']['file']}")["settimane"]
+            # solo il file atteso, non un percorso qualsiasi indicato dal manifest pubblicato
+            if manifest["novita"].get("file") != OUT.name:
+                raise ValueError(f"file delle novità inatteso: {manifest['novita'].get('file')!r}")
+            old_weeks = valid_weeks(fetch_json(session, f"{DATA_BASE_URL}/{OUT.name}").get("settimane"))
         previous_date = manifest["dati_gbif_al"]
+        if not plausible_date(previous_date):
+            raise ValueError(f"data dei dati pubblicati non valida: {previous_date!r}")
         if previous_date >= current_date:
             print(f"Nessun dato nuovo rispetto a quelli pubblicati ({previous_date}): novità invariate")
             write(merge_history(old_weeks, None))
             return 0
         previous = {}
         for slug, entry in manifest["specie"].items():
-            previous[slug] = fetch_json(session, f"{DATA_BASE_URL}/{entry['punti']['file']}") if entry.get("punti") else None
-    except (requests.RequestException, ValueError, KeyError) as exc:
+            if not SLUG_RE.match(slug):
+                raise ValueError(f"specie con un nome non valido nel manifest: {slug!r}")
+            if entry.get("punti") and entry["punti"].get("file") != f"species/{slug}.json":
+                raise ValueError(f"percorso inatteso per {slug}: {entry['punti'].get('file')!r}")
+            previous[slug] = fetch_json(session, f"{DATA_BASE_URL}/species/{slug}.json") if entry.get("punti") else None
+    except (requests.RequestException, ValueError, KeyError, AttributeError, TypeError) as exc:
         print(f"Dati pubblicati non raggiungibili ({exc}): tengo le novità già note", file=sys.stderr)
         write(merge_history(local_weeks, None))
         return 1

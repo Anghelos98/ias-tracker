@@ -22,20 +22,24 @@ import time
 import unicodedata
 from datetime import date
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import requests
 from bs4 import BeautifulSoup, Tag
+
+from net_safety import ISPRA_BASE, get_limited, ispra_url
 
 ROOT = Path(__file__).resolve().parent.parent
 REFERENCE = ROOT / "ias_reference.json"
 OUT_DIR = ROOT / "assets" / "data" / "sheets"
 
-BASE = "https://www.specieinvasive.isprambiente.it"
+BASE = ISPRA_BASE
 LIST_URL = f"{BASE}/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2"
 LICENSE = "CC BY 4.0"
 ATTRIBUTION = "ISPRA – specieinvasive.isprambiente.it"
 REQUEST_DELAY_S = 1.0
 HEADERS = {"User-Agent": "IAS-Tracker/1.0 (app open source; scarica le schede una tantum)"}
+MAX_PAGE_BYTES = 5 * 1024 * 1024  # le pagine ISPRA pesano ~100 KB
 
 
 def slugify(name: str) -> str:
@@ -85,8 +89,8 @@ def sentence_case(text: str) -> str:
 
 
 def get(session: requests.Session, url: str) -> BeautifulSoup:
-    response = session.get(url, timeout=30)
-    response.raise_for_status()
+    # solo pagine del sito ISPRA, anche dopo eventuali reindirizzamenti
+    response = get_limited(session, url, MAX_PAGE_BYTES, timeout=30, final_url_ok=lambda u: ispra_url(u) == u)
     time.sleep(REQUEST_DELAY_S)
     return BeautifulSoup(response.text, "html.parser")
 
@@ -100,12 +104,13 @@ def parse_list(soup: BeautifulSoup) -> dict[str, dict]:
         link = tr.find("a", href=True)
         title = tr.select_one(".el-title")
         meta = tr.select_one(".el-meta")
-        if not link:
-            continue
+        url = ispra_url(link["href"]) if link else None
+        if not url:
+            continue  # nessun link, o un link a un altro sito
         scientific = clean(link.get_text())
         rows[name_key(scientific)] = {
             "nome_ispra": scientific,
-            "url": BASE + link["href"] if link["href"].startswith("/") else link["href"],
+            "url": url,
             "nome_comune": clean(title.get_text()) if title else None,
             "presenza_italia": presence_text(meta) if meta else None,
         }
@@ -189,8 +194,13 @@ def parse_sheet(soup: BeautifulSoup) -> dict:
     sheet["sezioni"] = sections
 
     def first_link(fragment: str) -> str | None:
-        a = soup.find("a", href=re.compile(re.escape(fragment)))
-        return (BASE + a["href"]) if a and a["href"].startswith("/") else (a["href"] if a else None)
+        # Il primo link al file atteso sul sito ISPRA: un link a un altro sito che contiene lo
+        # stesso percorso ("https://altro.sito/images/schede-specie/…") viene ignorato.
+        for a in soup.find_all("a", href=re.compile(re.escape(fragment))):
+            url = ispra_url(a["href"])
+            if url and fragment in urlsplit(url).path:
+                return url
+        return None
 
     # Scheda completa = descrizione più le sezioni descrittive. Le specie aggiunte di recente
     # hanno su ISPRA solo una pagina segnaposto; alcune pagine vecchie solo la descrizione.

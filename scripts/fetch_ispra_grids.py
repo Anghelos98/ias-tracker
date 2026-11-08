@@ -18,12 +18,10 @@ Richiede: requests, pyshp, pyproj, shapely
 
 from __future__ import annotations
 
-import io
 import json
 import sys
 import tempfile
 import time
-import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -33,6 +31,8 @@ import shapely
 from pyproj import Transformer
 from shapely.geometry import MultiPolygon, Polygon, shape
 from shapely.ops import unary_union
+
+from net_safety import extract_zip_limited, get_limited, ispra_url
 
 ROOT = Path(__file__).resolve().parent.parent
 SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
@@ -45,6 +45,11 @@ DECIMALS = 5        # ~1 m
 
 TO_WGS84 = Transformer.from_crs("EPSG:3035", "EPSG:4326", always_xy=True)
 
+# Shapefile ISPRA: oggi ~1 MB compresso, 4 file. Limiti larghi contro file enormi o zip bomb.
+MAX_ZIP_BYTES = 50 * 1024 * 1024
+MAX_ZIP_FILES = 50
+MAX_ZIP_EXTRACTED = 500 * 1024 * 1024
+
 
 def read_cells(zip_bytes: bytes) -> tuple[list[Polygon], set[str]]:
     """Celle in cui la specie è presente (in metri, EPSG:3035) e i loro codici.
@@ -53,7 +58,7 @@ def read_cells(zip_bytes: bytes) -> tuple[list[Polygon], set[str]]:
     specie è indicata dal campo "Species" compilato.
     """
     with tempfile.TemporaryDirectory() as tmp:
-        zipfile.ZipFile(io.BytesIO(zip_bytes)).extractall(tmp)
+        extract_zip_limited(zip_bytes, tmp, max_files=MAX_ZIP_FILES, max_total_bytes=MAX_ZIP_EXTRACTED)
         shp = next(Path(tmp).rglob("*.shp"))
         reader = shapefile.Reader(str(shp))
         fields = [f[0].lower() for f in reader.fields[1:]]  # i nomi variano (CellCode / CELLCODE)
@@ -109,13 +114,12 @@ def main() -> int:
     for sheet_path in sorted(SHEETS_DIR.glob("*.json")):
         slug = sheet_path.stem
         sheet = json.loads(sheet_path.read_text(encoding="utf-8"))
-        url = sheet.get("shapefile_distribuzione")
+        url = ispra_url(sheet.get("shapefile_distribuzione"))
         out = OUT_DIR / f"{slug}.json"
         if not url:
-            continue
+            continue  # nessuno shapefile, o un indirizzo fuori dal sito ISPRA
         try:
-            response = session.get(url, timeout=60)
-            response.raise_for_status()
+            response = get_limited(session, url, MAX_ZIP_BYTES, timeout=60, final_url_ok=lambda u: ispra_url(u) == u)
             cells, codes = read_cells(response.content)
             polygons = to_polygons(cells)
         except Exception as exc:  # file mancante, corrotto o non leggibile: si tiene il precedente
