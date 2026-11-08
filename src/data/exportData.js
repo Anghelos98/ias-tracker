@@ -4,6 +4,8 @@
 import { dayToIso, gbifUrl, originalUrl, passesFilters, todayDay } from './points';
 import { REGIONS } from './regions';
 import { areaPredicate } from '../utils/distance';
+import { csvCell } from '../utils/csv';
+import { escapeMarkup as xml } from '../utils/markup';
 
 const REGION_NAMES = new Map(REGIONS.map((r) => [r.code, r.name]));
 
@@ -73,12 +75,6 @@ const COLUMNS = [
   'dato_originale',
 ];
 
-function csvCell(value) {
-  if (value == null) return '';
-  const text = String(value);
-  return /[",\r\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-}
-
 export function toCSV(rows) {
   const lines = [COLUMNS.join(',')];
   for (const row of rows) lines.push(COLUMNS.map((c) => csvCell(row[c])).join(','));
@@ -99,14 +95,6 @@ export function toGeoJSON(rows, meta = {}) {
     null,
     1,
   );
-}
-
-function xml(text) {
-  return String(text ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }
 
 export function toKML(rows, title = 'IAS Tracker') {

@@ -32,6 +32,7 @@ import RegionReport from './src/components/RegionReport';
 import NewsScreen from './src/components/NewsScreen';
 import SettingsScreen from './src/components/SettingsScreen';
 import { CLUSTER_MAX_ZOOM, useClusters } from './src/hooks/useClusters';
+import { useDeferredOpen } from './src/hooks/useDeferredOpen';
 import {
   checkForUpdates,
   clearDownloadedData,
@@ -210,6 +211,14 @@ function IASTracker() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [nearbyOpen, setNearbyOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [newsOpen, setNewsOpen] = useState(false);
+  // Una schermata (Modal) alla volta: aperture differite dopo una chiusura (vedi useDeferredOpen).
+  // screenOpenRef è aggiornato più sotto, dopo la dichiarazione di tutte le schermate.
+  const screenOpenRef = useRef(false);
+  const openAfterClose = useDeferredOpen(screenOpenRef);
+  // App aperta dalla notifica delle novità: all'avvio non si apre l'elenco delle specie
+  const openedFromNotificationRef = useRef(false);
   // Griglia ufficiale ISPRA 10×10 km della specie mostrata (livello attivabile dai Filtri)
   const [showGrid, setShowGrid] = useState(false);
   const [grid, setGrid] = useState({ slug: null, data: null });
@@ -575,8 +584,8 @@ function IASTracker() {
   // Da "Nuova segnalazione" al taccuino e viceversa (due Modal: una alla volta su iOS).
   const openNotebookFromReport = useCallback(() => {
     setReportOpen(false);
-    setTimeout(() => setNotebookOpen(true), 400);
-  }, []);
+    openAfterClose(() => setNotebookOpen(true));
+  }, [openAfterClose]);
 
   const openReport = useCallback((kind) => {
     setReportKind(kind);
@@ -587,15 +596,18 @@ function IASTracker() {
   const newEntryFromNotebook = useCallback(
     (kind) => {
       setNotebookOpen(false);
-      setTimeout(() => openReport(kind), 400);
+      openAfterClose(() => openReport(kind));
     },
-    [openReport],
+    [openReport, openAfterClose],
   );
 
-  const openFromPanel = useCallback((setOpen) => {
-    setPanelOpen(false);
-    setTimeout(() => setOpen(true), 400);
-  }, []);
+  const openFromPanel = useCallback(
+    (setOpen) => {
+      setPanelOpen(false);
+      openAfterClose(() => setOpen(true));
+    },
+    [openAfterClose],
+  );
 
   /**
    * Scheda di una specie. Aperta da un'altra schermata (elenco specie, Vicino a me, rapporto per
@@ -608,10 +620,16 @@ function IASTracker() {
     sheetOriginRef.current = null; // dalla mappa: alla chiusura si resta sulla mappa
     setSheetSpecies(item);
   }, []);
-  const openSheetAfter = useCallback((origin, item) => {
-    sheetOriginRef.current = origin;
-    setTimeout(() => setSheetSpecies(item), 400);
-  }, []);
+  const openSheetAfter = useCallback(
+    (origin, item) => {
+      // l'origine si registra solo se la scheda si apre davvero
+      openAfterClose(() => {
+        sheetOriginRef.current = origin;
+        setSheetSpecies(item);
+      });
+    },
+    [openAfterClose],
+  );
 
   // Rapporto per regione: la specie scelta viene mostrata inquadrando la regione.
   const showSpeciesInRegion = useCallback(
@@ -675,8 +693,10 @@ function IASTracker() {
     let active = true;
     hasSeenWelcome().then((seen) => {
       if (!active) return;
-      if (seen) setPanelOpen(true);
-      else setWelcomeOpen(true);
+      // aperta dalla notifica: si aprono le novità (la lettura arriva dopo la notifica)
+      if (seen) {
+        if (!openedFromNotificationRef.current) setPanelOpen(true);
+      } else setWelcomeOpen(true);
     });
     return () => {
       active = false;
@@ -686,8 +706,8 @@ function IASTracker() {
   const finishWelcome = useCallback(() => {
     markWelcomeSeen();
     setWelcomeOpen(false);
-    if (!species) setTimeout(() => setPanelOpen(true), 400);
-  }, [species]);
+    if (!species) openAfterClose(() => setPanelOpen(true));
+  }, [species, openAfterClose]);
 
   // Filtri: ripristinati all'avvio, salvati a ogni modifica.
   useEffect(() => {
@@ -745,7 +765,6 @@ function IASTracker() {
   const [follows, setFollows] = useState(NO_FOLLOWS);
   const followsRef = useRef(NO_FOLLOWS); // vedi changeFollow
   const [newsSeen, setNewsSeen] = useState(undefined); // undefined = non ancora letto
-  const [newsOpen, setNewsOpen] = useState(false);
   const [seenAtOpen, setSeenAtOpen] = useState(null);
   const [notify, setNotify] = useState(false);
   const notifyRef = useRef(false);
@@ -804,11 +823,23 @@ function IASTracker() {
   }, [news]);
 
   // Apertura dell'app toccando la notifica delle novità (anche ad app chiusa).
+  // Con l'app in background può essere aperta una schermata qualsiasi: si chiudono tutte, poi
+  // si aprono le novità. Su iOS, aperte sopra un'altra schermata, non comparirebbero e non si
+  // potrebbero più aprire (vedi useDeferredOpen). Resta aperta solo una segnalazione in corso
+  // di scrittura, che andrebbe persa: in quel caso le novità restano nell'avviso sulla mappa.
   useEffect(() => {
     const handle = (response) => {
       if (response?.notification.request.content.data?.screen !== 'novita') return;
+      openedFromNotificationRef.current = true;
       setPanelOpen(false);
-      setTimeout(openNews, 400);
+      setFiltersOpen(false);
+      setNearbyOpen(false);
+      setRegionsOpen(false);
+      setSettingsOpen(false);
+      setNotebookOpen(false);
+      setSheetSpecies(null);
+      sheetOriginRef.current = null;
+      openAfterClose(openNews); // se le novità sono già aperte restano come sono
     };
     // versioni sincrone: quelle *Async sono deprecate in expo-notifications (SDK 58)
     try {
@@ -822,7 +853,7 @@ function IASTracker() {
     }
     const subscription = Notifications.addNotificationResponseReceivedListener(handle);
     return () => subscription.remove();
-  }, [openNews]);
+  }, [openNews, openAfterClose]);
 
   // Valori correnti letti da un ref: più tocchi su "Segui" prima del render successivo (elenco
   // delle Novità) si sommano invece di sovrascriversi.
@@ -893,11 +924,10 @@ function IASTracker() {
       nearby: () => setNearbyOpen(true),
       news: () => setNewsOpen(true), // senza openNews: le novità "non viste" restano quelle di prima
     }[origin];
-    if (reopen) setTimeout(reopen, 400);
-  }, []);
+    if (reopen) openAfterClose(reopen);
+  }, [openAfterClose]);
 
   // --- Impostazioni ---------------------------------------------------------------------
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [theme, setTheme] = useState('auto');
   const [mapType, setMapType] = useState('standard');
   const [signature, setSignature] = useState('');
@@ -1007,8 +1037,24 @@ function IASTracker() {
 
   const openWelcomeFromSettings = useCallback(() => {
     setSettingsOpen(false);
-    setTimeout(() => setWelcomeOpen(true), 400);
-  }, []);
+    openAfterClose(() => setWelcomeOpen(true));
+  }, [openAfterClose]);
+
+  // Una schermata è aperta? Letto allo scadere delle aperture differite (useDeferredOpen).
+  const screenOpen =
+    panelOpen ||
+    filtersOpen ||
+    nearbyOpen ||
+    regionsOpen ||
+    newsOpen ||
+    settingsOpen ||
+    welcomeOpen ||
+    reportOpen ||
+    notebookOpen ||
+    sheetSpecies !== null;
+  useEffect(() => {
+    screenOpenRef.current = screenOpen;
+  }, [screenOpen]);
 
   // "Tutte le specie": la voce si aggiorna con i dati (numero di specie e totale correnti)
   const topSpecies = species?.all ? allSpeciesItem : species;
@@ -1300,7 +1346,7 @@ function IASTracker() {
         onNotebook={() => openFromPanel(setNotebookOpen)}
         onNews={() => {
           setPanelOpen(false);
-          setTimeout(openNews, 400);
+          openAfterClose(openNews);
         }}
         newsBadge={newsBadge}
         onClose={() => setPanelOpen(false)}

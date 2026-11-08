@@ -5,6 +5,7 @@
 // dalla pipeline dati con i confini ISTAT (scripts/build_app_data.py). I dati senza quel campo
 // (versioni precedenti) o i punti in mare aperto non rientrano in nessuna regione.
 
+import { csvCell } from '../utils/csv';
 import { passesFilters, todayDay } from './points';
 import { REGIONS } from './regions';
 
@@ -90,12 +91,6 @@ export function regionReport(datasets, filters, code, currentYear = new Date().g
     earlier,
     undated,
   };
-}
-
-function csvCell(value) {
-  if (value == null) return '';
-  const text = String(value);
-  return /[",\r\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
 /** Intestazioni della tabella del rapporto, leggibili (si apre in un foglio di calcolo). */

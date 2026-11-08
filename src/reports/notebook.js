@@ -1,6 +1,8 @@
 // Taccuino di campo: le voci salvate sul telefono sono presenze (segnalazioni di una specie)
 // o interventi di gestione (taglio, eradicazione…). Funzioni pure, testate in __tests__/.
 
+import { csvCell } from '../utils/csv';
+import { escapeMarkup as xml } from '../utils/markup';
 
 /** Tipi di intervento di gestione. */
 export const INTERVENTIONS = [
@@ -109,20 +111,6 @@ const COLUMNS = [
   'inviata',
   'invio_non_confermato',
 ];
-
-function csvCell(value) {
-  if (value == null) return '';
-  const text = String(value);
-  return /[",\r\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-}
-
-function xml(text) {
-  return String(text ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
 
 export function formatNotebook(format, entries) {
   const rows = notebookRows(entries);

@@ -64,6 +64,19 @@ def clean(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def presence_text(meta: Tag) -> str | None:
+    """Presenza in Italia dall'elenco ISPRA, con le righe separate da una virgola.
+
+    ISPRA va a capo con <br>: "Assente in natura<br/>Solo coltivata". Senza separatore il testo
+    diventava "Assente in naturaSolo coltivata" (mostrato così nella scheda e nel modulo di
+    segnalazione); ora "Assente in natura, solo coltivata".
+    """
+    parts = [clean(s) for s in meta.stripped_strings if clean(s)]
+    if not parts:
+        return None
+    return ", ".join([parts[0]] + [p[:1].lower() + p[1:] for p in parts[1:]])
+
+
 def sentence_case(text: str) -> str:
     """'DISTRIBUZIONE IN ITALIA' / 'in europa' -> 'Distribuzione in Italia' / 'In Europa'."""
     text = clean(text).lower()
@@ -94,7 +107,7 @@ def parse_list(soup: BeautifulSoup) -> dict[str, dict]:
             "nome_ispra": scientific,
             "url": BASE + link["href"] if link["href"].startswith("/") else link["href"],
             "nome_comune": clean(title.get_text()) if title else None,
-            "presenza_italia": clean(meta.get_text()) if meta else None,
+            "presenza_italia": presence_text(meta) if meta else None,
         }
     return rows
 

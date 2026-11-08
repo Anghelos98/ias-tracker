@@ -40,6 +40,22 @@ def test_sentence_case():
     assert ispra.sentence_case("in europa") == "In Europa"
 
 
+def test_presenza_ispra_su_due_righe_separata_da_virgola():
+    # Markup reale dell'elenco ISPRA (8/11/2026): le righe sono separate da <br/>.
+    html = """<table>
+    <tr class="el-item"><td><a href="/a">Cortaderia jubata</a></td>
+      <td><div class="el-meta">Assente in natura<br/>Solo coltivata</div></td></tr>
+    <tr class="el-item"><td><a href="/b">Lygodium japonicum</a></td>
+      <td><div class="el-meta">Assente<br/>Solo coltivata</div></td></tr>
+    <tr class="el-item"><td><a href="/c">Ailanthus altissima</a></td>
+      <td><div class="el-meta">Diffusa</div></td></tr>
+    </table>"""
+    rows = ispra.parse_list(BeautifulSoup(html, "html.parser"))
+    assert rows["cortaderia jubata"]["presenza_italia"] == "Assente in natura, solo coltivata"
+    assert rows["lygodium japonicum"]["presenza_italia"] == "Assente, solo coltivata"
+    assert rows["ailanthus altissima"]["presenza_italia"] == "Diffusa"
+
+
 def test_ogni_specie_ha_nome_comune_e_regolamento():
     for name in REFERENCE:
         assert name in build_app_data.COMMON_NAMES

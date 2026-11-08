@@ -2,16 +2,10 @@
 // Funzione pura, testata in __tests__/regionReportPdf.test.js: non usa immagini esterne
 // (su iOS la stampa non carica file locali), il grafico è un SVG disegnato qui.
 
+import { escapeMarkup as esc } from '../utils/markup';
+
 /** Pagina A4 in punti tipografici (72 per pollice), usata da expo-print. */
 export const A4 = { width: 595, height: 842 };
-
-function esc(text) {
-  return String(text ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
 
 const num = (n) => n.toLocaleString('it-IT');
 const plural = (n, one, many) => `${num(n)} ${n === 1 ? one : many}`;
