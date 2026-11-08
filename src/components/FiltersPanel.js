@@ -1,6 +1,7 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import BottomSheet, { SheetScrollView } from './BottomSheet';
 import { MARKER_COLORS } from './markerColors';
 import { APPROXIMATE_M, DEFAULT_FILTERS, formatDay, lastYearsStartDay, todayDay } from '../data/points';
 import { useThemedStyles } from '../theme';
@@ -53,128 +54,122 @@ export default function FiltersPanel({ visible, filters, onChange, showGrid, onT
   const set = (patch) => onChange({ ...filters, ...patch });
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      {/* sfondo scuro a tutto schermo, anche dietro gli angoli arrotondati del pannello */}
-      <View style={styles.overlay}>
-        <Pressable
-          style={styles.backdrop}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel="Chiudi filtri"
-        />
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 12 }]}>
-          <View style={styles.handle} />
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.header}>
-              <Text style={styles.title} accessibilityRole="header">
-                Filtri
-              </Text>
-              <Pressable
-                onPress={() => onChange(DEFAULT_FILTERS)}
-                hitSlop={10}
-                accessibilityRole="button"
-                accessibilityLabel="Ripristina i filtri"
-              >
-                <Text style={styles.reset}>Ripristina</Text>
-              </Pressable>
-            </View>
-
-            <Text style={styles.label} accessibilityRole="header">
-              Periodo della segnalazione
-            </Text>
-            <View style={styles.chips}>
-              {RECENT_PERIODS.map((p) => (
-                <Chip
-                  key={p.label}
-                  label={p.label}
-                  active={isPeriod(p, filters)}
-                  onPress={() => set({ minYear: p.minYear, maxAgeDays: p.maxAgeDays, lastYears: p.lastYears })}
-                />
-              ))}
-            </View>
-            <View style={styles.fromYears}>
-              <Text style={styles.fromLabel}>Dall’anno</Text>
-              <View style={styles.segmented} accessibilityRole="radiogroup" accessibilityLabel="Dall'anno">
-                {FROM_YEARS.map((year) => {
-                  const active = filters.minYear === year && filters.maxAgeDays == null && filters.lastYears == null;
-                  return (
-                    <Pressable
-                      key={year}
-                      style={[styles.segment, active && styles.segmentActive]}
-                      onPress={() => set({ minYear: year, maxAgeDays: null, lastYears: null })}
-                      accessibilityRole="radio"
-                      accessibilityState={{ checked: active }}
-                      accessibilityLabel={`Dal ${year}`}
-                    >
-                      <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{year}</Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-            {filters.maxAgeDays != null && (
-              <Text style={styles.note}>
-                {filters.maxAgeDays <= 31 ? 'Ultimi 30 giorni' : 'Ultimi 12 mesi'} in base alla data dell’osservazione:
-                escluse le segnalazioni senza data completa.
-              </Text>
-            )}
-            {filters.lastYears != null && filters.maxAgeDays == null && (
-              <Text style={styles.note}>
-                Dal {formatDay(lastYearsStartDay(todayDay(), filters.lastYears))} a oggi, in base alla data
-                dell’osservazione. Le segnalazioni con il solo anno contano se l’anno è tutto nel periodo.
-              </Text>
-            )}
-            {filters.minYear != null && filters.maxAgeDays == null && filters.lastYears == null && (
-              <Text style={styles.note}>
-                Dal 1° gennaio {filters.minYear}, in base all’anno dell’osservazione. Escluse le segnalazioni senza
-                anno.
-              </Text>
-            )}
-
-            <Text style={styles.label} accessibilityRole="header">
-              Precisione della posizione
-            </Text>
-            <Chips
-              options={PRECISIONS}
-              value={filters.maxUncertainty}
-              onSelect={(maxUncertainty) => set({ maxUncertainty })}
-            />
-            {filters.maxUncertainty != null && (
-              <Text style={styles.note}>Escluse le segnalazioni la cui fonte non indica la precisione.</Text>
-            )}
-
-            <View style={styles.switchRow}>
-              <View style={styles.flex}>
-                <Text style={styles.switchLabel}>Identificazioni automatiche</Text>
-                <Text style={styles.note}>Segnalazioni Pl@ntNet riconosciute solo dall’algoritmo, senza verifica.</Text>
-              </View>
-              <Switch
-                value={filters.includeAutomatic}
-                onValueChange={(includeAutomatic) => set({ includeAutomatic })}
-                accessibilityLabel="Identificazioni automatiche"
-              />
-            </View>
-
-            <View style={styles.switchRow}>
-              <View style={styles.flex}>
-                <Text style={styles.switchLabel}>Griglia ufficiale ISPRA (10×10 km)</Text>
-                <Text style={styles.note}>
-                  Celle in cui ISPRA registra la specie (rendicontazione UE, giugno 2025). {gridNote}
-                </Text>
-              </View>
-              <Switch value={showGrid} onValueChange={onToggleGrid} accessibilityLabel="Griglia ufficiale ISPRA" />
-            </View>
-
-            <Text style={styles.label} accessibilityRole="header">
-              Legenda
-            </Text>
-            <Legend />
-
-            {extra}
-          </ScrollView>
+    <BottomSheet
+      visible={visible}
+      onClose={onClose}
+      closeLabel="Chiudi filtri"
+      maxHeight="85%"
+      paddingBottom={insets.bottom + 12}
+      header={
+        <View style={styles.header}>
+          <Text style={styles.title} accessibilityRole="header">
+            Filtri
+          </Text>
+          <Pressable
+            onPress={() => onChange(DEFAULT_FILTERS)}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Ripristina i filtri"
+          >
+            <Text style={styles.reset}>Ripristina</Text>
+          </Pressable>
         </View>
-      </View>
-    </Modal>
+      }
+    >
+      <SheetScrollView showsVerticalScrollIndicator={false}>
+        <Text style={styles.label} accessibilityRole="header">
+          Periodo della segnalazione
+        </Text>
+        <View style={styles.chips}>
+          {RECENT_PERIODS.map((p) => (
+            <Chip
+              key={p.label}
+              label={p.label}
+              active={isPeriod(p, filters)}
+              onPress={() => set({ minYear: p.minYear, maxAgeDays: p.maxAgeDays, lastYears: p.lastYears })}
+            />
+          ))}
+        </View>
+        <View style={styles.fromYears}>
+          <Text style={styles.fromLabel}>Dall’anno</Text>
+          <View style={styles.segmented} accessibilityRole="radiogroup" accessibilityLabel="Dall'anno">
+            {FROM_YEARS.map((year) => {
+              const active = filters.minYear === year && filters.maxAgeDays == null && filters.lastYears == null;
+              return (
+                <Pressable
+                  key={year}
+                  style={[styles.segment, active && styles.segmentActive]}
+                  onPress={() => set({ minYear: year, maxAgeDays: null, lastYears: null })}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: active }}
+                  accessibilityLabel={`Dal ${year}`}
+                >
+                  <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{year}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+        {filters.maxAgeDays != null && (
+          <Text style={styles.note}>
+            {filters.maxAgeDays <= 31 ? 'Ultimi 30 giorni' : 'Ultimi 12 mesi'} in base alla data dell’osservazione:
+            escluse le segnalazioni senza data completa.
+          </Text>
+        )}
+        {filters.lastYears != null && filters.maxAgeDays == null && (
+          <Text style={styles.note}>
+            Dal {formatDay(lastYearsStartDay(todayDay(), filters.lastYears))} a oggi, in base alla data
+            dell’osservazione. Le segnalazioni con il solo anno contano se l’anno è tutto nel periodo.
+          </Text>
+        )}
+        {filters.minYear != null && filters.maxAgeDays == null && filters.lastYears == null && (
+          <Text style={styles.note}>
+            Dal 1° gennaio {filters.minYear}, in base all’anno dell’osservazione. Escluse le segnalazioni senza anno.
+          </Text>
+        )}
+
+        <Text style={styles.label} accessibilityRole="header">
+          Precisione della posizione
+        </Text>
+        <Chips
+          options={PRECISIONS}
+          value={filters.maxUncertainty}
+          onSelect={(maxUncertainty) => set({ maxUncertainty })}
+        />
+        {filters.maxUncertainty != null && (
+          <Text style={styles.note}>Escluse le segnalazioni la cui fonte non indica la precisione.</Text>
+        )}
+
+        <View style={styles.switchRow}>
+          <View style={styles.flex}>
+            <Text style={styles.switchLabel}>Identificazioni automatiche</Text>
+            <Text style={styles.note}>Segnalazioni Pl@ntNet riconosciute solo dall’algoritmo, senza verifica.</Text>
+          </View>
+          <Switch
+            value={filters.includeAutomatic}
+            onValueChange={(includeAutomatic) => set({ includeAutomatic })}
+            accessibilityLabel="Identificazioni automatiche"
+          />
+        </View>
+
+        <View style={styles.switchRow}>
+          <View style={styles.flex}>
+            <Text style={styles.switchLabel}>Griglia ufficiale ISPRA (10×10 km)</Text>
+            <Text style={styles.note}>
+              Celle in cui ISPRA registra la specie (rendicontazione UE, giugno 2025). {gridNote}
+            </Text>
+          </View>
+          <Switch value={showGrid} onValueChange={onToggleGrid} accessibilityLabel="Griglia ufficiale ISPRA" />
+        </View>
+
+        <Text style={styles.label} accessibilityRole="header">
+          Legenda
+        </Text>
+        <Legend />
+
+        {extra}
+      </SheetScrollView>
+    </BottomSheet>
   );
 }
 
@@ -229,17 +224,6 @@ function LegendItem({ dotStyle, text }) {
 
 const createStyles = (c) =>
   StyleSheet.create({
-    overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: c.backdrop },
-    backdrop: { ...StyleSheet.absoluteFillObject },
-    sheet: {
-      maxHeight: '85%',
-      backgroundColor: c.surface,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
-      paddingHorizontal: 16,
-      paddingTop: 8,
-    },
-    handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.handle, marginBottom: 12 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     title: { fontSize: 17, fontWeight: '600', color: c.text },
     reset: { fontSize: 15, color: c.primary, fontWeight: '600' },

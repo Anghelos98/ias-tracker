@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { loadAllDatasets } from '../data/allSpecies';
 import { formatDistance, speciesNearby } from '../data/nearby';
 import { useThemedStyles } from '../theme';
+import BottomSheet, { SheetFlatList } from './BottomSheet';
 import StatusPill from './StatusPill';
 import { readGpsPosition } from '../utils/location';
 
@@ -78,17 +79,14 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
   );
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      {/* sfondo scuro a tutto schermo, anche dietro gli angoli arrotondati del pannello */}
-      <View style={styles.overlay}>
-        <Pressable
-          style={styles.backdrop}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel="Chiudi Vicino a me"
-        />
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 8 }]}>
-          <View style={styles.handle} />
+    <BottomSheet
+      visible={visible}
+      onClose={onClose}
+      closeLabel="Chiudi Vicino a me"
+      maxHeight="75%"
+      paddingBottom={insets.bottom + 8}
+      header={
+        <>
           <Text style={styles.title} accessibilityRole="header">
             Vicino a me
           </Text>
@@ -107,85 +105,74 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
               </Pressable>
             ))}
           </View>
+        </>
+      }
+    >
+      {!error && !position && <StatusPill label="Aggiornamento della posizione…" style={styles.status} />}
+      {!error && position && !datasets && <StatusPill label="Cerco le segnalazioni…" style={styles.status} />}
 
-          {!error && !position && <StatusPill label="Aggiornamento della posizione…" style={styles.status} />}
-          {!error && position && !datasets && <StatusPill label="Cerco le segnalazioni…" style={styles.status} />}
-
-          {error && (
-            <View style={styles.center}>
-              <Text style={styles.error} accessibilityLiveRegion="polite">
-                {error}
-              </Text>
-              <Pressable onPress={retry} style={styles.retry} accessibilityRole="button">
-                <Text style={styles.retryText}>Riprova</Text>
-              </Pressable>
-            </View>
-          )}
-
-          {ready && (
-            <FlatList
-              data={results}
-              keyExtractor={(r) => r.species.slug}
-              ListHeaderComponent={
-                <Text style={styles.summary} accessibilityLiveRegion="polite">
-                  {results.length
-                    ? `${results.length} specie entro ${radius / 1000} km`
-                    : `Nessuna segnalazione entro ${radius / 1000} km con i filtri attivi.`}
-                </Text>
-              }
-              renderItem={({ item }) => (
-                <Pressable
-                  style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
-                  onPress={() => onSelect(item, position, radius)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${item.species.commonName}: ${item.count} ${
-                    item.count === 1 ? 'segnalazione' : 'segnalazioni'
-                  }, la più vicina a ${formatDistance(item.nearest)}`}
-                  accessibilityHint="Mostra le segnalazioni sulla mappa"
-                >
-                  <View style={styles.rowText}>
-                    <Text style={styles.common}>{item.species.commonName}</Text>
-                    <Text style={styles.scientific}>{item.species.scientificName}</Text>
-                    <Text style={styles.meta}>
-                      {item.count} {item.count === 1 ? 'segnalazione' : 'segnalazioni'} · la più vicina a{' '}
-                      {formatDistance(item.nearest)}
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={() => onInfo(item.species)}
-                    hitSlop={10}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Scheda di ${item.species.commonName}`}
-                  >
-                    <Text style={styles.info} allowFontScaling={false}>
-                      ⓘ
-                    </Text>
-                  </Pressable>
-                </Pressable>
-              )}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-              style={styles.list}
-            />
-          )}
+      {error && (
+        <View style={styles.center}>
+          <Text style={styles.error} accessibilityLiveRegion="polite">
+            {error}
+          </Text>
+          <Pressable onPress={retry} style={styles.retry} accessibilityRole="button">
+            <Text style={styles.retryText}>Riprova</Text>
+          </Pressable>
         </View>
-      </View>
-    </Modal>
+      )}
+
+      {ready && (
+        <SheetFlatList
+          data={results}
+          keyExtractor={(r) => r.species.slug}
+          ListHeaderComponent={
+            <Text style={styles.summary} accessibilityLiveRegion="polite">
+              {results.length
+                ? `${results.length} specie entro ${radius / 1000} km`
+                : `Nessuna segnalazione entro ${radius / 1000} km con i filtri attivi.`}
+            </Text>
+          }
+          renderItem={({ item }) => (
+            <Pressable
+              style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+              onPress={() => onSelect(item, position, radius)}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.species.commonName}: ${item.count} ${
+                item.count === 1 ? 'segnalazione' : 'segnalazioni'
+              }, la più vicina a ${formatDistance(item.nearest)}`}
+              accessibilityHint="Mostra le segnalazioni sulla mappa"
+            >
+              <View style={styles.rowText}>
+                <Text style={styles.common}>{item.species.commonName}</Text>
+                <Text style={styles.scientific}>{item.species.scientificName}</Text>
+                <Text style={styles.meta}>
+                  {item.count} {item.count === 1 ? 'segnalazione' : 'segnalazioni'} · la più vicina a{' '}
+                  {formatDistance(item.nearest)}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => onInfo(item.species)}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel={`Scheda di ${item.species.commonName}`}
+              >
+                <Text style={styles.info} allowFontScaling={false}>
+                  ⓘ
+                </Text>
+              </Pressable>
+            </Pressable>
+          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          style={styles.list}
+        />
+      )}
+    </BottomSheet>
   );
 }
 
 const createStyles = (c) =>
   StyleSheet.create({
-    overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: c.backdrop },
-    backdrop: { ...StyleSheet.absoluteFillObject },
-    sheet: {
-      maxHeight: '75%',
-      backgroundColor: c.surface,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
-      paddingHorizontal: 16,
-      paddingTop: 8,
-    },
-    handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.handle, marginBottom: 12 },
     title: { fontSize: 17, fontWeight: '600', color: c.text },
     subtitle: { fontSize: 13, color: c.textMuted, marginTop: 4, marginBottom: 8 },
     chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },

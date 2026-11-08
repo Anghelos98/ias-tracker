@@ -57,32 +57,45 @@ function verticalBounds(region) {
 }
 
 /**
+ * Riquadro della mappa che corrisponde alla regione: margini (punti) tra i bordi della vista e
+ * i bordi della regione. Con margini nulli la regione occupa tutta la vista.
+ *
+ * Su iOS la regione riportata da Apple Maps NON copre tutta la vista: misurato sul telefono,
+ * i pallini risultavano calcolati fino a 40 px più in alto del punto in cui sono disegnati
+ * (scarto che cresce allontanandosi dal centro, solo in verticale), e i tocchi andavano persi.
+ * App.js misura il riquadro reale con la mappa stessa (pointForCoordinate, vedi insetsFromEdges).
+ */
+export const NO_INSETS = { top: 0, bottom: 0, left: 0, right: 0 };
+
+/**
  * Conversione da coordinate geografiche a punti dello schermo per una regione e una mappa
  * di date dimensioni (nord in alto, senza inclinazione). I bordi si calcolano una volta sola:
  * conviene quando si proiettano molti punti con la stessa regione.
+ * @param {{width: number, height: number, insets?: typeof NO_INSETS}} size
  */
-export function screenProjector(region, { width, height }) {
+export function screenProjector(region, { width, height, insets = NO_INSETS }) {
   const { top, bottom } = verticalBounds(region);
   const west = region.longitude - region.longitudeDelta / 2;
+  const innerWidth = width - insets.left - insets.right;
+  const innerHeight = height - insets.top - insets.bottom;
   return {
-    x: (longitude) => ((longitude - west) / region.longitudeDelta) * width,
-    y: (latitude) => ((top - toMercator(latitude)) / (top - bottom)) * height,
+    x: (longitude) => insets.left + ((longitude - west) / region.longitudeDelta) * innerWidth,
+    y: (latitude) => insets.top + ((top - toMercator(latitude)) / (top - bottom)) * innerHeight,
   };
 }
 
 /** Posizione verticale (in punti dello schermo) di una latitudine dentro la regione visibile. */
-export function latitudeToScreenY(latitude, region, mapHeight) {
-  const { top, bottom } = verticalBounds(region);
-  return ((top - toMercator(latitude)) / (top - bottom)) * mapHeight;
+export function latitudeToScreenY(latitude, region, mapHeight, insets = NO_INSETS) {
+  return screenProjector(region, { width: 0, height: mapHeight, insets }).y(latitude);
 }
 
 /**
  * Nuova latitudine del centro della mappa per spostare verticalmente il contenuto di
  * `shiftY` punti (positivo = il contenuto sale sullo schermo). Lo zoom non cambia.
  */
-export function shiftCenterLatitude(region, mapHeight, shiftY) {
+export function shiftCenterLatitude(region, mapHeight, shiftY, insets = NO_INSETS) {
   const { top, bottom } = verticalBounds(region);
-  const mercatorPerPoint = (top - bottom) / mapHeight;
+  const mercatorPerPoint = (top - bottom) / (mapHeight - insets.top - insets.bottom);
   return fromMercator(toMercator(region.latitude) - shiftY * mercatorPerPoint);
 }
 
@@ -90,6 +103,40 @@ export function shiftCenterLatitude(region, mapHeight, shiftY) {
 export function longitudeToScreenX(longitude, region, mapWidth) {
   const west = region.longitude - region.longitudeDelta / 2;
   return ((longitude - west) / region.longitudeDelta) * mapWidth;
+}
+
+/** Angoli nord-ovest e sud-est della regione (coordinate geografiche). */
+export function regionCorners(region) {
+  const { top, bottom } = verticalBounds(region);
+  const halfLon = region.longitudeDelta / 2;
+  return {
+    northWest: { latitude: fromMercator(top), longitude: region.longitude - halfLon },
+    southEast: { latitude: fromMercator(bottom), longitude: region.longitude + halfLon },
+  };
+}
+
+/**
+ * Margini del riquadro della regione a partire dai punti dello schermo in cui la mappa disegna
+ * gli angoli nord-ovest e sud-est (regionCorners). Restituisce null se i valori non sono
+ * plausibili (il riquadro deve occupare buona parte della vista): si tengono quelli precedenti.
+ */
+export function insetsFromEdges(northWest, southEast, { width, height }) {
+  const values = [northWest?.x, northWest?.y, southEast?.x, southEast?.y];
+  if (!values.every(Number.isFinite) || !width || !height) return null;
+  const insets = {
+    top: northWest.y,
+    left: northWest.x,
+    bottom: height - southEast.y,
+    right: width - southEast.x,
+  };
+  const plausible =
+    southEast.x - northWest.x > width * 0.5 &&
+    southEast.y - northWest.y > height * 0.5 &&
+    Math.abs(insets.top) < height * 0.25 &&
+    Math.abs(insets.bottom) < height * 0.25 &&
+    Math.abs(insets.left) < width * 0.25 &&
+    Math.abs(insets.right) < width * 0.25;
+  return plausible ? insets : null;
 }
 
 /**

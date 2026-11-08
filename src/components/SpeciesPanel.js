@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import BottomSheet, { SheetFlatList } from './BottomSheet';
 import { useColors, useThemedStyles } from '../theme';
 
 /** Pannello a scomparsa dal basso con l'elenco ricercabile delle 49 specie. */
@@ -32,17 +33,14 @@ export default function SpeciesPanel({
   }, [query, species]);
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      {/* sfondo scuro a tutto schermo, anche dietro gli angoli arrotondati del pannello */}
-      <View style={styles.overlay}>
-        <Pressable
-          style={styles.backdrop}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel="Chiudi elenco"
-        />
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 8 }]}>
-          <View style={styles.handle} />
+    <BottomSheet
+      visible={visible}
+      onClose={onClose}
+      closeLabel="Chiudi elenco"
+      maxHeight="75%"
+      paddingBottom={insets.bottom + 8}
+      header={
+        <>
           <View style={styles.titleRow}>
             <Text style={styles.title} accessibilityRole="header">
               Specie di rilevanza unionale ({species.length})
@@ -69,9 +67,7 @@ export default function SpeciesPanel({
                 accessibilityRole="button"
                 accessibilityLabel={newsBadge ? `Novità: ${newsBadge}` : 'Novità e specie seguite'}
               >
-                <Text style={styles.toolText}>
-                  Novità{newsBadge ? <Text style={styles.toolBadge}> ●</Text> : null}
-                </Text>
+                <Text style={styles.toolText}>Novità{newsBadge ? <Text style={styles.toolBadge}> ●</Text> : null}</Text>
               </Pressable>
             )}
           </View>
@@ -85,89 +81,94 @@ export default function SpeciesPanel({
             autoCorrect={false}
             clearButtonMode="while-editing"
           />
-          <FlatList
-            data={filtered}
-            keyExtractor={(s) => s.slug}
-            keyboardShouldPersistTaps="handled"
-            renderItem={({ item }) => {
-              const selected = item.slug === selectedSlug;
-              const empty = item.total === 0;
-              return (
-                <Pressable
-                  onPress={() => onSelect(item)}
-                  style={({ pressed }) => [styles.row, selected && styles.rowSelected, pressed && styles.rowPressed]}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  accessibilityLabel={`${item.commonName}, ${item.scientificName}, ${
-                    empty ? 'nessuna segnalazione' : `${item.total.toLocaleString('it-IT')} segnalazioni`
-                  }`}
-                  accessibilityHint="Mostra le segnalazioni sulla mappa"
-                >
-                  <View style={styles.rowText}>
-                    <Text style={[styles.common, empty && styles.muted]}>{item.commonName}</Text>
-                    <Text style={[styles.scientific, empty && styles.muted]}>{item.scientificName}</Text>
-                  </View>
-                  <Text style={[styles.count, empty && styles.muted]}>
-                    {empty ? 'nessuna\nsegnalazione' : item.total.toLocaleString('it-IT')}
-                  </Text>
-                  <Pressable
-                    onPress={() => onInfo(item)}
-                    hitSlop={10}
-                    style={styles.infoButton}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Scheda di ${item.commonName}`}
-                  >
-                    <Text style={styles.infoText} allowFontScaling={false}>
-                      ⓘ
-                    </Text>
-                  </Pressable>
-                </Pressable>
-              );
-            }}
-            ListHeaderComponent={
-              query.trim() ? null : (
-                <Pressable
-                  onPress={() => onSelect(allItem)}
-                  style={({ pressed }) => [
-                    styles.row,
-                    styles.allRow,
-                    allItem.slug === selectedSlug && styles.rowSelected,
-                    pressed && styles.rowPressed,
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: allItem.slug === selectedSlug }}
-                  accessibilityLabel={`${allItem.commonName}, ${allItem.scientificName}, ${allItem.total.toLocaleString('it-IT')} segnalazioni`}
-                >
-                  <View style={styles.rowText}>
-                    <Text style={styles.common}>{allItem.commonName}</Text>
-                    <Text style={styles.allSubtitle}>{allItem.scientificName}</Text>
-                  </View>
-                  <Text style={styles.count}>{allItem.total.toLocaleString('it-IT')}</Text>
-                </Pressable>
-              )
-            }
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            ListEmptyComponent={<Text style={styles.empty}>Nessuna specie trovata</Text>}
-          />
-        </View>
-      </View>
-    </Modal>
+        </>
+      }
+    >
+      <SpeciesList
+        filtered={filtered}
+        allItem={allItem}
+        query={query}
+        selectedSlug={selectedSlug}
+        onSelect={onSelect}
+        onInfo={onInfo}
+        styles={styles}
+      />
+    </BottomSheet>
+  );
+}
+
+/** Elenco delle specie (scorre dentro il pannello; in cima il gesto verso il basso lo chiude). */
+function SpeciesList({ filtered, allItem, query, selectedSlug, onSelect, onInfo, styles }) {
+  return (
+    <SheetFlatList
+      data={filtered}
+      keyExtractor={(s) => s.slug}
+      keyboardShouldPersistTaps="handled"
+      renderItem={({ item }) => {
+        const selected = item.slug === selectedSlug;
+        const empty = item.total === 0;
+        return (
+          <Pressable
+            onPress={() => onSelect(item)}
+            style={({ pressed }) => [styles.row, selected && styles.rowSelected, pressed && styles.rowPressed]}
+            accessibilityRole="button"
+            accessibilityState={{ selected }}
+            accessibilityLabel={`${item.commonName}, ${item.scientificName}, ${
+              empty ? 'nessuna segnalazione' : `${item.total.toLocaleString('it-IT')} segnalazioni`
+            }`}
+            accessibilityHint="Mostra le segnalazioni sulla mappa"
+          >
+            <View style={styles.rowText}>
+              <Text style={[styles.common, empty && styles.muted]}>{item.commonName}</Text>
+              <Text style={[styles.scientific, empty && styles.muted]}>{item.scientificName}</Text>
+            </View>
+            <Text style={[styles.count, empty && styles.muted]}>
+              {empty ? 'nessuna\nsegnalazione' : item.total.toLocaleString('it-IT')}
+            </Text>
+            <Pressable
+              onPress={() => onInfo(item)}
+              hitSlop={10}
+              style={styles.infoButton}
+              accessibilityRole="button"
+              accessibilityLabel={`Scheda di ${item.commonName}`}
+            >
+              <Text style={styles.infoText} allowFontScaling={false}>
+                ⓘ
+              </Text>
+            </Pressable>
+          </Pressable>
+        );
+      }}
+      ListHeaderComponent={
+        query.trim() ? null : (
+          <Pressable
+            onPress={() => onSelect(allItem)}
+            style={({ pressed }) => [
+              styles.row,
+              styles.allRow,
+              allItem.slug === selectedSlug && styles.rowSelected,
+              pressed && styles.rowPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityState={{ selected: allItem.slug === selectedSlug }}
+            accessibilityLabel={`${allItem.commonName}, ${allItem.scientificName}, ${allItem.total.toLocaleString('it-IT')} segnalazioni`}
+          >
+            <View style={styles.rowText}>
+              <Text style={styles.common}>{allItem.commonName}</Text>
+              <Text style={styles.allSubtitle}>{allItem.scientificName}</Text>
+            </View>
+            <Text style={styles.count}>{allItem.total.toLocaleString('it-IT')}</Text>
+          </Pressable>
+        )
+      }
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      ListEmptyComponent={<Text style={styles.empty}>Nessuna specie trovata</Text>}
+    />
   );
 }
 
 const createStyles = (c) =>
   StyleSheet.create({
-    overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: c.backdrop },
-    backdrop: { ...StyleSheet.absoluteFillObject },
-    sheet: {
-      maxHeight: '75%',
-      backgroundColor: c.surface,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
-      paddingHorizontal: 16,
-      paddingTop: 8,
-    },
-    handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.handle, marginBottom: 12 },
     titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     title: { fontSize: 17, fontWeight: '600', flexShrink: 1, color: c.text },
     about: { fontSize: 14, color: c.primary, fontWeight: '600', paddingLeft: 8 },

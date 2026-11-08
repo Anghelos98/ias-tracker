@@ -80,8 +80,11 @@ import { useColors, useThemedStyles } from './src/theme';
 import {
   ITALY_REGION,
   bboxToRegion,
+  NO_INSETS,
   findFeatureAtPoint,
+  insetsFromEdges,
   latitudeToScreenY,
+  regionCorners,
   screenProjector,
   shiftCenterLatitude,
 } from './src/utils/geo';
@@ -105,7 +108,8 @@ const CLUSTER_TOUCH_SLOP = 16;
 const TAP_MAX_MOVE = 16;
 const TAP_MAX_MS = 600;
 // Lo stesso tocco può arrivare da due canali (eventi di tocco e onPress della mappa, in ritardo):
-// un secondo arrivo entro questo tempo e questa distanza viene ignorato.
+// l'arrivo dall'ALTRO canale entro questo tempo e questa distanza viene ignorato. Due tocchi
+// dallo stesso canale sono sempre due tocchi distinti (es. un nuovo tentativo dopo un errore).
 const TAP_DEDUP_MS = 700;
 const TAP_DEDUP_PX = 40;
 // Su iOS la selezione parte dagli eventi di tocco (immediati); l'onPress della mappa resta come
@@ -120,8 +124,8 @@ function hitArea(feature) {
 }
 
 /** Diagnostica: marker più vicino al punto toccato, con la distanza e la direzione (px). */
-function describeNearest(features, point, region, width, height) {
-  const project = screenProjector(region, { width, height });
+function describeNearest(features, point, region, size) {
+  const project = screenProjector(region, size);
   let nearest = null;
   for (const f of features) {
     const [lon, lat] = f.geometry.coordinates;
@@ -209,10 +213,51 @@ function IASTracker() {
   const selectedIdRef = useRef(null); // pallino selezionato, letto dai gestori dei tocchi
   const centeredKeyRef = useRef(null);
 
-  const handleRegionChange = useCallback((next) => {
-    regionRef.current = next;
-    setRegion(next);
+  /**
+   * Riquadro reale della regione sulla mappa (iOS): Apple Maps non fa corrispondere la regione
+   * a tutta la vista, quindi si chiede alla mappa dove disegna due angoli della regione e se ne
+   * ricavano i margini (vedi NO_INSETS in geo.js). I margini dipendono dall'impaginazione, non
+   * dalla regione: valgono anche durante i movimenti successivi. Si rimisurano a ogni fine
+   * movimento, solo con regioni comunicate dalla mappa (quella iniziale richiesta viene adattata
+   * alle proporzioni dello schermo); se la misura non riesce restano gli ultimi validi.
+   */
+  const mapInsetsRef = useRef(NO_INSETS);
+  const mapSize = useCallback(
+    () => ({ width: mapWidthRef.current, height: mapHeightRef.current, insets: mapInsetsRef.current }),
+    [],
+  );
+  const calibrateMap = useCallback(async (measured) => {
+    const map = mapRef.current;
+    if (Platform.OS !== 'ios' || !map?.pointForCoordinate || !mapWidthRef.current) return;
+    try {
+      const { northWest, southEast } = regionCorners(measured);
+      const [nw, se] = await Promise.all([map.pointForCoordinate(northWest), map.pointForCoordinate(southEast)]);
+      // la mappa si è mossa durante la misura: i punti non corrispondono più a questa regione
+      if (regionRef.current !== measured) return;
+      const insets = insetsFromEdges(nw, se, { width: mapWidthRef.current, height: mapHeightRef.current });
+      if (!insets) return;
+      const previous = mapInsetsRef.current;
+      mapInsetsRef.current = insets;
+      if (__DEV__ && Object.keys(insets).some((k) => Math.abs(insets[k] - previous[k]) >= 1)) {
+        const r = (v) => Math.round(v);
+        console.log(
+          `[tocco] riquadro della regione: margini alto ${r(insets.top)}, basso ${r(insets.bottom)}, ` +
+            `sinistra ${r(insets.left)}, destra ${r(insets.right)}`,
+        );
+      }
+    } catch {
+      // misura non disponibile: restano i margini precedenti
+    }
   }, []);
+
+  const handleRegionChange = useCallback(
+    (next) => {
+      regionRef.current = next;
+      setRegion(next);
+      calibrateMap(next);
+    },
+    [calibrateMap],
+  );
   // Durante il movimento si aggiorna solo il ref (niente render): i tocchi fatti mentre la
   // mappa rallenta usano la posizione reale, non quella dell'ultimo movimento concluso.
   const trackRegion = useCallback((next) => {
@@ -361,32 +406,37 @@ function IASTracker() {
    * il gruppo più vicino, oppure chiude la selezione. `source` dice da dove arriva il tocco.
    * Lo stesso tocco ricevuto due volte (dai due canali) viene gestito una sola volta.
    */
-  const lastTapRef = useRef({ t: 0, x: 0, y: 0 });
+  const lastTapRef = useRef({ t: 0, x: 0, y: 0, source: null, paired: true });
   const handleTapAt = useCallback(
     (point, source) => {
       const now = Date.now();
       const last = lastTapRef.current;
-      if (now - last.t < TAP_DEDUP_MS && Math.hypot(point.x - last.x, point.y - last.y) < TAP_DEDUP_PX) {
+      if (
+        !last.paired &&
+        last.source !== source &&
+        now - last.t < TAP_DEDUP_MS &&
+        Math.hypot(point.x - last.x, point.y - last.y) < TAP_DEDUP_PX
+      ) {
+        last.paired = true; // doppione dello stesso tocco dall'altro canale
         logTap(source, point, 'già gestito');
         return;
       }
-      lastTapRef.current = { t: now, x: point.x, y: point.y };
-      const width = mapWidthRef.current;
-      const height = mapHeightRef.current;
-      const best =
-        width && height ? findFeatureAtPoint(clustersRef.current, point, regionRef.current, { width, height }, hitArea) : null;
+      lastTapRef.current = { t: now, x: point.x, y: point.y, source, paired: false };
+      const size = mapSize();
+      const region = regionRef.current;
+      const best = size.width && size.height ? findFeatureAtPoint(clustersRef.current, point, region, size, hitArea) : null;
       if (!best) {
-        if (__DEV__) logTap(source, point, `nessun marker; ${describeNearest(clustersRef.current, point, regionRef.current, width, height)}`);
+        if (__DEV__) logTap(source, point, `nessun marker; ${describeNearest(clustersRef.current, point, region, size)}`);
         clearSelection();
       } else if (best.properties.cluster) {
-        if (__DEV__) logTap(source, point, `gruppo di ${best.properties.records}; ${describeNearest([best], point, regionRef.current, width, height)}`);
+        if (__DEV__) logTap(source, point, `gruppo di ${best.properties.records}; ${describeNearest([best], point, region, size)}`);
         pressCluster(best);
       } else {
-        if (__DEV__) logTap(source, point, `pallino ${best.properties.id}; ${describeNearest([best], point, regionRef.current, width, height)}`);
+        if (__DEV__) logTap(source, point, `pallino ${best.properties.id}; ${describeNearest([best], point, region, size)}`);
         selectPoint(best);
       }
     },
-    [clearSelection, pressCluster, selectPoint],
+    [clearSelection, pressCluster, selectPoint, mapSize],
   );
 
   /**
@@ -398,22 +448,27 @@ function IASTracker() {
    * Su Android è in pixel fisici (Projection.toScreenLocation di Google Maps): confrontata con
    * misure in punti indicherebbe un altro posto della mappa (×2-3) e selezionerebbe un marker
    * lontano dal dito. Lì si parte dalle coordinate geografiche del tocco.
+   *
+   * Su iOS a volte arriva un onPress con posizione 0,0 (dopo il tocco di un marker): non è un
+   * tocco vero e veniva trattato come un tocco nel vuoto, chiudendo la scheda appena aperta.
    */
   const handleMapPress = useCallback(
     (e) => {
       const { coordinate, position } = e.nativeEvent;
-      const width = mapWidthRef.current;
-      const height = mapHeightRef.current;
-      if (!width || !height) return;
-      let point =
-        Platform.OS === 'ios' && position && Number.isFinite(position.x) ? { x: position.x, y: position.y } : null;
-      if (!point && coordinate) {
-        const project = screenProjector(regionRef.current, { width, height });
+      const size = mapSize();
+      if (!size.width || !size.height) return;
+      let point = null;
+      if (Platform.OS === 'ios') {
+        if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) return;
+        if (position.x === 0 && position.y === 0) return; // evento senza posizione reale
+        point = { x: position.x, y: position.y };
+      } else if (coordinate) {
+        const project = screenProjector(regionRef.current, size);
         point = { x: project.x(coordinate.longitude), y: project.y(coordinate.latitude) };
       }
       if (point) handleTapAt(point, 'mappa');
     },
-    [handleTapAt],
+    [handleTapAt, mapSize],
   );
 
   /**
@@ -473,12 +528,13 @@ function IASTracker() {
       const mapHeight = mapHeightRef.current;
       if (!mapHeight) return;
       const topLimit = topBarBottomRef.current;
-      const pointY = latitudeToScreenY(selection.coordinate.latitude, region, mapHeight);
+      const insets = mapInsetsRef.current;
+      const pointY = latitudeToScreenY(selection.coordinate.latitude, region, mapHeight, insets);
       const covered = pointY > cardTop - CARD_CLEARANCE || pointY < topLimit + CARD_CLEARANCE;
       if (!covered) return;
 
       const targetY = (topLimit + cardTop) / 2;
-      const latitude = shiftCenterLatitude(region, mapHeight, pointY - targetY);
+      const latitude = shiftCenterLatitude(region, mapHeight, pointY - targetY, insets);
       mapRef.current?.animateToRegion({ ...region, latitude }, 350);
     },
     [selection],
