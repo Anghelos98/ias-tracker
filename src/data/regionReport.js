@@ -98,9 +98,12 @@ function csvCell(value) {
   return /[",\r\n;]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
+/** Intestazioni della tabella del rapporto, leggibili (si apre in un foglio di calcolo). */
+export const REGION_REPORT_COLUMNS = ['Regione', 'Specie', 'Nome comune', 'Segnalazioni', 'Primo anno', 'Ultimo anno'];
+
 /** Tabella CSV del rapporto (una riga per specie), da condividere o aprire in un foglio di calcolo. */
 export function regionReportCSV(report, regionName) {
-  const lines = [['regione', 'specie', 'nome_comune', 'segnalazioni', 'primo_anno', 'ultimo_anno'].join(',')];
+  const lines = [REGION_REPORT_COLUMNS.map(csvCell).join(',')];
   for (const s of report.species) {
     lines.push(
       [regionName, s.species.scientificName, s.species.commonName, s.count, s.firstYear, s.lastYear]

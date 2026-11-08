@@ -6,6 +6,9 @@ import { Text } from 'react-native';
 import BottomSheet, { SheetScrollView } from '../src/components/BottomSheet';
 
 jest.mock('react-native/Libraries/Utilities/useColorScheme', () => ({ __esModule: true, default: () => 'light' }));
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
 
 const sheet = (visible, onClose) => (
   <BottomSheet visible={visible} onClose={onClose} closeLabel="Chiudi prova" header={<Text>Titolo</Text>}>

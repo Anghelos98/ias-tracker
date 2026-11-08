@@ -1,18 +1,9 @@
 // Calcolo delle specie segnalate vicino a una posizione. Funzioni pure, testate in __tests__/.
 
 import { passesFilters, todayDay } from './points';
+import { circleBox, distanceMeters } from '../utils/distance';
 
-const EARTH_RADIUS_M = 6371008.8;
-const toRad = (deg) => (deg * Math.PI) / 180;
-
-/** Distanza in metri tra due punti (formula dell'emisenoverso). */
-export function distanceMeters(a, b) {
-  const dLat = toRad(b.latitude - a.latitude);
-  const dLon = toRad(b.longitude - a.longitude);
-  const h =
-    Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.latitude)) * Math.cos(toRad(b.latitude)) * Math.sin(dLon / 2) ** 2;
-  return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(h)));
-}
+export { distanceMeters };
 
 /** "350 m", "2,4 km", "12 km" */
 export function formatDistance(meters) {
@@ -33,8 +24,7 @@ export function formatDistance(meters) {
  */
 export function speciesNearby(datasets, position, radiusM, filters) {
   // Riquadro grossolano per scartare in fretta i punti lontani prima del calcolo esatto.
-  const dLat = radiusM / 111320;
-  const dLon = dLat / Math.max(0.01, Math.cos(toRad(position.latitude)));
+  const { dLat, dLon } = circleBox(position, radiusM);
   const results = [];
   const today = todayDay();
   for (const { species, data } of datasets) {

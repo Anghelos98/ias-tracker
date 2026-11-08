@@ -70,7 +70,7 @@ describe('regionReport', () => {
 
   test('CSV con una riga per specie', () => {
     expect(regionReportCSV(report, 'Lazio').split('\n')).toEqual([
-      'regione,specie,nome_comune,segnalazioni,primo_anno,ultimo_anno',
+      'Regione,Specie,Nome comune,Segnalazioni,Primo anno,Ultimo anno', // leggibili, senza trattini bassi
       'Lazio,Ailanthus altissima,Ailanto,4,1990,2024',
       'Lazio,Heracleum mantegazzianum,Panace di Mantegazza,1,2024,2024',
       '',

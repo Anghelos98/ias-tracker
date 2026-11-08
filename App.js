@@ -10,7 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import MapView, { Marker, Polygon } from 'react-native-maps';
+import MapView, { Circle, Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
@@ -115,6 +115,10 @@ const TAP_DEDUP_PX = 40;
 // Su iOS la selezione parte dagli eventi di tocco (immediati); l'onPress della mappa resta come
 // riserva se un tocco non arrivasse da lì.
 const TAP_FROM_TOUCHES = Platform.OS === 'ios';
+// iOS: dopo il tocco su un pallino lo zoom della mappa resta spento per questo tempo (ms).
+// Apple Maps interpreta "tocco + trascinamento subito dopo" come zoom con un dito (doppio tocco
+// e trascina): il trascinamento che segue il tocco su un pallino diventava uno zoom.
+const ZOOM_LOCK_AFTER_TAP_MS = 500;
 
 /** Area di tocco di un elemento della mappa. */
 function hitArea(feature) {
@@ -155,6 +159,12 @@ function loadDatasets(item, manifest, speciesList) {
   return item.all
     ? loadAllDatasets(speciesList, manifest)
     : readSpeciesPoints(item, manifest).then((data) => (data ? [{ species: item, data }] : null));
+}
+
+/** Regione della mappa che inquadra la zona di "Vicino a me" (cerchio con un piccolo margine). */
+function areaToRegion({ center, radiusM }) {
+  const delta = (radiusM / 111320) * 2.4;
+  return { ...center, latitudeDelta: delta, longitudeDelta: delta };
 }
 
 function zoomToRegion([longitude, latitude], zoom) {
@@ -264,7 +274,14 @@ function IASTracker() {
     regionRef.current = next;
   }, []);
 
-  const { clusters, visibleCount, expansionZoom, leaves } = useClusters(datasets, region, filters);
+  // "Vicino a me" come filtro della mappa: { center, radiusM } o null (tutta Italia)
+  const [area, setArea] = useState(null);
+  const areaRef = useRef(null);
+  useEffect(() => {
+    areaRef.current = area;
+  }, [area]);
+
+  const { clusters, visibleCount, expansionZoom, leaves } = useClusters(datasets, region, filters, area);
   useEffect(() => {
     clustersRef.current = clusters;
   }, [clusters]);
@@ -320,11 +337,12 @@ function IASTracker() {
             Alert.alert('Dati non disponibili', 'Non è stato possibile leggere le segnalazioni. Riprova.');
             return;
           }
-          if (focus?.bbox) {
-            mapRef.current?.animateToRegion(bboxToRegion(focus.bbox), 600);
-          } else if (focus) {
-            const delta = (focus.radiusM / 111320) * 2.4;
-            mapRef.current?.animateToRegion({ ...focus.center, latitudeDelta: delta, longitudeDelta: delta }, 600);
+          // con "Vicino a me" attivo si inquadra la zona: fuori non ci sono segnalazioni mostrate
+          const target = focus ?? areaRef.current;
+          if (target?.bbox) {
+            mapRef.current?.animateToRegion(bboxToRegion(target.bbox), 600);
+          } else if (target) {
+            mapRef.current?.animateToRegion(areaToRegion(target), 600);
           } else if (item.all) {
             mapRef.current?.animateToRegion(ITALY_REGION, 600);
           } else if (item.bbox) {
@@ -357,7 +375,15 @@ function IASTracker() {
   }, [hasLocation]);
 
   // Callback stabili: i marker memoizzati non si ridisegnano a ogni pan/zoom.
+  const [zoomLocked, setZoomLocked] = useState(false);
+  const zoomLockTimer = useRef(null);
+  useEffect(() => () => clearTimeout(zoomLockTimer.current), []);
   const selectPoint = useCallback((feature) => {
+    if (Platform.OS === 'ios') {
+      setZoomLocked(true);
+      clearTimeout(zoomLockTimer.current);
+      zoomLockTimer.current = setTimeout(() => setZoomLocked(false), ZOOM_LOCK_AFTER_TAP_MS);
+    }
     // stesso pallino già selezionato (es. secondo tocco di un doppio tocco per lo zoom)
     if (selectedIdRef.current === feature.properties.id) return;
     const [longitude, latitude] = feature.geometry.coordinates;
@@ -567,6 +593,22 @@ function IASTracker() {
     setTimeout(() => setOpen(true), 400);
   }, []);
 
+  /**
+   * Scheda di una specie. Aperta da un'altra schermata (elenco specie, Vicino a me, rapporto per
+   * regione, novità), alla chiusura si torna a quella schermata invece che alla mappa. iOS non
+   * mostra due Modal insieme: la schermata si chiude, la scheda si apre dopo l'animazione, e alla
+   * chiusura della scheda la schermata si riapre (con il suo stato: ricerca, regione, scheda).
+   */
+  const sheetOriginRef = useRef(null);
+  const openSheet = useCallback((item) => {
+    sheetOriginRef.current = null; // dalla mappa: alla chiusura si resta sulla mappa
+    setSheetSpecies(item);
+  }, []);
+  const openSheetAfter = useCallback((origin, item) => {
+    sheetOriginRef.current = origin;
+    setTimeout(() => setSheetSpecies(item), 400);
+  }, []);
+
   // Rapporto per regione: la specie scelta viene mostrata inquadrando la regione.
   const showSpeciesInRegion = useCallback(
     (item, region) => {
@@ -578,8 +620,8 @@ function IASTracker() {
   );
   const openSheetFromRegions = useCallback((item) => {
     setRegionsOpen(false);
-    setTimeout(() => setSheetSpecies(item), 400);
-  }, []);
+    openSheetAfter('regions', item);
+  }, [openSheetAfter]);
 
   const showReportOnMap = useCallback((report) => {
     setNotebookOpen(false);
@@ -592,8 +634,8 @@ function IASTracker() {
 
   const openSheetFromPanel = useCallback((item) => {
     setPanelOpen(false);
-    setTimeout(() => setSheetSpecies(item), 400);
-  }, []);
+    openSheetAfter('panel', item);
+  }, [openSheetAfter]);
 
   // "Vicino a me": mostra la specie scelta inquadrando l'area attorno all'utente.
   const selectNearby = useCallback(
@@ -608,7 +650,20 @@ function IASTracker() {
   );
   const openSheetFromNearby = useCallback((item) => {
     setNearbyOpen(false);
-    setTimeout(() => setSheetSpecies(item), 400);
+    openSheetAfter('nearby', item);
+  }, [openSheetAfter]);
+
+  /** Zona di "Vicino a me" sulla mappa: attivata, cambiata (raggio, posizione) o spenta. */
+  const changeArea = useCallback((next) => {
+    const prev = areaRef.current;
+    const same =
+      prev && next && prev.radiusM === next.radiusM &&
+      prev.center.latitude === next.center.latitude && prev.center.longitude === next.center.longitude;
+    if (same || (!prev && !next)) return;
+    areaRef.current = next;
+    setArea(next);
+    setSelection(null);
+    if (next) mapRef.current?.animateToRegion(areaToRegion(next), 600);
   }, []);
 
   // Primo avvio: presentazione, poi l'elenco delle specie. Negli avvii successivi subito l'elenco.
@@ -820,7 +875,21 @@ function IASTracker() {
   );
   const openSheetFromNews = useCallback((item) => {
     setNewsOpen(false);
-    setTimeout(() => setSheetSpecies(item), 400);
+    openSheetAfter('news', item);
+  }, [openSheetAfter]);
+
+  // Chiusura della scheda specie: si torna alla schermata da cui era stata aperta (vedi openSheet).
+  const closeSheet = useCallback(() => {
+    setSheetSpecies(null);
+    const origin = sheetOriginRef.current;
+    sheetOriginRef.current = null;
+    const reopen = {
+      panel: () => setPanelOpen(true),
+      regions: () => setRegionsOpen(true),
+      nearby: () => setNearbyOpen(true),
+      news: () => setNewsOpen(true), // senza openNews: le novità "non viste" restano quelle di prima
+    }[origin];
+    if (reopen) setTimeout(reopen, 400);
   }, []);
 
   // --- Impostazioni ---------------------------------------------------------------------
@@ -988,7 +1057,17 @@ function IASTracker() {
         // nord sempre in alto e niente inclinazione: il calcolo del marker toccato è esatto
         rotateEnabled={false}
         pitchEnabled={false}
+        zoomEnabled={!zoomLocked}
       >
+        {area && (
+          <Circle
+            center={area.center}
+            radius={area.radiusM}
+            strokeColor="rgba(46,125,50,0.8)"
+            fillColor="rgba(46,125,50,0.06)"
+            strokeWidth={2}
+          />
+        )}
         {clusters.map((f) => {
           if (f.properties.cluster) {
             // il numero fa parte della chiave: su Android il marker è una bitmap che non si ridisegna
@@ -1066,7 +1145,7 @@ function IASTracker() {
               <Text style={styles.italic}>{topSpecies.scientificName}</Text>
               {topSpecies.total === 0
                 ? ' · nessuna segnalazione in Italia'
-                : ` · ${visibleCount.toLocaleString('it-IT')} segnalazioni`}
+                : ` · ${visibleCount.toLocaleString('it-IT')} segnalazioni${area ? ` entro ${area.radiusM / 1000} km` : ''}`}
             </Text>
           )}
         </Pressable>
@@ -1076,7 +1155,7 @@ function IASTracker() {
         {species && !species.all && (
           <Pressable
             style={styles.infoRound}
-            onPress={() => setSheetSpecies(species)}
+            onPress={() => openSheet(species)}
             accessibilityRole="button"
             accessibilityLabel={`Scheda di ${species.commonName}`}
           >
@@ -1090,6 +1169,18 @@ function IASTracker() {
       {/* Avvisi sotto la barra superiore: dati in aggiornamento, novità */}
       <View style={[styles.pills, { top: topBarBottom + 8 }]} pointerEvents="box-none">
         {updatingData && <StatusPill floating label="Aggiornamento dei dati in corso…" />}
+        {area && (
+          <Pressable
+            style={styles.areaPill}
+            onPress={() => changeArea(null)}
+            accessibilityRole="button"
+            accessibilityLabel={`Mostrate solo le segnalazioni entro ${area.radiusM / 1000} chilometri da te. Tocca per tornare a tutta Italia`}
+          >
+            <Text style={styles.areaPillText}>
+              📍 Entro {area.radiusM / 1000} km da te <Text style={styles.areaPillAction}> · Tutta Italia ✕</Text>
+            </Text>
+          </Pressable>
+        )}
         {newsBadge && !selection && (
           <Pressable
             style={styles.newsPill}
@@ -1109,7 +1200,7 @@ function IASTracker() {
         coordinate={selection?.coordinate}
         bottomInset={insets.bottom}
         onClose={clearSelection}
-        onOpenSheet={(slug) => setSheetSpecies(speciesList.find((s) => s.slug === slug) ?? null)}
+        onOpenSheet={(slug) => openSheet(speciesList.find((s) => s.slug === slug) ?? null)}
       />
 
       {/* Barra inferiore: filtri, elenco specie, posizione */}
@@ -1164,6 +1255,9 @@ function IASTracker() {
         speciesList={speciesList}
         manifest={manifest}
         filters={filters}
+        areaActive={!!area}
+        onAreaChange={changeArea}
+        currentSpecies={species}
         onSelect={selectNearby}
         onInfo={openSheetFromNearby}
         onClose={() => setNearbyOpen(false)}
@@ -1182,6 +1276,7 @@ function IASTracker() {
             datasets={datasets}
             filters={filters}
             region={region}
+            area={area}
             title={species?.commonName ?? ''}
             slug={species?.all ? 'tutte-le-specie' : (species?.slug ?? 'specie')}
           />
@@ -1277,7 +1372,7 @@ function IASTracker() {
         species={sheetSpecies}
         manifest={manifest}
         visible={!!sheetSpecies}
-        onClose={() => setSheetSpecies(null)}
+        onClose={closeSheet}
         onOpenSpecies={(slug) => setSheetSpecies(speciesList.find((s) => s.slug === slug) ?? null)}
         followed={sheetSpecies ? follows.species.includes(sheetSpecies.slug) : false}
         onToggleFollow={(slug) => changeFollow('species', slug)}
@@ -1380,5 +1475,14 @@ const createStyles = (c) => {
       ...shadow,
     },
     newsPillText: { color: c.warning, fontSize: 13, fontWeight: '700' },
+    areaPill: {
+      backgroundColor: c.surface,
+      borderRadius: 16,
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      ...shadow,
+    },
+    areaPillText: { color: c.primary, fontSize: 13, fontWeight: '700' },
+    areaPillAction: { color: c.textSecondary, fontWeight: '600' },
   });
 };

@@ -27,12 +27,13 @@ const VIEWPORT_MARGIN = 0.15;
  * @param {{species: object, data: object}[] | null} datasets  punti di una o più specie (formato compatto)
  * @param {object} region  regione visibile della mappa
  * @param {import('../data/points').Filters} filters  filtri scelti dall'utente
+ * @param {object|null} [area]  "Vicino a me" attivo: { center, radiusM }
  */
-export function useClusters(datasets, region, filters) {
+export function useClusters(datasets, region, filters, area = null) {
   // L'indice si ricostruisce solo quando cambiano dati o filtro, non a ogni pan/zoom.
   const index = useMemo(() => {
     if (!datasets?.length) return null;
-    const { features, count } = groupDatasets(datasets, filters);
+    const { features, count } = groupDatasets(datasets, filters, area);
 
     const sc = new Supercluster({
       ...CLUSTER_OPTIONS,
@@ -44,7 +45,7 @@ export function useClusters(datasets, region, filters) {
     });
     sc.load(features);
     return { sc, count };
-  }, [datasets, filters]);
+  }, [datasets, filters, area]);
 
   const zoom = regionToZoom(region);
 

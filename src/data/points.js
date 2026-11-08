@@ -2,6 +2,8 @@
 // filtri scelti dall'utente. Funzioni pure, senza dipendenze dall'interfaccia: sono coperte
 // dai test in __tests__/.
 
+import { areaPredicate } from '../utils/distance';
+
 /** Oltre questa incertezza (metri) una posizione è considerata approssimativa. */
 export const APPROXIMATE_M = 1000;
 
@@ -134,15 +136,19 @@ export function activeFilterCount(filters) {
  *
  * @param {{species: {slug: string, commonName: string, scientificName: string}, data: {fonti: {nome: string, licenza: string|null}[], punti: Array<[number, number, number|null, number, 0|1, number|null]>}}[]} datasets
  * @param {Filters} filters
+ * @param {{center: {latitude: number, longitude: number}, radiusM: number} | null} [area]
+ *   "Vicino a me" attivo: solo le segnalazioni entro il raggio
  * @returns {{features: object[], count: number}} punti GeoJSON e numero di record inclusi
  */
-export function groupDatasets(datasets, filters) {
+export function groupDatasets(datasets, filters, area = null) {
   const byLocation = new Map();
   const today = todayDay();
+  const inArea = areaPredicate(area);
   let count = 0;
   for (const { species, data } of datasets) {
     const speciesInfo = { slug: species.slug, commonName: species.commonName, scientificName: species.scientificName };
     data.punti.forEach(([lon, lat, year, sourceIdx, automatic, uncertainty, , gbifId, originalId, day], i) => {
+      if (inArea && !inArea(lon, lat)) return;
       const source = data.fonti[sourceIdx] ?? { nome: 'Fonte sconosciuta', licenza: null };
       const record = {
         id: `${species.slug}:${i}`,

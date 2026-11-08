@@ -221,10 +221,7 @@ export default function RegionReport({
               </View>
               <Text style={styles.count}>{item.count.toLocaleString('it-IT')}</Text>
               <Pressable
-                onPress={() => {
-                  setRegion(null);
-                  onInfo(item.species);
-                }}
+                onPress={() => onInfo(item.species)} // la regione resta: chiusa la scheda si torna qui
                 hitSlop={10}
                 accessibilityRole="button"
                 accessibilityLabel={`Scheda di ${item.species.commonName}`}
@@ -299,8 +296,9 @@ function RegionContacts({ code, styles }) {
         </View>
       ))}
       <Text style={styles.note}>
-        Uffici responsabili per le specie esotiche invasive indicati dal {CONTACTS_SOURCE.label.replace('Ministero dell’Ambiente, ', 'Ministero dell’Ambiente (')}).{' '}
-        {PEC_NOTE} Per le nuove comparse si può scrivere anche al Ministero, dalla scheda di ogni specie.
+        Uffici responsabili per le specie esotiche invasive indicati dal{' '}
+        {CONTACTS_SOURCE.label.replace('Ministero dell’Ambiente, ', 'Ministero dell’Ambiente (')}). {PEC_NOTE} Per le
+        nuove comparse si può scrivere anche al Ministero, dalla scheda di ogni specie.
       </Text>
       <Pressable onPress={() => open(CONTACTS_SOURCE.url)} accessibilityRole="link" hitSlop={6}>
         <Text style={styles.contactLink}>Documento del Ministero ↗</Text>

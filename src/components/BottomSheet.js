@@ -2,15 +2,22 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import {
   Animated,
   Easing,
-  FlatList,
+  KeyboardAvoidingView,
   Modal,
-  PanResponder,
+  Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   View,
   useWindowDimensions,
 } from 'react-native';
+import {
+  FlatList,
+  GestureDetector,
+  GestureHandlerRootView,
+  ScrollView,
+  usePanGesture,
+} from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useThemedStyles } from '../theme';
 
@@ -20,16 +27,21 @@ import { useThemedStyles } from '../theme';
 // basso: il pannello segue il dito e lo sfondo si schiarisce di pari passo; lasciato oltre una
 // soglia (o con un gesto rapido) si chiude, altrimenti torna su.
 // - Dalla maniglia e dall'intestazione (`header`) si trascina sempre.
-// - Dal contenuto si trascina solo quando l'elenco è in cima: altrimenti il gesto scorre
-//   l'elenco. Per questo l'elenco riceve le proprietà di useSheetScrollProps().
+// - Dal contenuto si trascina solo verso il basso e quando l'elenco è in cima: altrimenti il
+//   gesto scorre l'elenco. Per questo l'elenco è SheetFlatList / SheetScrollView.
+// Il trascinamento è riconosciuto da react-native-gesture-handler (riconoscitori nativi): con il
+// sistema dei tocchi di React Native (PanResponder) sul telefono non partiva.
 // Apertura e chiusura sono animate qui (Modal senza animazione propria), così la chiusura
 // parte dal punto in cui il dito ha lasciato il pannello.
 
 const OPEN_MS = 260;
 const CLOSE_MS = 200;
-const DRAG_START_PX = 6; // movimento minimo prima che il trascinamento prenda il gesto
 const CLOSE_DISTANCE = 120; // trascinato oltre questa distanza (px) si chiude…
-const CLOSE_VELOCITY = 0.8; // …oppure con un gesto rapido verso il basso (px/ms)
+const CLOSE_VELOCITY = 800; // …oppure con un gesto rapido verso il basso (px/s)
+
+// Trascinamento: parte dopo 8 px in verticale; un movimento orizzontale di 20 px lo annulla.
+const DRAG_START = 8;
+const DRAG_FAIL_X = [-20, 20];
 
 const SheetScrollContext = createContext(null);
 
@@ -48,11 +60,9 @@ export function SheetFlatList(props) {
   return <FlatList {...useSheetScrollProps()} {...props} />;
 }
 
-/** Il gesto è un trascinamento verticale più che orizzontale? */
-const isVertical = (g) => Math.abs(g.dy) > DRAG_START_PX && Math.abs(g.dy) > Math.abs(g.dx) * 1.2;
-
 export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, paddingBottom, header, children }) {
   const styles = useThemedStyles(createStyles);
+  const insets = useSafeAreaInsets();
   const { height: screenHeight } = useWindowDimensions();
   const offscreen = screenHeight;
   // Spostamento del pannello verso il basso: 0 = aperto, `offscreen` = fuori dallo schermo.
@@ -61,6 +71,7 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
   const [mounted, setMounted] = useState(visible);
   if (visible && !mounted) setMounted(true); // apertura: stato aggiornato durante il render
   const atTopRef = useRef(true); // elenco del contenuto in cima
+  const dragRef = useRef(false); // il gesto in corso sta trascinando il pannello
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -99,30 +110,54 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
     Animated.spring(translateY, { toValue: 0, bounciness: 4, speed: 18, useNativeDriver: true }).start();
   }, [translateY]);
 
-  const panResponder = useCallback(
-    (canStart) =>
-      PanResponder.create({
-        // fase di cattura: il trascinamento ha la precedenza su righe e pulsanti del pannello
-        onMoveShouldSetPanResponderCapture: (_, g) => isVertical(g) && canStart(g),
-        onMoveShouldSetPanResponder: (_, g) => isVertical(g) && canStart(g),
-        onPanResponderTerminationRequest: () => false,
-        onPanResponderGrant: () => translateY.stopAnimation(),
-        onPanResponderMove: (_, g) => translateY.setValue(Math.max(0, g.dy)),
-        onPanResponderRelease: (_, g) => {
-          if (g.dy > CLOSE_DISTANCE || g.vy > CLOSE_VELOCITY) onCloseRef.current?.();
-          else snapBack();
-        },
-        onPanResponderTerminate: snapBack,
-      }),
-    [translateY, snapBack],
+  // Funzioni del gesto (eseguite in JavaScript: Reanimated non è installato).
+  const startDrag = useCallback(
+    (fromList) => {
+      // dal contenuto si trascina solo se l'elenco è in cima all'inizio del gesto
+      dragRef.current = !fromList || atTopRef.current;
+      if (dragRef.current) translateY.stopAnimation();
+    },
+    [translateY],
   );
-  // Dalla maniglia e dall'intestazione: sempre; dal contenuto: verso il basso, a elenco in cima.
-  // I ref si leggono solo nelle funzioni chiamate da PanResponder durante il gesto, mai durante
-  // il render: la regola del compilatore non può saperlo.
-  // eslint-disable-next-line react-hooks/refs
-  const headerPan = useMemo(() => panResponder(() => true), [panResponder]);
-  // eslint-disable-next-line react-hooks/refs
-  const bodyPan = useMemo(() => panResponder((g) => g.dy > 0 && atTopRef.current), [panResponder]);
+  const moveDrag = useCallback(
+    (e) => {
+      if (dragRef.current) translateY.setValue(Math.max(0, e.translationY));
+    },
+    [translateY],
+  );
+  const endDrag = useCallback(
+    (e) => {
+      if (!dragRef.current) return;
+      dragRef.current = false;
+      if (!e.canceled && (e.translationY > CLOSE_DISTANCE || e.velocityY > CLOSE_VELOCITY)) onCloseRef.current?.();
+      else snapBack();
+    },
+    [snapBack],
+  );
+
+  const startFromHeader = useCallback(() => startDrag(false), [startDrag]);
+  const startFromList = useCallback(() => startDrag(true), [startDrag]);
+
+  // Dalla maniglia e dall'intestazione: trascinamento verticale.
+  const headerPan = usePanGesture({
+    disableReanimated: true,
+    activeOffsetY: [-DRAG_START, DRAG_START],
+    failOffsetX: DRAG_FAIL_X,
+    onActivate: startFromHeader,
+    onUpdate: moveDrag,
+    onDeactivate: endDrag,
+  });
+  // Dal contenuto: solo verso il basso (verso l'alto il gesto fallisce e scorre l'elenco),
+  // insieme allo scorrimento dell'elenco (simultaneousWith in scrollProps).
+  const bodyPan = usePanGesture({
+    disableReanimated: true,
+    activeOffsetY: [-1000, DRAG_START],
+    failOffsetY: [-DRAG_START, 1000],
+    failOffsetX: DRAG_FAIL_X,
+    onActivate: startFromList,
+    onUpdate: moveDrag,
+    onDeactivate: endDrag,
+  });
 
   const scrollProps = useMemo(
     () => ({
@@ -131,8 +166,9 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
       },
       scrollEventThrottle: 16,
       bounces: false, // in cima il gesto verso il basso trascina il pannello, non l'elenco
+      simultaneousWith: bodyPan, // l'elenco scorre e il pannello si trascina con lo stesso gesto
     }),
-    [],
+    [bodyPan],
   );
 
   const backdropOpacity = useMemo(
@@ -142,35 +178,51 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
 
   return (
     <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
-      <View style={styles.root}>
-        <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} pointerEvents="none" />
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={closeLabel}
-        />
-        <Animated.View style={[styles.sheet, { maxHeight, paddingBottom, transform: [{ translateY }] }]}>
-          <View {...headerPan.panHandlers}>
-            <View style={styles.handleArea}>
-              <View style={styles.handle} />
-            </View>
-            {header}
-          </View>
-          <View style={styles.body} {...bodyPan.panHandlers}>
-            <SheetScrollContext.Provider value={scrollProps}>{children}</SheetScrollContext.Provider>
-          </View>
-        </Animated.View>
-      </View>
+      {/* iOS: con la tastiera aperta il pannello sale sopra di essa (prima, con pochi risultati
+          nella ricerca, si abbassava e finiva dietro la tastiera) e si accorcia se serve */}
+      {/* i gesti nativi dentro una Modal richiedono una propria radice */}
+      <GestureHandlerRootView style={styles.fill}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={[styles.root, { paddingTop: insets.top + 8 }]}
+        >
+          <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} pointerEvents="none" />
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={closeLabel}
+          />
+          <Animated.View style={[styles.sheet, { maxHeight, paddingBottom, transform: [{ translateY }] }]}>
+            {/* collapsable={false}: viste native vere su cui agganciare i gesti (React Native
+              "appiattisce" i contenitori senza aspetto proprio) */}
+            <GestureDetector gesture={headerPan}>
+              <View collapsable={false}>
+                <View collapsable={false} style={styles.handleArea}>
+                  <View style={styles.handle} />
+                </View>
+                {header}
+              </View>
+            </GestureDetector>
+            <GestureDetector gesture={bodyPan}>
+              <View collapsable={false} style={styles.body}>
+                <SheetScrollContext.Provider value={scrollProps}>{children}</SheetScrollContext.Provider>
+              </View>
+            </GestureDetector>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
 
 const createStyles = (c) =>
   StyleSheet.create({
+    fill: { flex: 1 },
     root: { flex: 1, justifyContent: 'flex-end' },
     backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.backdrop },
     sheet: {
+      flexShrink: 1, // con la tastiera aperta si accorcia invece di uscire dallo schermo
       backgroundColor: c.surface,
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,

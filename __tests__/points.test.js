@@ -79,10 +79,13 @@ describe('filtri', () => {
 });
 
 describe('più specie insieme', () => {
-  const other = { species: { slug: 'b', commonName: 'Specie B', scientificName: 'Planta b' }, data: {
-    fonti: [{ nome: 'Herbarium', licenza: 'CC0 1.0' }],
-    punti: [[12.5, 41.9, 2022, 0, 0, 5]], // stessa posizione di due record della specie A
-  } };
+  const other = {
+    species: { slug: 'b', commonName: 'Specie B', scientificName: 'Planta b' },
+    data: {
+      fonti: [{ nome: 'Herbarium', licenza: 'CC0 1.0' }],
+      punti: [[12.5, 41.9, 2022, 0, 0, 5]], // stessa posizione di due record della specie A
+    },
+  };
 
   test('record di specie diverse nello stesso punto restano distinguibili', () => {
     const { features, count } = groupDatasets([{ species: SPECIES_A, data: DATA }, other], DEFAULT_FILTERS);
@@ -174,4 +177,21 @@ test('dal 2020: dal 1° gennaio, in base all’anno', () => {
   expect(passesFilters(rec(2020), filters)).toBe(true);
   expect(passesFilters(rec(2019, jan1 - 1), filters)).toBe(false);
   expect(passesFilters(rec(null), filters)).toBe(false);
+});
+
+test('"Vicino a me" attivo: solo le segnalazioni entro il raggio', () => {
+  const data = {
+    fonti: [{ nome: 'iNaturalist', licenza: 'CC0' }],
+    punti: [
+      [12.5, 41.9, 2020, 0, 0, 10], // centro
+      [12.53, 41.9, 2020, 0, 0, 10], // ~2,5 km a est
+      [12.6, 41.9, 2020, 0, 0, 10], // ~8,3 km a est
+    ],
+  };
+  const area = { center: { latitude: 41.9, longitude: 12.5 }, radiusM: 5000 };
+  expect(groupByLocation(data, DEFAULT_FILTERS).count).toBe(3);
+  const { count, features } = groupDatasets([{ species: SPECIES_A, data }], DEFAULT_FILTERS, area);
+  expect(count).toBe(2);
+  // identificativi invariati: restano quelli della posizione nel file
+  expect(features.map((f) => f.properties.id).sort()).toEqual(['a:0', 'a:1']);
 });

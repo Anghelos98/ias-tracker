@@ -10,7 +10,7 @@ import { shareTextFile } from '../utils/shareFile';
  * Esportazione delle segnalazioni mostrate sulla mappa (con i filtri attivi), dell'area
  * visibile o di tutta Italia, in CSV, GeoJSON o KML.
  */
-export default function ExportSection({ datasets, filters, region, title, slug }) {
+export default function ExportSection({ datasets, filters, region, area = null, title, slug }) {
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
   const [format, setFormat] = useState('csv');
@@ -18,8 +18,8 @@ export default function ExportSection({ datasets, filters, region, title, slug }
   const [busy, setBusy] = useState(false);
 
   const rows = useMemo(
-    () => (datasets?.length ? exportRows(datasets, filters, onlyVisible ? regionToBBox(region) : null) : []),
-    [datasets, filters, onlyVisible, region],
+    () => (datasets?.length ? exportRows(datasets, filters, onlyVisible ? regionToBBox(region) : null, area) : []),
+    [datasets, filters, onlyVisible, region, area],
   );
 
   if (!datasets?.length) {
@@ -38,7 +38,12 @@ export default function ExportSection({ datasets, filters, region, title, slug }
     try {
       const content = formatExport(format, rows, {
         title: `IAS Tracker – ${title}`,
-        meta: { specie: title, filtri: filters, area: onlyVisible ? regionToBBox(region) : 'Italia' },
+        meta: {
+          specie: title,
+          filtri: filters,
+          area: onlyVisible ? regionToBBox(region) : 'Italia',
+          ...(area ? { vicino_a_me: { centro: area.center, raggio_m: area.radiusM } } : {}),
+        },
       });
       await shareTextFile(exportFileName(slug, format), content, EXPORT_FORMATS[format]);
     } catch {
@@ -55,7 +60,11 @@ export default function ExportSection({ datasets, filters, region, title, slug }
       </Text>
       <View style={styles.chips}>
         <Chip label="Area visibile" active={onlyVisible} onPress={() => setOnlyVisible(true)} />
-        <Chip label="Tutta Italia" active={!onlyVisible} onPress={() => setOnlyVisible(false)} />
+        <Chip
+          label={area ? `Entro ${area.radiusM / 1000} km` : 'Tutta Italia'}
+          active={!onlyVisible}
+          onPress={() => setOnlyVisible(false)}
+        />
       </View>
       <View style={[styles.chips, styles.formats]}>
         {Object.entries(EXPORT_FORMATS).map(([key, f]) => (

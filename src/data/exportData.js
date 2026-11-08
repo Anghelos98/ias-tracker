@@ -3,6 +3,7 @@
 
 import { dayToIso, gbifUrl, originalUrl, passesFilters, todayDay } from './points';
 import { REGIONS } from './regions';
+import { areaPredicate } from '../utils/distance';
 
 const REGION_NAMES = new Map(REGIONS.map((r) => [r.code, r.name]));
 
@@ -23,15 +24,17 @@ export const ATTRIBUTION =
 
 /**
  * Righe da esportare: segnalazioni che passano i filtri, facoltativamente solo dentro un
- * riquadro [ovest, sud, est, nord].
+ * riquadro [ovest, sud, est, nord] e/o dentro la zona di "Vicino a me" ({ center, radiusM }).
  */
-export function exportRows(datasets, filters, bbox = null) {
+export function exportRows(datasets, filters, bbox = null, area = null) {
   const rows = [];
   const today = todayDay();
+  const inArea = areaPredicate(area);
   for (const { species, data } of datasets) {
     for (const [lon, lat, year, sourceIdx, automatic, uncertainty, region, gbifId, originalId, day] of data.punti) {
       const source = data.fonti[sourceIdx] ?? { nome: 'Fonte sconosciuta', licenza: null };
       if (bbox && (lon < bbox[0] || lat < bbox[1] || lon > bbox[2] || lat > bbox[3])) continue;
+      if (inArea && !inArea(lon, lat)) continue;
       const record = { year, automatic: automatic === 1, uncertainty: uncertainty ?? null, day: day ?? null };
       if (!passesFilters(record, filters, today)) continue;
       rows.push({

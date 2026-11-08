@@ -220,7 +220,9 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
         onOpenWelcome={noop}
       />,
     );
-    expect(screen.getByText('I dati dell’app vengono aggiornati ogni 12 ore per impostazione predefinita.')).toBeTruthy();
+    expect(
+      screen.getByText('I dati dell’app vengono aggiornati ogni 12 ore per impostazione predefinita.'),
+    ).toBeTruthy();
     expect(screen.getByText(/aggiornate al 6 novembre 2026/)).toBeTruthy();
     expect(screen.getByText('Ripristina i filtri predefiniti')).toBeTruthy();
     // il tocco resta in attesa dell'aggiornamento: non lo si aspetta qui
@@ -269,9 +271,7 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
     await render(<NewsScreen {...props} follows={{ species: [], regions: [10] }} />);
     await fireEvent.press(screen.getByText('Seguite'));
     expect(screen.getByText('1 segnalazione nuova nell’ultima settimana')).toBeTruthy();
-    await render(
-      <NewsScreen {...props} seenAtOpen="2026-11-09T04:00:00Z" follows={{ species: [], regions: [10] }} />,
-    );
+    await render(<NewsScreen {...props} seenAtOpen="2026-11-09T04:00:00Z" follows={{ species: [], regions: [10] }} />);
     await fireEvent.press(screen.getByText('Seguite'));
     expect(screen.getByText('1 segnalazione nuova dalla tua ultima visita')).toBeTruthy();
     expect(screen.getByText('Avvisami delle novità')).toBeTruthy();
@@ -356,4 +356,60 @@ test('filtri: periodo relativo e dall’anno si escludono a vicenda', async () =
   expect(screen.getByText(/a oggi, in base alla data dell’osservazione/)).toBeTruthy();
   await rerender(<FiltersPanel {...props} filters={{ ...DEFAULT_FILTERS, minYear: 2020 }} />);
   expect(screen.getByText(/Dal 1° gennaio 2020/)).toBeTruthy();
+});
+
+test('vicino a me: interruttore "solo questa zona sulla mappa"', async () => {
+  useColorScheme.mockReturnValue('light');
+  const Location = require('expo-location');
+  Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
+  Location.getCurrentPositionAsync.mockResolvedValueOnce({ coords: { latitude: 41.9, longitude: 12.5, accuracy: 5 } });
+  const onAreaChange = jest.fn();
+  const props = {
+    visible: true,
+    speciesList: SPECIES,
+    manifest: null,
+    filters: DEFAULT_FILTERS,
+    onAreaChange,
+    onSelect: noop,
+    onInfo: noop,
+    onClose: noop,
+  };
+  const { rerender } = await render(<NearbyPanel {...props} areaActive={false} />);
+  expect(await screen.findByText(/specie entro 5 km|Nessuna segnalazione entro 5 km/)).toBeTruthy();
+  await fireEvent(screen.getByLabelText('Solo questa zona sulla mappa'), 'valueChange', true);
+  const area = { center: { latitude: 41.9, longitude: 12.5 }, radiusM: 5000 };
+  expect(onAreaChange).toHaveBeenLastCalledWith(area);
+  // attivo: cambiando raggio la zona sulla mappa lo segue
+  await rerender(<NearbyPanel {...props} areaActive />);
+  await fireEvent.press(screen.getByLabelText('Raggio 10 chilometri'));
+  expect(onAreaChange).toHaveBeenLastCalledWith({ ...area, radiusM: 10000 });
+  await fireEvent(screen.getByLabelText('Solo questa zona sulla mappa'), 'valueChange', false);
+  expect(onAreaChange).toHaveBeenLastCalledWith(null);
+});
+
+test('vicino a me con la zona attiva: elenco limitato alla specie scelta in alto', async () => {
+  useColorScheme.mockReturnValue('light');
+  const Location = require('expo-location');
+  Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ status: 'granted' });
+  Location.getCurrentPositionAsync.mockResolvedValueOnce({ coords: { latitude: 41.9, longitude: 12.5, accuracy: 5 } });
+  await render(
+    <NearbyPanel
+      visible
+      speciesList={SPECIES}
+      manifest={null}
+      filters={DEFAULT_FILTERS}
+      areaActive
+      onAreaChange={noop}
+      currentSpecies={ailanto}
+      onSelect={noop}
+      onInfo={noop}
+      onClose={noop}
+    />,
+  );
+  expect(await screen.findByText(/^Ailanto entro 5 km \(la specie scelta in alto\)$|^Nessuna segnalazione di Ailanto entro 5 km/)).toBeTruthy();
+  expect(screen.getByText(/Mappa ed elenco mostrano solo Ailanto/)).toBeTruthy();
+  // nessun'altra specie nell'elenco
+  expect(screen.queryAllByLabelText(/^Scheda di /).map((n) => n.props.accessibilityLabel)).toEqual(
+    expect.not.arrayContaining([expect.not.stringContaining('Ailanto')]),
+  );
 });

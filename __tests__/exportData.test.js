@@ -59,3 +59,21 @@ test('nome del file', () => {
     'ias-tracker_ailanthus-altissima_2026-11-06.kml',
   );
 });
+
+test('esportazione con "Vicino a me" attivo: solo la zona', () => {
+  const datasets = [
+    {
+      species: { scientificName: 'Planta a', commonName: 'A' },
+      data: {
+        fonti: [{ nome: 'X', licenza: 'CC0' }],
+        punti: [
+          [12.5, 41.9, 2020, 0, 0, 10],
+          [13.5, 41.9, 2020, 0, 0, 10],
+        ],
+      },
+    },
+  ];
+  const area = { center: { latitude: 41.9, longitude: 12.5 }, radiusM: 10000 };
+  expect(exportRows(datasets, DEFAULT_FILTERS)).toHaveLength(2);
+  expect(exportRows(datasets, DEFAULT_FILTERS, null, area)).toHaveLength(1);
+});

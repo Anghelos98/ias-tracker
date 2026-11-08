@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { loadAllDatasets } from '../data/allSpecies';
@@ -14,8 +14,25 @@ const RADII = [1000, 5000, 10000, 25000];
 /**
  * "Vicino a me": specie invasive segnalate entro un raggio dalla posizione dell'utente,
  * ordinate per distanza della segnalazione più vicina. Rispetta i filtri attivi.
+ *
+ * Con l'interruttore "Solo questa zona sulla mappa" anche la mappa mostra solo le segnalazioni
+ * entro il raggio (`onAreaChange({ center, radiusM })`, oppure null per tornare a tutta Italia).
+ * La zona segue il raggio scelto e la posizione letta a ogni apertura del pannello. Con la zona
+ * attiva e una specie scelta in alto (`currentSpecies`), anche l'elenco mostra solo quella specie,
+ * come la mappa; con "Tutte le specie" o senza zona l'elenco mostra tutte le specie vicine.
  */
-export default function NearbyPanel({ visible, speciesList, manifest, filters, onSelect, onInfo, onClose }) {
+export default function NearbyPanel({
+  visible,
+  speciesList,
+  manifest,
+  filters,
+  areaActive = false,
+  onAreaChange,
+  currentSpecies = null,
+  onSelect,
+  onInfo,
+  onClose,
+}) {
   const insets = useSafeAreaInsets();
   const styles = useThemedStyles(createStyles);
   const [radius, setRadius] = useState(5000);
@@ -72,11 +89,28 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
     setAttempt((a) => a + 1);
   }, []);
 
+  // Zona attiva sulla mappa: segue il raggio e la nuova posizione letta all'apertura.
+  useEffect(() => {
+    if (!areaActive || !position || !onAreaChange) return;
+    onAreaChange({ center: { latitude: position.latitude, longitude: position.longitude }, radiusM: radius });
+  }, [areaActive, position, radius, onAreaChange]);
+
+  const toggleArea = (on) => {
+    if (!onAreaChange) return;
+    if (!on) onAreaChange(null);
+    else if (position) {
+      onAreaChange({ center: { latitude: position.latitude, longitude: position.longitude }, radiusM: radius });
+    }
+  };
+
   const ready = Boolean(!error && position && datasets);
-  const results = useMemo(
-    () => (ready ? speciesNearby(datasets, position, radius, filters) : []),
-    [ready, datasets, position, radius, filters],
-  );
+  // specie a cui è limitato l'elenco (quella mostrata sulla mappa), o null per tutte
+  const onlySpecies = areaActive && currentSpecies && !currentSpecies.all ? currentSpecies : null;
+  const results = useMemo(() => {
+    if (!ready) return [];
+    const all = speciesNearby(datasets, position, radius, filters);
+    return onlySpecies ? all.filter((r) => r.species.slug === onlySpecies.slug) : all;
+  }, [ready, datasets, position, radius, filters, onlySpecies]);
 
   return (
     <BottomSheet
@@ -105,6 +139,26 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
               </Pressable>
             ))}
           </View>
+          {onAreaChange && (
+            <View style={styles.areaRow}>
+              <View style={styles.areaText}>
+                <Text style={styles.areaTitle}>Solo questa zona sulla mappa</Text>
+                <Text style={styles.areaNote}>
+                  {onlySpecies
+                    ? `Mappa ed elenco mostrano solo ${onlySpecies.commonName} entro ${radius / 1000} km dalla tua posizione.`
+                    : areaActive
+                      ? `La mappa mostra solo le segnalazioni entro ${radius / 1000} km dalla tua posizione.`
+                      : 'Spento: la mappa mostra le segnalazioni di tutta Italia.'}
+                </Text>
+              </View>
+              <Switch
+                value={areaActive}
+                onValueChange={toggleArea}
+                disabled={!areaActive && !position}
+                accessibilityLabel="Solo questa zona sulla mappa"
+              />
+            </View>
+          )}
         </>
       }
     >
@@ -128,9 +182,13 @@ export default function NearbyPanel({ visible, speciesList, manifest, filters, o
           keyExtractor={(r) => r.species.slug}
           ListHeaderComponent={
             <Text style={styles.summary} accessibilityLiveRegion="polite">
-              {results.length
-                ? `${results.length} specie entro ${radius / 1000} km`
-                : `Nessuna segnalazione entro ${radius / 1000} km con i filtri attivi.`}
+              {onlySpecies
+                ? results.length
+                  ? `${onlySpecies.commonName} entro ${radius / 1000} km (la specie scelta in alto)`
+                  : `Nessuna segnalazione di ${onlySpecies.commonName} entro ${radius / 1000} km con i filtri attivi.`
+                : results.length
+                  ? `${results.length} specie entro ${radius / 1000} km`
+                  : `Nessuna segnalazione entro ${radius / 1000} km con i filtri attivi.`}
             </Text>
           }
           renderItem={({ item }) => (
@@ -182,6 +240,10 @@ const createStyles = (c) =>
     chipTextActive: { color: c.onPrimary, fontWeight: '600' },
     center: { alignItems: 'center', paddingVertical: 28, gap: 10 },
     status: { marginTop: 4, marginBottom: 20 },
+    areaRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 12 },
+    areaText: { flex: 1 },
+    areaTitle: { fontSize: 14, fontWeight: '600', color: c.text },
+    areaNote: { fontSize: 12, color: c.textMuted, marginTop: 2 },
     error: { fontSize: 14, color: c.warning, textAlign: 'center' },
     retry: { borderWidth: 1.5, borderColor: c.primary, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 8 },
     retryText: { color: c.primary, fontWeight: '600' },
