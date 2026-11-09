@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import Supercluster from 'supercluster';
 
 import { groupDatasets } from '../data/points';
+import { DIAGNOSTICS_ENABLED, diag, diagDuration, setDiagContext } from '../diagnostics/log';
 import { regionToBBox, regionToZoom } from '../utils/geo';
 
 // Parametri di raggruppamento:
@@ -20,6 +21,43 @@ const CLUSTER_OPTIONS = { radius: 40, extent: 256, minPoints: 2, maxZoom: CLUSTE
 // vengono già calcolati: evita che compaiano "a scatti" ai bordi durante il pan.
 const VIEWPORT_MARGIN = 0.15;
 
+/** Indice supercluster dei punti filtrati (ricostruito solo quando cambiano dati o filtri). */
+function buildIndex(datasets, filters, area) {
+  const started = Date.now();
+  const { features, count } = groupDatasets(datasets, filters, area);
+  const sc = new Supercluster({
+    ...CLUSTER_OPTIONS,
+    // il numero mostrato sui cluster è il numero di segnalazioni, non di posizioni
+    map: (props) => ({ records: props.records.length }),
+    reduce: (acc, props) => {
+      acc.records += props.records;
+    },
+  });
+  sc.load(features);
+  // registro di diagnostica (solo build di prova)
+  diag('mappa', `indice: ${count} segnalazioni in ${features.length} posizioni, ${Date.now() - started} ms`);
+  return { sc, count };
+}
+
+/** Gruppi e pallini dentro (o appena fuori) la regione visibile. */
+function clustersInRegion(index, region, zoom) {
+  const padded = {
+    ...region,
+    latitudeDelta: region.latitudeDelta * (1 + 2 * VIEWPORT_MARGIN),
+    longitudeDelta: region.longitudeDelta * (1 + 2 * VIEWPORT_MARGIN),
+  };
+  const started = Date.now();
+  const result = index.sc.getClusters(regionToBBox(padded), zoom);
+  // registro di diagnostica (solo build di prova): stato riportato accanto a un eventuale
+  // blocco dell'interfaccia, durata del raggruppamento se lenta
+  if (DIAGNOSTICS_ENABLED) {
+    const groups = result.reduce((n, f) => n + (f.properties.cluster ? 1 : 0), 0);
+    setDiagContext('mappa', `zoom ${Math.round(zoom)}, ${groups} gruppi e ${result.length - groups} pallini`);
+    diagDuration('mappa', `raggruppamento (${result.length} elementi)`, started, 50);
+  }
+  return result;
+}
+
 /**
  * Raggruppa i punti di una specie con supercluster e restituisce solo ciò che è
  * dentro (o appena fuori) lo schermo: i marker fuori vista non vengono creati.
@@ -31,33 +69,14 @@ const VIEWPORT_MARGIN = 0.15;
  */
 export function useClusters(datasets, region, filters, area = null) {
   // L'indice si ricostruisce solo quando cambiano dati o filtro, non a ogni pan/zoom.
-  const index = useMemo(() => {
-    if (!datasets?.length) return null;
-    const { features, count } = groupDatasets(datasets, filters, area);
-
-    const sc = new Supercluster({
-      ...CLUSTER_OPTIONS,
-      // il numero mostrato sui cluster è il numero di segnalazioni, non di posizioni
-      map: (props) => ({ records: props.records.length }),
-      reduce: (acc, props) => {
-        acc.records += props.records;
-      },
-    });
-    sc.load(features);
-    return { sc, count };
-  }, [datasets, filters, area]);
+  const index = useMemo(
+    () => (datasets?.length ? buildIndex(datasets, filters, area) : null),
+    [datasets, filters, area],
+  );
 
   const zoom = regionToZoom(region);
 
-  const clusters = useMemo(() => {
-    if (!index) return [];
-    const padded = {
-      ...region,
-      latitudeDelta: region.latitudeDelta * (1 + 2 * VIEWPORT_MARGIN),
-      longitudeDelta: region.longitudeDelta * (1 + 2 * VIEWPORT_MARGIN),
-    };
-    return index.sc.getClusters(regionToBBox(padded), zoom);
-  }, [index, region, zoom]);
+  const clusters = useMemo(() => (index ? clustersInRegion(index, region, zoom) : []), [index, region, zoom]);
 
   // Dipendono solo dall'indice: restano stabili durante pan/zoom (niente re-render dei marker).
   const expansionZoom = useCallback((clusterId) => index?.sc.getClusterExpansionZoom(clusterId) ?? 12, [index]);

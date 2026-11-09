@@ -1,3 +1,5 @@
+// Registro di diagnostica delle build di prova: per primo, per annotare anche gli errori all'avvio.
+import './src/diagnostics/install';
 import { registerRootComponent } from 'expo';
 
 // Definisce l'attività in background degli avvisi sulle novità: deve avvenire al caricamento,

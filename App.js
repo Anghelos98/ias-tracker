@@ -56,6 +56,7 @@ import {
   toggleFollow,
   weeksSince,
 } from './src/data/news';
+import { diag, diagDuration, diagError } from './src/diagnostics/log';
 import { disableNewsAlerts, enableNewsAlerts } from './src/notifications/newsAlerts';
 import {
   hasSeenWelcome,
@@ -324,8 +325,14 @@ function IASTracker() {
   // Permesso di geolocalizzazione: abilita il pallino blu della posizione dell'utente.
   useEffect(() => {
     Location.requestForegroundPermissionsAsync()
-      .then(({ status }) => setHasLocation(status === 'granted'))
-      .catch(() => setHasLocation(false));
+      .then(({ status }) => {
+        diag('posizione', `permesso: ${status}`);
+        setHasLocation(status === 'granted');
+      })
+      .catch((e) => {
+        diagError('posizione', e);
+        setHasLocation(false);
+      });
   }, []);
 
   /**
@@ -345,11 +352,17 @@ function IASTracker() {
         return;
       }
       setLoading(true);
+      const started = Date.now();
+      diag('specie', `${item.commonName}: caricamento`);
       // Caricamento dinamico: dati scaricati (se più recenti) o inclusi nell'app.
       loadDatasets(item, manifest, speciesList)
-        .catch(() => null)
+        .catch((e) => {
+          diagError('specie', e);
+          return null;
+        })
         .then((loaded) => {
           if (request !== loadRequest.current) return; // nel frattempo è stata scelta un'altra specie
+          diagDuration('specie', `${item.commonName}: ${loaded ? 'caricata' : 'NON caricata'}`, started);
           setDatasets(loaded);
           setLoading(false);
           if (!loaded) {
@@ -387,8 +400,9 @@ function IASTracker() {
         { latitude: coords.latitude, longitude: coords.longitude, latitudeDelta: 0.2, longitudeDelta: 0.2 },
         600,
       );
-    } catch {
+    } catch (e) {
       // GPS spento, servizi di localizzazione disattivati o nessun segnale
+      diagError('posizione', e);
       Alert.alert('Posizione non disponibile', 'Controlla che la localizzazione sia attiva e riprova.');
     }
   }, [hasLocation]);
@@ -762,6 +776,7 @@ function IASTracker() {
   else if (!species.grid) gridNote = 'ISPRA non pubblica la griglia per questa specie.';
 
   const changeFilters = useCallback((next) => {
+    diag('filtri', describeFilters(next) || 'predefiniti');
     setSelection(null);
     setFilters(next);
     saveFilters(next);
@@ -1016,6 +1031,7 @@ function IASTracker() {
         },
       });
       if (!active) return;
+      diag('dati', `controllo all'avvio: ${status}`);
       setUpdatingData(false);
       // negli altri casi il manifest è quello già salvato, appena impostato
       if (latest && (status === 'updated' || status === 'incomplete')) applyNewData(latest);
@@ -1028,6 +1044,7 @@ function IASTracker() {
   /** Aggiornamento manuale dalle Impostazioni: se arrivano dati nuovi, la mappa li mostra subito. */
   const updateNow = useCallback(async () => {
     const result = await checkForUpdates({ force: true, onDownloadStart: () => setUpdatingData(true) });
+    diag('dati', `aggiornamento manuale: ${result.status}`);
     setUpdatingData(false);
     if (result.manifest && (result.status === 'updated' || result.status === 'incomplete')) {
       applyNewData(result.manifest);
@@ -1099,6 +1116,10 @@ function IASTracker() {
         initialRegion={ITALY_REGION}
         onRegionChange={trackRegion}
         onRegionChangeComplete={handleRegionChange}
+        // registro di diagnostica: onMapReady su Android può arrivare prima che l'evento sia
+        // collegato; onMapLoaded dice se le tessere della mappa sono arrivate davvero
+        onMapReady={() => diag('mappa', 'pronta')}
+        onMapLoaded={() => diag('mappa', 'tessere caricate')}
         mapType={mapType}
         userInterfaceStyle={colors.scheme}
         loadingEnabled

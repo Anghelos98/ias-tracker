@@ -8,6 +8,9 @@
       "environment": "preview",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_DIAGNOSTICS": "1"
       }
     },
     "production": {

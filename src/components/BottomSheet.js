@@ -19,6 +19,7 @@ import {
 } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { diag } from '../diagnostics/log';
 import { useThemedStyles } from '../theme';
 
 // Pannello che sale dal basso (elenco specie, Filtri, Vicino a me).
@@ -76,11 +77,29 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
+  // Registro di diagnostica (solo build di prova): apertura, chiusura e come è stata chiesta.
+  const name = closeLabel ?? 'pannello';
+  const nameRef = useRef(name);
+  useEffect(() => {
+    nameRef.current = name;
+  }, [name]);
+  const requestClose = useCallback((how) => {
+    diag('pannello', `${nameRef.current}: chiusura con ${how}`);
+    onCloseRef.current?.();
+  }, []);
+  useEffect(() => {
+    if (visible) diag('pannello', `${nameRef.current}: apertura`);
+  }, [visible]);
 
   // Apertura: la Modal compare e il pannello sale. Chiusura (visible = false, da qualunque
   // parte arrivi): il pannello scende dal punto in cui si trova, poi la Modal sparisce.
+  const mountedRef = useRef(mounted);
+  useEffect(() => {
+    mountedRef.current = mounted;
+  }, [mounted]);
   useEffect(() => {
     if (visible) return undefined;
+    const wasOpen = mountedRef.current; // per il registro: non all'avvio, quando è già chiuso
     const animation = Animated.timing(translateY, {
       toValue: offscreen,
       duration: CLOSE_MS,
@@ -89,6 +108,7 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
     });
     animation.start(({ finished }) => {
       if (finished) setMounted(false); // non se nel frattempo è stato riaperto
+      if (wasOpen) diag('pannello', `${nameRef.current}: ${finished ? 'chiuso' : 'animazione di chiusura interrotta'}`);
     });
     return () => animation.stop();
   }, [visible, offscreen, translateY]);
@@ -129,10 +149,17 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
     (e) => {
       if (!dragRef.current) return;
       dragRef.current = false;
-      if (!e.canceled && (e.translationY > CLOSE_DISTANCE || e.velocityY > CLOSE_VELOCITY)) onCloseRef.current?.();
-      else snapBack();
+      if (!e.canceled && (e.translationY > CLOSE_DISTANCE || e.velocityY > CLOSE_VELOCITY)) {
+        requestClose('trascinamento');
+      } else {
+        diag(
+          'pannello',
+          `${nameRef.current}: trascinato di ${Math.round(e.translationY)} px${e.canceled ? ' (gesto annullato)' : ''}, torna su`,
+        );
+        snapBack();
+      }
     },
-    [snapBack],
+    [snapBack, requestClose],
   );
 
   const startFromHeader = useCallback(() => startDrag(false), [startDrag]);
@@ -177,7 +204,13 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
   );
 
   return (
-    <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+    <Modal
+      visible={mounted}
+      transparent
+      animationType="none"
+      onRequestClose={() => requestClose('tasto Indietro')}
+      statusBarTranslucent
+    >
       {/* iOS: con la tastiera aperta il pannello sale sopra di essa (prima, con pochi risultati
           nella ricerca, si abbassava e finiva dietro la tastiera) e si accorcia se serve */}
       {/* i gesti nativi dentro una Modal richiedono una propria radice */}
@@ -189,7 +222,7 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
           <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} pointerEvents="none" />
           <Pressable
             style={StyleSheet.absoluteFill}
-            onPress={onClose}
+            onPress={() => requestClose('tocco sullo sfondo')}
             accessibilityRole="button"
             accessibilityLabel={closeLabel}
           />

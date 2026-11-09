@@ -2,6 +2,7 @@ import { Component, Fragment, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { clearDownloadedData } from '../data/remote';
+import { diagError } from '../diagnostics/log';
 import { useThemedStyles } from '../theme';
 
 /**
@@ -19,6 +20,12 @@ export default class ErrorBoundary extends Component {
 
   static getDerivedStateFromError(error) {
     return { error };
+  }
+
+  componentDidCatch(error, info) {
+    // registro di diagnostica (solo build di prova): errore e punto della schermata
+    const where = (info?.componentStack ?? '').trim().split('\n').slice(0, 6).join('\n');
+    diagError('schermata', `${error?.name ?? 'Errore'}: ${error?.message ?? error}${where ? `\n${where}` : ''}`);
   }
 
   retry = () => this.setState((s) => ({ error: null, attempt: s.attempt + 1 }));

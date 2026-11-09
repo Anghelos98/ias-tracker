@@ -3,6 +3,7 @@ import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Switch, Text,
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useSheetTopInset from '../hooks/useSheetTopInset';
 
+import { DIAGNOSTICS_ENABLED, clearDiagnostics, diagnosticsCount, shareDiagnostics } from '../diagnostics/log';
 import StatusPill from './StatusPill';
 import { REPO_URL, PRIVACY_URL } from './WelcomeScreen';
 import { SIGNATURE_MAX } from '../data/preferences';
@@ -257,6 +258,9 @@ export default function SettingsScreen({
           />
         </Section>
 
+        {/* Diagnostica: solo nelle build di prova (beta, RC) */}
+        {DIAGNOSTICS_ENABLED && <DiagnosticsSection styles={styles} />}
+
         {/* Informazioni */}
         <Section title="Informazioni" styles={styles}>
           <LinkRow label="Presentazione dell’app" onPress={onOpenWelcome} styles={styles} />
@@ -266,6 +270,60 @@ export default function SettingsScreen({
         </Section>
       </ScrollView>
     </Modal>
+  );
+}
+
+/**
+ * Registro di diagnostica (vedi src/diagnostics/log.js): presente solo nelle build di prova.
+ * Il registro resta sul telefono finché l'utente non lo condivide.
+ */
+function DiagnosticsSection({ styles }) {
+  // la Modal monta il contenuto a ogni apertura delle Impostazioni: il conteggio è sempre fresco
+  const [count, setCount] = useState(diagnosticsCount);
+  const [message, setMessage] = useState(null);
+
+  const share = async () => {
+    try {
+      await shareDiagnostics();
+    } catch {
+      setMessage('Non è stato possibile condividere il registro.');
+    }
+  };
+  const confirmClear = () =>
+    Alert.alert('Cancellare il registro?', 'Gli eventi annotati finora vengono eliminati dal telefono.', [
+      { text: 'Annulla', style: 'cancel' },
+      {
+        text: 'Cancella',
+        style: 'destructive',
+        onPress: () => {
+          clearDiagnostics();
+          setCount(diagnosticsCount());
+          setMessage('Registro cancellato.');
+        },
+      },
+    ]);
+
+  return (
+    <Section title="Diagnostica (versione di prova)" styles={styles}>
+      <Text style={styles.rowTitle}>Registro degli eventi</Text>
+      <Text style={styles.description}>
+        Questa versione di prova annota errori, rallentamenti e le azioni principali (senza posizioni, note o
+        foto). Il registro resta sul telefono: condividilo per segnalare un problema.
+      </Text>
+      <Text style={styles.meta}>{count === 1 ? '1 evento annotato' : `${count} eventi annotati`}</Text>
+      <Pressable style={styles.button} onPress={share} accessibilityRole="button">
+        <Text style={styles.buttonText}>Condividi registro</Text>
+      </Pressable>
+      {message && (
+        <Text style={styles.result} accessibilityLiveRegion="polite">
+          {message}
+        </Text>
+      )}
+      <Divider styles={styles} />
+      <Pressable onPress={confirmClear} accessibilityRole="button">
+        <Text style={styles.destructive}>Cancella registro</Text>
+      </Pressable>
+    </Section>
   );
 }
 
