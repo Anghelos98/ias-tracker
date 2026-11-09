@@ -24,6 +24,9 @@
       "blockedPermissions": [
         "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.READ_EXTERNAL_STORAGE"
+      ],
+      "permissions": [
+        "android.permission.ACCESS_MEDIA_LOCATION"
       ]
     },
     "web": {

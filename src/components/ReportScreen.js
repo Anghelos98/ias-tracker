@@ -19,13 +19,14 @@ import { PEC_NOTE, REGIONAL_OFFICES, locateRegion, officeAddress } from '../data
 import { REPORT_EMAIL } from '../data/legal';
 import { REGIONS } from '../data/regions';
 import { SPECIES } from '../data/species';
+import { diag } from '../diagnostics/log';
 import { gpsFromExif } from '../reports/format';
 import { INTERVENTIONS, NOTE_MAX } from '../reports/notebook';
 import { alertDraft, isRecorded, sendByEmail, shareReport } from '../reports/send';
 import { addReport, newReportId, persistPhotos } from '../reports/storage';
 import { useColors, useThemedStyles } from '../theme';
 import { photoWithoutMetadata } from '../utils/cleanPhoto';
-import { readGpsPosition } from '../utils/location';
+import { allowPhotoLocation, readGpsPosition } from '../utils/location';
 
 // Confini delle regioni (~100 KB), letti solo quando serve la prima volta (posizione nota):
 // all'avvio dell'app non servono.
@@ -86,6 +87,8 @@ export default function ReportScreen({
   const [locating, setLocating] = useState(true);
   const [locationError, setLocationError] = useState(null);
   const [photos, setPhotos] = useState([]); // { uri, gps, source }
+  // Ultima foto dalla galleria senza posizione: { permissionDenied } (avviso sotto le foto)
+  const [missingPhotoLocation, setMissingPhotoLocation] = useState(null);
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
   const isIntervention = kind === 'intervento';
@@ -140,6 +143,9 @@ export default function ReportScreen({
       }
       // Qualità piena: la foto viene compressa una sola volta, quando si tolgono i metadati.
       const options = { mediaTypes: ['images'], quality: 1, exif: true };
+      // Android: dalla galleria la posizione della foto arriva solo con il permesso apposito
+      const permission = fromCamera ? null : await allowPhotoLocation();
+      if (permission) diag('foto', `permesso posizione delle foto: ${permission}`);
       const result = fromCamera
         ? await ImagePicker.launchCameraAsync(options)
         : await ImagePicker.launchImageLibraryAsync(options);
@@ -149,6 +155,13 @@ export default function ReportScreen({
       // La posizione si legge dai metadati restituiti dal selettore; la foto salvata e inviata è
       // una copia senza metadati (vedi utils/cleanPhoto.js).
       const gps = gpsFromExif(asset.exif);
+      // registro di diagnostica (solo build di prova): solo se c'è, mai la posizione
+      diag('foto', `${fromCamera ? 'fotocamera' : 'galleria'}: posizione della foto ${gps ? 'presente' : 'assente'}`);
+      // solo dalla galleria: con la fotocamera si è sul posto e il GPS dà già la posizione giusta
+      // (e su iPhone la fotocamera dell'app non salva mai il luogo nella foto)
+      setMissingPhotoLocation(
+        gps || fromCamera ? null : { permissionDenied: permission === 'denied' || permission === 'never_ask_again' },
+      );
       let uri;
       try {
         uri = await photoWithoutMetadata(asset.uri);
@@ -475,12 +488,23 @@ export default function ReportScreen({
             ))}
           </View>
           {photos.length > 0 && <Text style={styles.small}>Tieni premuta una foto per rimuoverla.</Text>}
+          {photos.length > 0 && missingPhotoLocation && (
+            <Text style={[styles.hint, styles.hintNeutral, styles.photoHint]} accessibilityLiveRegion="polite">
+              {photoLocationHint(missingPhotoLocation)}
+            </Text>
+          )}
           {photos.length < MAX_PHOTOS && (
             <View style={styles.row}>
               <SmallButton label="Scatta foto" onPress={() => addPhoto(true)} styles={styles} />
               <SmallButton label="Dalla galleria" onPress={() => addPhoto(false)} styles={styles} />
             </View>
           )}
+          <Text style={styles.small}>
+            Dalla galleria: se la foto contiene il luogo dello scatto, l’app può proporlo come posizione della
+            segnalazione. Serve che la fotocamera del telefono salvi la posizione (impostazione «posizione» o
+            «tag di localizzazione») e che la foto non sia passata da app che la tolgono, come WhatsApp,
+            Telegram o alcune gallerie.
+          </Text>
           <Text style={styles.small}>
             {isIntervention
               ? 'Consiglio: una foto prima e una dopo l’intervento.'
@@ -623,6 +647,22 @@ function SmallButton({ label, onPress, disabled, styles }) {
   );
 }
 
+/** Perché la foto appena aggiunta non ha una posizione da proporre (testo dell'avviso). */
+function photoLocationHint({ permissionDenied }) {
+  if (permissionDenied) {
+    return (
+      'Questa foto non contiene la posizione: l’app non ha il permesso di leggere la posizione delle foto. ' +
+      'Puoi concederlo dalle impostazioni del telefono (App → IAS Tracker → Autorizzazioni). ' +
+      'La foto resta allegata; per la segnalazione si usa la posizione GPS.'
+    );
+  }
+  return (
+    'Questa foto non contiene la posizione. Succede se la fotocamera non salvava il luogo dello scatto o se ' +
+    'la foto è passata da un’app che lo toglie (WhatsApp, Telegram, alcune gallerie). ' +
+    'Per la segnalazione si usa la posizione GPS.'
+  );
+}
+
 const createStyles = (c) =>
   StyleSheet.create({
     header: {
@@ -699,6 +739,7 @@ const createStyles = (c) =>
     hint: { fontSize: 13, lineHeight: 19, padding: 10, borderRadius: 10, marginBottom: 12 },
     hintImportant: { backgroundColor: c.hintImportantBg, color: c.hintImportantText },
     hintNeutral: { backgroundColor: c.surfaceAlt, color: c.textSecondary },
+    photoHint: { marginTop: 8, marginBottom: 4 },
     primary: { backgroundColor: c.primaryFill, borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
     primaryText: { color: c.onPrimary, fontSize: 16, fontWeight: '700' },
     primarySub: { color: c.onPrimarySoft, fontSize: 12, marginTop: 2 },
