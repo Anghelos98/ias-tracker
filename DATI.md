@@ -18,7 +18,7 @@ nazionali), che ne sceglie la licenza:
 | CC BY     | qualsiasi uso, **con attribuzione** della fonte      |
 | CC BY-NC  | solo uso **non commerciale**, con attribuzione       |
 
-IAS Tracker è gratuita, senza pubblicità e open source: l'uso è non commerciale.
+AlienHub è gratuita, senza pubblicità e open source: l'uso è non commerciale.
 Chi riusa questi dati in altri progetti deve verificare la licenza di ciascun dataset.
 
 Per citare i dati: *GBIF.org, occurrence search, consultato il <data>*, più i dataset di

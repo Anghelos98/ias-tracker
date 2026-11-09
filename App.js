@@ -181,13 +181,13 @@ export default function App() {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
-        <IASTracker />
+        <AlienHubApp />
       </SafeAreaProvider>
     </ErrorBoundary>
   );
 }
 
-function IASTracker() {
+function AlienHubApp() {
   const insets = useSafeAreaInsets();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
@@ -912,7 +912,7 @@ function IASTracker() {
       } else {
         Alert.alert(
           'Notifiche non consentite',
-          'Per ricevere gli avvisi consenti le notifiche a IAS Tracker nelle impostazioni del telefono.',
+          'Per ricevere gli avvisi consenti le notifiche ad AlienHub nelle impostazioni del telefono.',
         );
       }
     } catch {
@@ -1213,7 +1213,7 @@ function IASTracker() {
           }
           accessibilityHint="Apre l'elenco delle specie"
         >
-          <Text style={styles.appName}>IAS Tracker</Text>
+          <Text style={styles.appName}>AlienHub</Text>
           <Text style={styles.speciesName} numberOfLines={1}>
             {topSpecies ? topSpecies.commonName : 'Scegli una specie'}
           </Text>

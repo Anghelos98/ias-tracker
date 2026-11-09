@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""IAS Tracker - sincronizza da GBIF le segnalazioni in Italia delle specie IAS.
+"""AlienHub - sincronizza da GBIF le segnalazioni in Italia delle specie IAS.
 
 Uso:
     python sync_ias_data.py --all                     # tutte le specie di ias_reference.json
@@ -62,7 +62,7 @@ class GBIFClient:
     def __init__(self, timeout: tuple[float, float] = (10.0, 30.0)) -> None:
         self.timeout = timeout
         self.session = requests.Session()
-        self.session.headers["User-Agent"] = "IAS-Tracker/1.0 (python-requests)"
+        self.session.headers["User-Agent"] = "AlienHub/1.0 (python-requests)"
         retry = Retry(
             total=5,
             backoff_factor=1.0,
@@ -356,7 +356,7 @@ def write_index(entries: list[dict[str, Any]]) -> None:
     existing.update({e["slug"]: e for e in entries})
     species = sorted(existing.values(), key=lambda s: s["nome_scientifico"])
     index = {
-        "app": "IAS Tracker",
+        "app": "AlienHub",
         "descrizione": "Segnalazioni in Italia delle specie vegetali esotiche invasive di rilevanza unionale",
         "fonte": "GBIF.org - Global Biodiversity Information Facility",
         "licenza_nota": "I record GBIF hanno licenze CC0 / CC BY / CC BY-NC a seconda del dataset: citare GBIF.org",

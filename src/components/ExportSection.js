@@ -37,7 +37,7 @@ export default function ExportSection({ datasets, filters, region, area = null, 
     setBusy(true);
     try {
       const content = formatExport(format, rows, {
-        title: `IAS Tracker – ${title}`,
+        title: `AlienHub – ${title}`,
         meta: {
           specie: title,
           filtri: filters,

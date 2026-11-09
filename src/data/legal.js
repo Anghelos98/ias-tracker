@@ -59,7 +59,7 @@ export const POSSESSION_DEADLINES = { '2025/1422': '2026-01-13' };
 export const WHAT_TO_DO = [
   'Non raccogliere, trapiantare o spostare la pianta: anche il trasporto è vietato, e frammenti di radici, fusti o semi possono originare nuove piante.',
   'Annota il luogo (o usa la posizione del telefono) e scatta qualche foto della pianta e dei suoi dettagli.',
-  `Segnala il ritrovamento al Ministero dell’Ambiente (${REPORT_EMAIL}) o alla tua Regione, oppure registralo su iNaturalist: le osservazioni verificate confluiscono in GBIF e quindi anche in IAS Tracker.`,
+  `Segnala il ritrovamento al Ministero dell’Ambiente (${REPORT_EMAIL}) o alla tua Regione, oppure registralo su iNaturalist: le osservazioni verificate confluiscono in GBIF e quindi anche in AlienHub.`,
   'Se hai la pianta in giardino, in vaso o in acquario, informati presso il Ministero o la Regione su come comportarti: detenerla e coltivarla è vietato.',
 ];
 

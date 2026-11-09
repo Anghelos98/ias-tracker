@@ -126,6 +126,6 @@ test('attivo: condivisione di una copia con il riepilogo del telefono', async ()
     expect.objectContaining({ mimeType: 'text/plain' }),
   );
   const copy = [...mockFiles.entries()].find(([uri]) => uri.startsWith('cache/'))[1];
-  expect(copy).toMatch(/^IAS Tracker 1\.0\.0 · /);
+  expect(copy).toMatch(/^AlienHub 1\.0\.0 · /);
   expect(copy).toMatch(/\[mappa\] pronta/);
 });

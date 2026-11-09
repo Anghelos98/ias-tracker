@@ -1,4 +1,4 @@
-# Aggiorna i dati di IAS Tracker e li pubblica su GitHub Pages.
+# Aggiorna i dati di AlienHub e li pubblica su GitHub Pages.
 #
 # Ogni lunedì scarica le segnalazioni da GBIF, le schede da ISPRA e le foto da iNaturalist
 # (solo CC0 e CC BY), prepara i file per

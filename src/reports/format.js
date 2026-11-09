@@ -40,7 +40,7 @@ export function reportBody(report) {
   lines.push(
     `Foto: ${report.photos.length ? `${report.photos.length} allegate` : 'nessuna'}`,
     '',
-    'Inviata con IAS Tracker, app gratuita e open source.',
+    'Inviata con AlienHub, app gratuita e open source.',
   );
   return lines.join('\n');
 }

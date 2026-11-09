@@ -153,7 +153,7 @@ export function formatNotebook(format, entries) {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<kml xmlns="http://www.opengis.net/kml/2.2">',
     '<Document>',
-    '  <name>IAS Tracker – taccuino di campo</name>',
+    '  <name>AlienHub – taccuino di campo</name>',
     ...placemarks,
     '</Document>',
     '</kml>',

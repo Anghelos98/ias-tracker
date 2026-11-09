@@ -107,12 +107,12 @@ def index_page(manifest: dict) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IAS Tracker – dati</title>
+<title>AlienHub – dati</title>
 <style>body{{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;line-height:1.5;color:#1b1b1b}}a{{color:#2e7d32}}code{{background:#f1f3f4;padding:1px 4px;border-radius:4px}}</style>
 </head>
 <body>
-<h1>IAS Tracker – dati</h1>
-<p>Dati usati dall'app <a href="https://github.com/Anghelos98/ias-tracker">IAS Tracker</a>,
+<h1>AlienHub – dati</h1>
+<p>Dati usati dall'app <a href="https://github.com/Anghelos98/ias-tracker">AlienHub</a>,
 gratuita e open source: segnalazioni in Italia delle piante esotiche invasive di rilevanza unionale.</p>
 <p><strong>{total}</strong> segnalazioni, dati GBIF aggiornati al <strong>{date}</strong>.
 Indice dei file: <a href="data/v{SCHEMA}/manifest.json"><code>data/v{SCHEMA}/manifest.json</code></a>.</p>

@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SHEETS_DIR = ROOT / "assets" / "data" / "sheets"
 OUT_DIR = ROOT / "assets" / "data" / "grid"
 
-HEADERS = {"User-Agent": "IAS-Tracker/1.0 (https://github.com/Anghelos98/ias-tracker)"}
+HEADERS = {"User-Agent": "AlienHub/1.0 (https://github.com/Anghelos98/ias-tracker)"}
 REQUEST_DELAY_S = 1.0
 SEGMENT_M = 10_000  # i lati lunghi vengono suddivisi ogni 10 km prima della conversione
 DECIMALS = 5        # ~1 m

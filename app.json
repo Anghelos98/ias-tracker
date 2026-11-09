@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "IAS Tracker",
+    "name": "AlienHub",
     "slug": "ias-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -36,18 +36,18 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "IAS Tracker usa la tua posizione per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni.",
-          "locationAlwaysAndWhenInUsePermission": "IAS Tracker usa la tua posizione solo mentre l’app è aperta, per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni. Non la usa in background.",
-          "locationAlwaysPermission": "IAS Tracker usa la tua posizione solo mentre l’app è aperta, per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni. Non la usa in background.",
-          "locationFullAccuracyPermission": "IAS Tracker chiede la posizione precisa per registrare le coordinate esatte delle tue segnalazioni.",
+          "locationWhenInUsePermission": "AlienHub usa la tua posizione per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni.",
+          "locationAlwaysAndWhenInUsePermission": "AlienHub usa la tua posizione solo mentre l’app è aperta, per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni. Non la usa in background.",
+          "locationAlwaysPermission": "AlienHub usa la tua posizione solo mentre l’app è aperta, per mostrarti sulla mappa e per registrare le coordinate delle tue segnalazioni. Non la usa in background.",
+          "locationFullAccuracyPermission": "AlienHub chiede la posizione precisa per registrare le coordinate esatte delle tue segnalazioni.",
           "motionUsagePermission": false
         }
       ],
       [
         "expo-image-picker",
         {
-          "cameraPermission": "IAS Tracker usa la fotocamera per fotografare le piante che vuoi segnalare.",
-          "photosPermission": "IAS Tracker accede alle foto per allegarle alle tue segnalazioni.",
+          "cameraPermission": "AlienHub usa la fotocamera per fotografare le piante che vuoi segnalare.",
+          "photosPermission": "AlienHub accede alle foto per allegarle alle tue segnalazioni.",
           "microphonePermission": false
         }
       ],

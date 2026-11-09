@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepara i dati per l'app IAS Tracker a partire dall'output di sync_ias_data.py.
+"""Prepara i dati per l'app AlienHub a partire dall'output di sync_ias_data.py.
 
 Legge:   data/index.json, data/species/<slug>.geojson
 Scrive:  assets/data/species/<slug>.json   punti in formato compatto

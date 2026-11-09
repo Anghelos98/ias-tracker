@@ -9,9 +9,9 @@ export const PRIVACY_URL = 'https://anghelos98.github.io/ias-tracker/privacy.htm
 
 const PAGES = [
   {
-    title: 'Benvenuto in IAS Tracker',
+    title: 'Benvenuto in AlienHub',
     paragraphs: [
-      'IAS Tracker mostra dove sono state segnalate in Italia le 49 piante esotiche invasive di rilevanza unionale: specie arrivate da altri continenti che si diffondono a danno degli ambienti naturali, dell’agricoltura e talvolta della salute.',
+      'AlienHub mostra dove sono state segnalate in Italia le 49 piante esotiche invasive di rilevanza unionale: specie arrivate da altri continenti che si diffondono a danno degli ambienti naturali, dell’agricoltura e talvolta della salute.',
       'Per queste specie il Regolamento UE 1143/2014 e il D.Lgs. 230/2017 vietano di coltivarle, venderle, trasportarle e rilasciarle nell’ambiente.',
       'L’app è gratuita, senza pubblicità e open source.',
     ],
@@ -72,7 +72,7 @@ export default function WelcomeScreen({ visible, onDone }) {
     <Modal visible={visible} animationType="fade" onRequestClose={finish}>
       <View style={[styles.container, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]}>
         <View style={[styles.topRow, styles.padded]}>
-          <Text style={styles.brand}>IAS Tracker</Text>
+          <Text style={styles.brand}>AlienHub</Text>
           {!last && (
             <Pressable
               onPress={finish}

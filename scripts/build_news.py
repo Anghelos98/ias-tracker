@@ -227,7 +227,7 @@ def main() -> int:
     local_weeks = json.loads(OUT.read_text(encoding="utf-8"))["settimane"] if OUT.exists() else []
 
     session = requests.Session()
-    session.headers["User-Agent"] = "IAS-Tracker-data-pipeline (https://github.com/Anghelos98/ias-tracker)"
+    session.headers["User-Agent"] = "AlienHub-data-pipeline (https://github.com/Anghelos98/ias-tracker)"
     try:
         manifest = fetch_json(session, f"{DATA_BASE_URL}/manifest.json")
         old_weeks = local_weeks

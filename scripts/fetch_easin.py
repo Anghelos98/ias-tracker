@@ -32,7 +32,7 @@ OUTPUT = ROOT / "assets" / "data" / "easin.json"
 
 API = "https://easin.jrc.ec.europa.eu/apixg/catxg"
 FACTSHEET = "https://easin.jrc.ec.europa.eu/spexplorer/species/factsheet/{}"
-HEADERS = {"User-Agent": "IAS-Tracker/1.0 (https://github.com/Anghelos98/ias-tracker)"}
+HEADERS = {"User-Agent": "AlienHub/1.0 (https://github.com/Anghelos98/ias-tracker)"}
 REQUEST_DELAY_S = 1.0
 
 PATHWAY_CATEGORIES = {

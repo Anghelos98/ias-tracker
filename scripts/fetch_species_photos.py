@@ -28,7 +28,7 @@ REFERENCE = ROOT / "ias_reference.json"
 OUTPUT = ROOT / "assets" / "data" / "photos.json"
 
 API = "https://api.inaturalist.org/v1"
-HEADERS = {"User-Agent": "IAS-Tracker/1.0 (https://github.com/Anghelos98/ias-tracker)"}
+HEADERS = {"User-Agent": "AlienHub/1.0 (https://github.com/Anghelos98/ias-tracker)"}
 REQUEST_DELAY_S = 1.0  # iNaturalist chiede al massimo ~1 richiesta al secondo
 PHOTOS_PER_SPECIES = 4
 ALLOWED_LICENSES = {"cc0": "CC0", "cc-by": "CC BY"}

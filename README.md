@@ -1,11 +1,13 @@
-# IAS Tracker
+# AlienHub
+
+_Nome precedente: IAS Tracker._
 
 App mobile gratuita e open source che mostra su mappa le segnalazioni in Italia delle
 **piante esotiche invasive di rilevanza unionale** (Regolamento UE 1143/2014 e
 aggiornamenti fino al Reg. di esecuzione UE 2025/1422).
 
 Le segnalazioni provengono da [GBIF](https://www.gbif.org), che riunisce i dati di
-iNaturalist, Pl@ntNet, Wikiplantbase, erbari e altre banche dati: IAS Tracker le mette
+iNaturalist, Pl@ntNet, Wikiplantbase, erbari e altre banche dati: AlienHub le mette
 insieme in un'unica mappa, per l'Italia e in italiano.
 
 Pensata sia per il pubblico (escursionisti, appassionati, chi ha un giardino) sia per i

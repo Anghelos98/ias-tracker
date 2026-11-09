@@ -188,7 +188,7 @@ export async function shareDiagnostics() {
   await Sharing.shareAsync(copy.uri, { mimeType: 'text/plain', UTI: 'public.plain-text', dialogTitle: name });
 }
 
-/** "IAS Tracker 1.0.0 · Android 14 (API 34) · Google Pixel 8 · build". Nessun dato personale. */
+/** "AlienHub 1.0.0 · Android 14 (API 34) · Google Pixel 8 · build". Nessun dato personale. */
 export function deviceSummary() {
   const version = Constants.expoConfig?.version ?? '?';
   const env = Constants.executionEnvironment;
@@ -202,7 +202,7 @@ export function deviceSummary() {
   } else {
     system = `${c.systemName ?? 'iOS'} ${c.osVersion ?? Platform.Version}`;
   }
-  return `IAS Tracker ${version} · ${system} · ${where}${__DEV__ ? ' (sviluppo)' : ''}`;
+  return `AlienHub ${version} · ${system} · ${where}${__DEV__ ? ' (sviluppo)' : ''}`;
 }
 
 function contextSummary() {

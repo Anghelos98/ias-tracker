@@ -81,7 +81,7 @@ export function regionReportHtml(report, { regionName, dataDate, filtersText = n
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IAS Tracker – ${esc(regionName)}</title>
+<title>AlienHub – ${esc(regionName)}</title>
 <style>
 @page { margin: 36px 40px; }
 body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #1b1b1b; font-size: 11px; line-height: 1.45; margin: 0; }
@@ -104,7 +104,7 @@ th.n { text-align: right; }
 </head>
 <body>
 <h1>Specie vegetali esotiche invasive – ${esc(regionName)}</h1>
-<p class="sub">Rapporto generato con IAS Tracker il ${esc(dateIt(now.toISOString()))}. Dati GBIF aggiornati al ${esc(dateIt(dataDate))}.${
+<p class="sub">Rapporto generato con AlienHub il ${esc(dateIt(now.toISOString()))}. Dati GBIF aggiornati al ${esc(dateIt(dataDate))}.${
     filtersText ? ` Filtri applicati: ${esc(filtersText)}.` : ''
   }</p>
 <div class="kpi">
@@ -125,12 +125,12 @@ ${
     : '<p>Nessuna segnalazione con i filtri attivi.</p>'
 }
 <h2>Fonti e note</h2>
-<p class="foot">Segnalazioni: GBIF.org, consultato tramite IAS Tracker. Ogni segnalazione mantiene la licenza del
+<p class="foot">Segnalazioni: GBIF.org, consultato tramite AlienHub. Ogni segnalazione mantiene la licenza del
 dataset di origine (CC0, CC BY o CC BY-NC); citare GBIF.org e i dataset. Regione di ogni segnalazione calcolata
 con i confini ISTAT (CC BY 4.0). Elenco delle specie: Regolamento (UE) 1143/2014 e regolamenti di esecuzione
 successivi, fino al Reg. (UE) 2025/1422. Il numero di segnalazioni dipende da quanto una zona è stata esplorata
 e non misura da solo la diffusione di una specie; l’assenza di segnalazioni non prova l’assenza della specie.</p>
-<p class="foot">IAS Tracker è un’app gratuita e open source: https://github.com/Anghelos98/ias-tracker</p>
+<p class="foot">AlienHub è un’app gratuita e open source: https://github.com/Anghelos98/ias-tracker</p>
 </body>
 </html>
 `;

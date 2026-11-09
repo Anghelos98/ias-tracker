@@ -44,7 +44,7 @@
     "jest-expo": "~58.0.14"
   },
   "license": "MIT",
-  "description": "IAS Tracker: mappa delle segnalazioni in Italia delle piante esotiche invasive di rilevanza unionale",
+  "description": "AlienHub: mappa delle segnalazioni in Italia delle piante esotiche invasive di rilevanza unionale",
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [

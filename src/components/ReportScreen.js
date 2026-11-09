@@ -652,7 +652,7 @@ function photoLocationHint({ permissionDenied }) {
   if (permissionDenied) {
     return (
       'Questa foto non contiene la posizione: l’app non ha il permesso di leggere la posizione delle foto. ' +
-      'Puoi concederlo dalle impostazioni del telefono (App → IAS Tracker → Autorizzazioni). ' +
+      'Puoi concederlo dalle impostazioni del telefono (App → AlienHub → Autorizzazioni). ' +
       'La foto resta allegata; per la segnalazione si usa la posizione GPS.'
     );
   }

@@ -38,7 +38,7 @@ LIST_URL = f"{BASE}/specie-di-rilevanza-unionale/specie-di-rilevanza-unionale-2"
 LICENSE = "CC BY 4.0"
 ATTRIBUTION = "ISPRA – specieinvasive.isprambiente.it"
 REQUEST_DELAY_S = 1.0
-HEADERS = {"User-Agent": "IAS-Tracker/1.0 (app open source; scarica le schede una tantum)"}
+HEADERS = {"User-Agent": "AlienHub/1.0 (app open source; scarica le schede una tantum)"}
 MAX_PAGE_BYTES = 5 * 1024 * 1024  # le pagine ISPRA pesano ~100 KB
 
 

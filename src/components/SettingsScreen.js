@@ -266,7 +266,7 @@ export default function SettingsScreen({
           <LinkRow label="Presentazione dell’app" onPress={onOpenWelcome} styles={styles} />
           <LinkRow label="Informativa sulla privacy ↗" onPress={() => Linking.openURL(PRIVACY_URL).catch(() => {})} styles={styles} />
           <LinkRow label="Codice sorgente su GitHub ↗" onPress={() => Linking.openURL(REPO_URL).catch(() => {})} styles={styles} />
-          <Text style={styles.meta}>IAS Tracker {APP_VERSION} · gratuita e open source (licenza MIT)</Text>
+          <Text style={styles.meta}>AlienHub {APP_VERSION} · gratuita e open source (licenza MIT)</Text>
         </Section>
       </ScrollView>
     </Modal>

@@ -21,7 +21,7 @@ export const EXPORT_FORMATS = {
 };
 
 export const ATTRIBUTION =
-  'Dati: GBIF.org (consultato tramite IAS Tracker). Ogni segnalazione mantiene la licenza del dataset ' +
+  'Dati: GBIF.org (consultato tramite AlienHub). Ogni segnalazione mantiene la licenza del dataset ' +
   'di origine (colonna "licenza"): CC0, CC BY o CC BY-NC (solo uso non commerciale). Citare GBIF.org e il dataset.';
 
 /**
@@ -97,7 +97,7 @@ export function toGeoJSON(rows, meta = {}) {
   );
 }
 
-export function toKML(rows, title = 'IAS Tracker') {
+export function toKML(rows, title = 'AlienHub') {
   const placemarks = rows.map((r) => {
     const details = [
       r.data ? `Data: ${r.data}` : `Anno: ${r.anno ?? 'non indicato'}`,
