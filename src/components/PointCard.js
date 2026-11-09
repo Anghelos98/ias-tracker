@@ -22,9 +22,12 @@ export default function PointCard({ points, coordinate, onClose, onOpenSheet, on
         <Text style={styles.title} numberOfLines={1} accessibilityRole="header" accessibilityLiveRegion="polite">
           {species ? species.commonName : `${speciesHere.length} specie in questo punto`}
         </Text>
+        {/* pulsante tondo ben visibile, con un'area di tocco che non arriva alla riga sotto:
+            il collegamento alla scheda della specie sta a sinistra, lontano dalla X */}
         <Pressable
           onPress={onClose}
-          hitSlop={12}
+          hitSlop={{ top: 10, right: 10, bottom: 2, left: 10 }}
+          style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
           accessibilityRole="button"
           accessibilityLabel="Chiudi scheda della segnalazione"
         >
@@ -37,7 +40,12 @@ export default function PointCard({ points, coordinate, onClose, onOpenSheet, on
         <View style={styles.subheader}>
           <Text style={styles.scientific}>{species.scientificName}</Text>
           {onOpenSheet && (
-            <Pressable onPress={() => onOpenSheet(species.slug)} hitSlop={8} accessibilityRole="button">
+            <Pressable
+              onPress={() => onOpenSheet(species.slug)}
+              hitSlop={{ top: 4, right: 8, bottom: 8, left: 8 }}
+              style={styles.sheetLinkButton}
+              accessibilityRole="button"
+            >
               <Text style={styles.sheetLink}>Scheda della specie ›</Text>
             </Pressable>
           )}
@@ -186,10 +194,22 @@ const createStyles = (c) =>
     },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     title: { flex: 1, fontSize: 16, fontWeight: '600', color: c.text },
-    close: { fontSize: 18, color: c.textMuted, paddingLeft: 12 },
-    subheader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-    scientific: { flex: 1, fontSize: 13, fontStyle: 'italic', color: c.textSecondary },
-    sheetLink: { fontSize: 13, color: c.link, fontWeight: '600', paddingLeft: 8 },
+    closeButton: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+      marginLeft: 12,
+      backgroundColor: c.surfaceAlt,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    closeButtonPressed: { backgroundColor: c.border },
+    close: { fontSize: 16, color: c.textSecondary },
+    // nome scientifico e, sotto a sinistra, il collegamento alla scheda (lontano dalla X)
+    subheader: { marginBottom: 8 },
+    scientific: { fontSize: 13, fontStyle: 'italic', color: c.textSecondary },
+    sheetLinkButton: { alignSelf: 'flex-start', marginTop: 4 },
+    sheetLink: { fontSize: 14, color: c.link, fontWeight: '600' },
     label: { fontSize: 12, color: c.textMuted, marginTop: 6 },
     value: { fontSize: 15, color: c.text },
     warning: { marginTop: 8, fontSize: 12, color: c.warning },

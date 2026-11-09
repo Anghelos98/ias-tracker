@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useSheetTopInset from '../hooks/useSheetTopInset';
 
 import StatusPill from './StatusPill';
 import { REPO_URL, PRIVACY_URL } from './WelcomeScreen';
@@ -69,6 +70,7 @@ export default function SettingsScreen({
   onOpenWelcome,
 }) {
   const insets = useSafeAreaInsets();
+  const topInset = useSheetTopInset();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
   const [checking, setChecking] = useState(false);
@@ -133,7 +135,7 @@ export default function SettingsScreen({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={styles.headerBar}>
+      <View style={[styles.headerBar, { paddingTop: 14 + topInset }]}>
         <Text style={styles.headerTitle} accessibilityRole="header">
           Impostazioni
         </Text>

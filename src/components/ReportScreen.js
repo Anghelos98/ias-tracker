@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useSheetTopInset from '../hooks/useSheetTopInset';
 
 import { PEC_NOTE, REGIONAL_OFFICES, locateRegion, officeAddress } from '../data/contacts';
 import { REPORT_EMAIL } from '../data/legal';
@@ -73,6 +74,7 @@ export default function ReportScreen({
   onOpenNotebook,
 }) {
   const insets = useSafeAreaInsets();
+  const topInset = useSheetTopInset();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
   const [kind, setKind] = useState(initialKind);
@@ -283,7 +285,7 @@ export default function ReportScreen({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: 14 + topInset }]}>
         <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button">
           <Text style={styles.headerAction}>Annulla</Text>
         </Pressable>

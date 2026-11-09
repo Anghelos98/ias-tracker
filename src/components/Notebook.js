@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useSheetTopInset from '../hooks/useSheetTopInset';
 
 import {
   NOTEBOOK_FORMATS,
@@ -29,6 +30,7 @@ const KIND_FILTERS = [
  */
 export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) {
   const insets = useSafeAreaInsets();
+  const topInset = useSheetTopInset();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
   // problem 'unreadable': il taccuino salvato non si legge; fill: spazio usato (solo Android)
@@ -160,7 +162,7 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={styles.headerBar}>
+      <View style={[styles.headerBar, { paddingTop: 14 + topInset }]}>
         <Text style={styles.headerTitle} accessibilityRole="header">
           Taccuino di campo
         </Text>

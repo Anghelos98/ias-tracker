@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useSheetTopInset from '../hooks/useSheetTopInset';
 
 import { describeFilters } from './FiltersPanel';
 import { CONTACTS_SOURCE, PEC_NOTE, REGIONAL_OFFICES } from '../data/contacts';
@@ -34,6 +35,7 @@ export default function RegionReport({
   onToggleFollowRegion,
 }) {
   const insets = useSafeAreaInsets();
+  const topInset = useSheetTopInset();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
   const [datasets, setDatasets] = useState(null);
@@ -239,7 +241,7 @@ export default function RegionReport({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={close}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: 14 + topInset }]}>
         {region ? (
           <Pressable
             onPress={() => setRegion(null)}

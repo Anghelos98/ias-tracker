@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Image, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useSheetTopInset from '../hooks/useSheetTopInset';
 
 import {
   CONFISCATION_NOTE,
@@ -39,6 +40,7 @@ function openUrl(url, sites) {
 /** Scheda completa di una specie: riconoscimento, legge, cosa fare, schede ISPRA. */
 export default function SpeciesSheet({ species, manifest, visible, onClose, onOpenSpecies, followed, onToggleFollow }) {
   const insets = useSafeAreaInsets();
+  const topInset = useSheetTopInset();
   const colors = useColors();
   const styles = useThemedStyles(createStyles);
   // La scheda ISPRA viene caricata solo quando si apre la schermata (scaricata o inclusa nell'app).
@@ -78,7 +80,7 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={[styles.header, { paddingTop: 12 }]}>
+      <View style={[styles.header, { paddingTop: 12 + topInset }]}>
         <View style={styles.headerText}>
           <Text style={styles.title} accessibilityRole="header">
             {species.commonName}

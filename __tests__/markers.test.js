@@ -3,7 +3,7 @@
 
 jest.mock('react-native-maps', () => ({ Marker: 'Marker' }));
 
-const { sameFeature } = require('../src/components/MapMarkers');
+const { dotImageKey, sameFeature } = require('../src/components/MapMarkers');
 
 const feature = (coordinates, properties) => ({ type: 'Feature', geometry: { type: 'Point', coordinates }, properties });
 
@@ -23,4 +23,11 @@ test('cluster: stesso identificativo, numero e posizione', () => {
   expect(sameFeature(c(7, 12), c(7, 12, [12.5, 42]))).toBe(false);
   // un punto e un cluster nella stessa posizione non sono lo stesso elemento
   expect(sameFeature(c(7, 1), feature([12.5, 41.9], { id: 'a:1', records: 1 }))).toBe(false);
+});
+
+test('immagine del pallino (Android): tipo di segnalazione e precisione della posizione', () => {
+  expect(dotImageKey({})).toBe('verified');
+  expect(dotImageKey({ automatic: true })).toBe('automatic');
+  expect(dotImageKey({ approximate: true })).toBe('approximateVerified');
+  expect(dotImageKey({ approximate: true, automatic: true })).toBe('approximateAutomatic');
 });

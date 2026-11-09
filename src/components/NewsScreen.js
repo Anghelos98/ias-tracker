@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useSheetTopInset from '../hooks/useSheetTopInset';
 
 import { filterFollowed, hasFollows, latestWeeks, summarize, weeksSince } from '../data/news';
 import { REGIONS } from '../data/regions';
@@ -36,6 +37,7 @@ export default function NewsScreen({
   onClose,
 }) {
   const insets = useSafeAreaInsets();
+  const topInset = useSheetTopInset();
   const styles = useThemedStyles(createStyles);
   const [tab, setTab] = useState('tutte'); // tutte | seguite
   const [editing, setEditing] = useState(false);
@@ -200,7 +202,7 @@ export default function NewsScreen({
       onShow={onShow}
       onRequestClose={close}
     >
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: 14 + topInset }]}>
         {editing ? (
           <Pressable onPress={() => setEditing(false)} hitSlop={12} accessibilityRole="button">
             <Text style={styles.headerAction}>‹ Novità</Text>
