@@ -3,7 +3,9 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -297,7 +299,14 @@ export default function ReportScreen({
   else if (position === null) missing = 'Serve la posizione';
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={onClose}
+    >
       <View style={[styles.header, { paddingTop: 14 + topInset }]}>
         <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button">
           <Text style={styles.headerAction}>Annulla</Text>
@@ -315,308 +324,314 @@ export default function ReportScreen({
         </Pressable>
       </View>
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.segmented} accessibilityRole="tablist">
-          {KINDS.map((k) => {
-            const active = k.value === kind;
-            return (
-              <Pressable
-                key={k.value}
-                style={[styles.segment, active && styles.segmentActive]}
-                onPress={() => changeKind(k.value)}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: active }}
-              >
-                <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{k.label}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Text style={styles.small}>
-          {isIntervention
-            ? 'Registra un intervento di gestione (taglio, eradicazione…) nel tuo taccuino di campo.'
-            : 'Segnala dove hai visto una specie invasiva.'}
-        </Text>
-
-        {/* 1. Specie */}
-        <Step number={1} title="Specie" styles={styles}>
-          {species && !pickingSpecies ? (
-            <Pressable
-              style={styles.choice}
-              onPress={() => setPickingSpecies(true)}
-              accessibilityRole="button"
-              accessibilityLabel={`Specie: ${species.commonName}, ${species.scientificName}`}
-              accessibilityHint="Tocca per cambiare specie"
-            >
-              <View style={styles.flex}>
-                <Text style={styles.choiceTitle}>{species.commonName}</Text>
-                <Text style={styles.choiceSubtitle}>{species.scientificName}</Text>
-              </View>
-              <Text style={styles.change}>Cambia</Text>
-            </Pressable>
-          ) : (
-            <View>
-              <TextInput
-                style={styles.input}
-                placeholder="Cerca per nome comune o scientifico"
-                placeholderTextColor={colors.placeholder}
-                value={query}
-                onChangeText={setQuery}
-                autoCorrect={false}
-                accessibilityLabel="Cerca la specie"
-              />
-              <View style={styles.speciesList}>
-                {filteredSpecies.slice(0, 8).map((s) => (
-                  <Pressable
-                    key={s.slug}
-                    style={styles.speciesRow}
-                    onPress={() => {
-                      setSpecies(s);
-                      setPickingSpecies(false);
-                    }}
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.choiceTitle}>{s.commonName}</Text>
-                    <Text style={styles.choiceSubtitle}>{s.scientificName}</Text>
-                  </Pressable>
-                ))}
-                {!isIntervention && (
-                  <Pressable
-                    style={styles.speciesRow}
-                    onPress={() => {
-                      setSpecies(UNKNOWN_SPECIES);
-                      setPickingSpecies(false);
-                    }}
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.choiceTitle}>Non so quale sia</Text>
-                    <Text style={styles.choiceSubtitle}>Le foto aiuteranno a identificarla</Text>
-                  </Pressable>
-                )}
-              </View>
-            </View>
-          )}
-        </Step>
-
-        {/* Tipo di intervento */}
-        {isIntervention && (
-          <Step number={2} title="Tipo di intervento" styles={styles}>
-            <View style={styles.chips}>
-              {INTERVENTIONS.map((i) => {
-                const active = i.value === intervention;
-                return (
-                  <Pressable
-                    key={i.value}
-                    onPress={() => setIntervention(i.value)}
-                    style={[styles.chip, active && styles.chipActive]}
-                    accessibilityRole="radio"
-                    accessibilityState={{ checked: active }}
-                  >
-                    <Text style={[styles.chipText, active && styles.chipTextActive]}>{i.label}</Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </Step>
-        )}
-
-        {/* Posizione */}
-        <Step number={isIntervention ? 3 : 2} title="Posizione" styles={styles}>
-          {locating && (
-            <View style={styles.row} accessible accessibilityLabel="Rilevo la posizione GPS">
-              <ActivityIndicator color={colors.primary} />
-              <Text style={styles.muted}> Rilevo la posizione GPS…</Text>
-            </View>
-          )}
-          {!locating && position && (
-            <View accessible>
-              <Text style={styles.coords}>
-                {position.latitude.toFixed(6)}, {position.longitude.toFixed(6)}
-              </Text>
-              <Text style={styles.muted}>
-                {position.source === 'foto'
-                  ? 'Posizione ricavata dalla foto'
-                  : position.accuracy != null
-                    ? `GPS, precisione ± ${Math.round(position.accuracy)} m`
-                    : 'GPS'}
-              </Text>
-              {position.source === 'gps' && position.accuracy > POOR_ACCURACY_M && (
-                <Text style={styles.warning}>
-                  Precisione bassa: se puoi, spostati all’aperto e aggiorna la posizione.
-                </Text>
-              )}
-            </View>
-          )}
-          {!locating && locationError && (
-            <Text style={styles.warning} accessibilityLiveRegion="polite">
-              {locationError}
-            </Text>
-          )}
-          <View style={styles.row}>
-            <SmallButton label="Aggiorna posizione" onPress={locate} disabled={locating} styles={styles} />
-            {photoWithGps && position?.source !== 'foto' && (
-              <SmallButton
-                label="Usa posizione della foto"
-                onPress={() => setPosition({ ...photoWithGps.gps, accuracy: null, source: 'foto' })}
-                styles={styles}
-              />
-            )}
+      {/* Android: la Modal da bordo a bordo non si accorcia con la tastiera, che altrimenti
+          coprirebbe i campi in basso (note, firma). iOS invariato. */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'android' ? 'padding' : undefined} style={styles.fill}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.segmented} accessibilityRole="tablist">
+            {KINDS.map((k) => {
+              const active = k.value === kind;
+              return (
+                <Pressable
+                  key={k.value}
+                  style={[styles.segment, active && styles.segmentActive]}
+                  onPress={() => changeKind(k.value)}
+                  accessibilityRole="tab"
+                  accessibilityState={{ selected: active }}
+                >
+                  <Text style={[styles.segmentText, active && styles.segmentTextActive]}>{k.label}</Text>
+                </Pressable>
+              );
+            })}
           </View>
-        </Step>
-
-        {/* Foto */}
-        <Step number={isIntervention ? 4 : 3} title={`Foto (facoltative, max ${MAX_PHOTOS})`} styles={styles}>
-          <View style={styles.photos}>
-            {photos.map((p, i) => (
-              <Pressable
-                key={`${i}-${p.uri}`}
-                onLongPress={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}
-                accessibilityRole="image"
-                accessibilityLabel={`Foto ${i + 1}`}
-                accessibilityHint="Tieni premuto per rimuovere la foto"
-                accessibilityActions={[{ name: 'delete', label: 'Rimuovi foto' }]}
-                onAccessibilityAction={(e) => {
-                  if (e.nativeEvent.actionName === 'delete') setPhotos((prev) => prev.filter((_, j) => j !== i));
-                }}
-              >
-                <Image source={{ uri: p.uri }} style={styles.photo} />
-              </Pressable>
-            ))}
-          </View>
-          {photos.length > 0 && <Text style={styles.small}>Tieni premuta una foto per rimuoverla.</Text>}
-          {photos.length > 0 && missingPhotoLocation && (
-            <Text style={[styles.hint, styles.hintNeutral, styles.photoHint]} accessibilityLiveRegion="polite">
-              {photoLocationHint(missingPhotoLocation)}
-            </Text>
-          )}
-          {photos.length < MAX_PHOTOS && (
-            <View style={styles.row}>
-              <SmallButton label="Scatta foto" onPress={() => addPhoto(true)} styles={styles} />
-              <SmallButton label="Dalla galleria" onPress={() => addPhoto(false)} styles={styles} />
-            </View>
-          )}
-          <Text style={styles.small}>
-            Dalla galleria: se la foto contiene il luogo dello scatto, l’app può proporlo come posizione della
-            segnalazione. Serve che la fotocamera del telefono salvi la posizione (impostazione «posizione» o
-            «tag di localizzazione») e che la foto non sia passata da app che la tolgono, come WhatsApp,
-            Telegram o alcune gallerie.
-          </Text>
           <Text style={styles.small}>
             {isIntervention
-              ? 'Consiglio: una foto prima e una dopo l’intervento.'
-              : 'Consiglio: una foto della pianta intera e una delle foglie o dei fiori.'}
+              ? 'Registra un intervento di gestione (taglio, eradicazione…) nel tuo taccuino di campo.'
+              : 'Segnala dove hai visto una specie invasiva.'}
           </Text>
-        </Step>
 
-        {/* Note */}
-        <Step number={isIntervention ? 5 : 4} title="Note (facoltative)" styles={styles}>
-          <TextInput
-            style={[styles.input, styles.noteInput]}
-            placeholder={
-              isIntervention
-                ? 'Es. superficie trattata, numero di piante, mezzi usati, prossimo controllo…'
-                : 'Es. quante piante, estensione, vicino a un corso d’acqua…'
-            }
-            placeholderTextColor={colors.placeholder}
-            value={note}
-            onChangeText={setNote}
-            multiline
-            maxLength={NOTE_MAX}
-            accessibilityLabel="Note"
-          />
-          {note.length > NOTE_MAX * 0.9 && (
-            <Text style={styles.noteCount}>
-              {note.length.toLocaleString('it-IT')} / {NOTE_MAX.toLocaleString('it-IT')} caratteri
-            </Text>
-          )}
-        </Step>
-
-        {/* Invio */}
-        <View style={styles.actions}>
-          {!isIntervention && species?.slug && presence && (
-            <Text style={[styles.hint, widespread ? styles.hintNeutral : styles.hintImportant]}>
-              {widespread
-                ? 'Specie già diffusa in Italia: la casella del Ministero è pensata soprattutto per le nuove comparse. Puoi inviare la segnalazione alla Regione o condividerla con l’ente parco.'
-                : `Specie ${presence.toLowerCase()} in Italia secondo ISPRA: la tua segnalazione è preziosa per intervenire presto. Inviala al Ministero.`}
-            </Text>
-          )}
-          {isIntervention ? (
-            <Pressable
-              style={[styles.primary, !ready && styles.disabled]}
-              onPress={() => send('save')}
-              disabled={!ready}
-              accessibilityRole="button"
-              accessibilityState={{ disabled: !ready }}
-            >
-              <Text style={styles.primaryText}>{sending ? 'Salvataggio…' : 'Salva nel taccuino'}</Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              style={[styles.primary, !ready && styles.disabled]}
-              onPress={() => send('email')}
-              disabled={!ready}
-              accessibilityRole="button"
-              accessibilityState={{ disabled: !ready }}
-              accessibilityLabel={`Invia al Ministero dell’Ambiente, email a ${REPORT_EMAIL}`}
-            >
-              <Text style={styles.primaryText}>{sending ? 'Salvataggio…' : 'Invia al Ministero dell’Ambiente'}</Text>
-              <Text style={styles.primarySub}>email a {REPORT_EMAIL}</Text>
-            </Pressable>
-          )}
-          {!isIntervention &&
-            offices.map((office) => (
+          {/* 1. Specie */}
+          <Step number={1} title="Specie" styles={styles}>
+            {species && !pickingSpecies ? (
               <Pressable
-                key={office.name}
-                style={[styles.secondary, !ready && styles.disabled]}
-                onPress={() => send({ office })}
+                style={styles.choice}
+                onPress={() => setPickingSpecies(true)}
+                accessibilityRole="button"
+                accessibilityLabel={`Specie: ${species.commonName}, ${species.scientificName}`}
+                accessibilityHint="Tocca per cambiare specie"
+              >
+                <View style={styles.flex}>
+                  <Text style={styles.choiceTitle}>{species.commonName}</Text>
+                  <Text style={styles.choiceSubtitle}>{species.scientificName}</Text>
+                </View>
+                <Text style={styles.change}>Cambia</Text>
+              </Pressable>
+            ) : (
+              <View>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Cerca per nome comune o scientifico"
+                  placeholderTextColor={colors.placeholder}
+                  value={query}
+                  onChangeText={setQuery}
+                  autoCorrect={false}
+                  accessibilityLabel="Cerca la specie"
+                />
+                <View style={styles.speciesList}>
+                  {filteredSpecies.slice(0, 8).map((s) => (
+                    <Pressable
+                      key={s.slug}
+                      style={styles.speciesRow}
+                      onPress={() => {
+                        setSpecies(s);
+                        setPickingSpecies(false);
+                      }}
+                      accessibilityRole="button"
+                    >
+                      <Text style={styles.choiceTitle}>{s.commonName}</Text>
+                      <Text style={styles.choiceSubtitle}>{s.scientificName}</Text>
+                    </Pressable>
+                  ))}
+                  {!isIntervention && (
+                    <Pressable
+                      style={styles.speciesRow}
+                      onPress={() => {
+                        setSpecies(UNKNOWN_SPECIES);
+                        setPickingSpecies(false);
+                      }}
+                      accessibilityRole="button"
+                    >
+                      <Text style={styles.choiceTitle}>Non so quale sia</Text>
+                      <Text style={styles.choiceSubtitle}>Le foto aiuteranno a identificarla</Text>
+                    </Pressable>
+                  )}
+                </View>
+              </View>
+            )}
+          </Step>
+
+          {/* Tipo di intervento */}
+          {isIntervention && (
+            <Step number={2} title="Tipo di intervento" styles={styles}>
+              <View style={styles.chips}>
+                {INTERVENTIONS.map((i) => {
+                  const active = i.value === intervention;
+                  return (
+                    <Pressable
+                      key={i.value}
+                      onPress={() => setIntervention(i.value)}
+                      style={[styles.chip, active && styles.chipActive]}
+                      accessibilityRole="radio"
+                      accessibilityState={{ checked: active }}
+                    >
+                      <Text style={[styles.chipText, active && styles.chipTextActive]}>{i.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </Step>
+          )}
+
+          {/* Posizione */}
+          <Step number={isIntervention ? 3 : 2} title="Posizione" styles={styles}>
+            {locating && (
+              <View style={styles.row} accessible accessibilityLabel="Rilevo la posizione GPS">
+                <ActivityIndicator color={colors.primary} />
+                <Text style={styles.muted}> Rilevo la posizione GPS…</Text>
+              </View>
+            )}
+            {!locating && position && (
+              <View accessible>
+                <Text style={styles.coords}>
+                  {position.latitude.toFixed(6)}, {position.longitude.toFixed(6)}
+                </Text>
+                <Text style={styles.muted}>
+                  {position.source === 'foto'
+                    ? 'Posizione ricavata dalla foto'
+                    : position.accuracy != null
+                      ? `GPS, precisione ± ${Math.round(position.accuracy)} m`
+                      : 'GPS'}
+                </Text>
+                {position.source === 'gps' && position.accuracy > POOR_ACCURACY_M && (
+                  <Text style={styles.warning}>
+                    Precisione bassa: se puoi, spostati all’aperto e aggiorna la posizione.
+                  </Text>
+                )}
+              </View>
+            )}
+            {!locating && locationError && (
+              <Text style={styles.warning} accessibilityLiveRegion="polite">
+                {locationError}
+              </Text>
+            )}
+            <View style={styles.row}>
+              <SmallButton label="Aggiorna posizione" onPress={locate} disabled={locating} styles={styles} />
+              {photoWithGps && position?.source !== 'foto' && (
+                <SmallButton
+                  label="Usa posizione della foto"
+                  onPress={() => setPosition({ ...photoWithGps.gps, accuracy: null, source: 'foto' })}
+                  styles={styles}
+                />
+              )}
+            </View>
+          </Step>
+
+          {/* Foto */}
+          <Step number={isIntervention ? 4 : 3} title={`Foto (facoltative, max ${MAX_PHOTOS})`} styles={styles}>
+            <View style={styles.photos}>
+              {photos.map((p, i) => (
+                <Pressable
+                  key={`${i}-${p.uri}`}
+                  onLongPress={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}
+                  accessibilityRole="image"
+                  accessibilityLabel={`Foto ${i + 1}`}
+                  accessibilityHint="Tieni premuto per rimuovere la foto"
+                  accessibilityActions={[{ name: 'delete', label: 'Rimuovi foto' }]}
+                  onAccessibilityAction={(e) => {
+                    if (e.nativeEvent.actionName === 'delete') setPhotos((prev) => prev.filter((_, j) => j !== i));
+                  }}
+                >
+                  <Image source={{ uri: p.uri }} style={styles.photo} />
+                </Pressable>
+              ))}
+            </View>
+            {photos.length > 0 && <Text style={styles.small}>Tieni premuta una foto per rimuoverla.</Text>}
+            {photos.length > 0 && missingPhotoLocation && (
+              <Text style={[styles.hint, styles.hintNeutral, styles.photoHint]} accessibilityLiveRegion="polite">
+                {photoLocationHint(missingPhotoLocation)}
+              </Text>
+            )}
+            {photos.length < MAX_PHOTOS && (
+              <View style={styles.row}>
+                <SmallButton label="Scatta foto" onPress={() => addPhoto(true)} styles={styles} />
+                <SmallButton label="Dalla galleria" onPress={() => addPhoto(false)} styles={styles} />
+              </View>
+            )}
+            <Text style={styles.small}>
+              Dalla galleria: se la foto contiene il luogo dello scatto, l’app può proporlo come posizione della
+              segnalazione. Serve che la fotocamera del telefono salvi la posizione (impostazione «posizione» o
+              «tag di localizzazione») e che la foto non sia passata da app che la tolgono, come WhatsApp,
+              Telegram o alcune gallerie.
+            </Text>
+            <Text style={styles.small}>
+              {isIntervention
+                ? 'Consiglio: una foto prima e una dopo l’intervento.'
+                : 'Consiglio: una foto della pianta intera e una delle foglie o dei fiori.'}
+            </Text>
+          </Step>
+
+          {/* Note */}
+          <Step number={isIntervention ? 5 : 4} title="Note (facoltative)" styles={styles}>
+            <TextInput
+              style={[styles.input, styles.noteInput]}
+              placeholder={
+                isIntervention
+                  ? 'Es. superficie trattata, numero di piante, mezzi usati, prossimo controllo…'
+                  : 'Es. quante piante, estensione, vicino a un corso d’acqua…'
+              }
+              placeholderTextColor={colors.placeholder}
+              value={note}
+              onChangeText={setNote}
+              multiline
+              maxLength={NOTE_MAX}
+              accessibilityLabel="Note"
+            />
+            {note.length > NOTE_MAX * 0.9 && (
+              <Text style={styles.noteCount}>
+                {note.length.toLocaleString('it-IT')} / {NOTE_MAX.toLocaleString('it-IT')} caratteri
+              </Text>
+            )}
+          </Step>
+
+          {/* Invio */}
+          <View style={styles.actions}>
+            {!isIntervention && species?.slug && presence && (
+              <Text style={[styles.hint, widespread ? styles.hintNeutral : styles.hintImportant]}>
+                {widespread
+                  ? 'Specie già diffusa in Italia: la casella del Ministero è pensata soprattutto per le nuove comparse. Puoi inviare la segnalazione alla Regione o condividerla con l’ente parco.'
+                  : `Specie ${presence.toLowerCase()} in Italia secondo ISPRA: la tua segnalazione è preziosa per intervenire presto. Inviala al Ministero.`}
+              </Text>
+            )}
+            {isIntervention ? (
+              <Pressable
+                style={[styles.primary, !ready && styles.disabled]}
+                onPress={() => send('save')}
                 disabled={!ready}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: !ready }}
-                accessibilityLabel={`Invia a ${office.name}, email a ${officeAddress(office)}`}
               >
-                <Text style={styles.secondaryText}>Invia a {office.name}</Text>
-                <Text style={styles.secondarySub}>
-                  {office.email ? `${office.emailLabel}: ${office.email}` : `PEC ${office.pec}`}
-                </Text>
+                <Text style={styles.primaryText}>{sending ? 'Salvataggio…' : 'Salva nel taccuino'}</Text>
               </Pressable>
-            ))}
-          {!isIntervention && offices.some((o) => !o.email) && <Text style={styles.small}>{PEC_NOTE}</Text>}
-          {!isIntervention && offices.length > 1 && (
-            <Text style={styles.small}>Scegli la Provincia autonoma in cui hai trovato la pianta.</Text>
-          )}
-          <Pressable
-            style={[styles.secondary, !ready && styles.disabled]}
-            onPress={() => send('share')}
-            disabled={!ready}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: !ready }}
-          >
-            <Text style={styles.secondaryText}>{isIntervention ? 'Salva e condividi…' : 'Condividi…'}</Text>
-          </Pressable>
-          {!isIntervention && (
+            ) : (
+              <Pressable
+                style={[styles.primary, !ready && styles.disabled]}
+                onPress={() => send('email')}
+                disabled={!ready}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: !ready }}
+                accessibilityLabel={`Invia al Ministero dell’Ambiente, email a ${REPORT_EMAIL}`}
+              >
+                <Text style={styles.primaryText}>
+                  {sending ? 'Salvataggio…' : 'Invia al Ministero dell’Ambiente'}
+                </Text>
+                <Text style={styles.primarySub}>email a {REPORT_EMAIL}</Text>
+              </Pressable>
+            )}
+            {!isIntervention &&
+              offices.map((office) => (
+                <Pressable
+                  key={office.name}
+                  style={[styles.secondary, !ready && styles.disabled]}
+                  onPress={() => send({ office })}
+                  disabled={!ready}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: !ready }}
+                  accessibilityLabel={`Invia a ${office.name}, email a ${officeAddress(office)}`}
+                >
+                  <Text style={styles.secondaryText}>Invia a {office.name}</Text>
+                  <Text style={styles.secondarySub}>
+                    {office.email ? `${office.emailLabel}: ${office.email}` : `PEC ${office.pec}`}
+                  </Text>
+                </Pressable>
+              ))}
+            {!isIntervention && offices.some((o) => !o.email) && <Text style={styles.small}>{PEC_NOTE}</Text>}
+            {!isIntervention && offices.length > 1 && (
+              <Text style={styles.small}>Scegli la Provincia autonoma in cui hai trovato la pianta.</Text>
+            )}
             <Pressable
-              style={[styles.tertiary, !ready && styles.disabled]}
-              onPress={() => send('save')}
+              style={[styles.secondary, !ready && styles.disabled]}
+              onPress={() => send('share')}
               disabled={!ready}
               accessibilityRole="button"
               accessibilityState={{ disabled: !ready }}
             >
-              <Text style={styles.tertiaryText}>Salva solo nel taccuino</Text>
+              <Text style={styles.secondaryText}>{isIntervention ? 'Salva e condividi…' : 'Condividi…'}</Text>
             </Pressable>
-          )}
-          {missing && !sending && <Text style={styles.small}>{missing} per poter salvare.</Text>}
-          <Text style={styles.small}>
-            {signature.trim()
-              ? `Firmata come “${signature.trim()}” (modificabile nelle Impostazioni). `
-              : ''}
-            Ogni voce resta salvata sul telefono, nel taccuino di campo.
-          </Text>
-        </View>
-      </ScrollView>
+            {!isIntervention && (
+              <Pressable
+                style={[styles.tertiary, !ready && styles.disabled]}
+                onPress={() => send('save')}
+                disabled={!ready}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: !ready }}
+              >
+                <Text style={styles.tertiaryText}>Salva solo nel taccuino</Text>
+              </Pressable>
+            )}
+            {missing && !sending && <Text style={styles.small}>{missing} per poter salvare.</Text>}
+            <Text style={styles.small}>
+              {signature.trim()
+                ? `Firmata come “${signature.trim()}” (modificabile nelle Impostazioni). `
+                : ''}
+              Ogni voce resta salvata sul telefono, nel taccuino di campo.
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -677,6 +692,7 @@ const createStyles = (c) =>
     },
     headerTitle: { fontSize: 17, fontWeight: '700', color: c.text },
     headerAction: { fontSize: 16, color: c.primary, fontWeight: '600' },
+    fill: { flex: 1 },
     scroll: { backgroundColor: c.background },
     content: { padding: 16 },
     flex: { flex: 1 },

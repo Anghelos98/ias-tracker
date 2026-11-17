@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * `<Modal presentationStyle="pageSheet">`.
  *
  * Su iOS la scheda parte già sotto la barra di stato: non serve spazio in più.
- * Su Android l'app disegna da bordo a bordo e la Modal occupa tutto lo schermo:
+ * Su Android la Modal disegna da bordo a bordo (statusBarTranslucent e
+ * navigationBarTranslucent, come impone Android 16) e occupa tutto lo schermo:
  * senza questo spazio l'intestazione finisce sotto la barra di stato.
  *
  * @returns {number} punti da aggiungere al margine superiore dell'intestazione

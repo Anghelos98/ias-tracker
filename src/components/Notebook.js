@@ -161,7 +161,14 @@ export default function Notebook({ visible, onClose, onShowOnMap, onNewEntry }) 
   );
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={onClose}
+    >
       <View style={[styles.headerBar, { paddingTop: 14 + topInset }]}>
         <Text style={styles.headerTitle} accessibilityRole="header">
           Taccuino di campo

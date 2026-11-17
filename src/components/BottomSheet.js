@@ -4,7 +4,6 @@ import {
   Easing,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -210,15 +209,14 @@ export default function BottomSheet({ visible, onClose, closeLabel, maxHeight, p
       animationType="none"
       onRequestClose={() => requestClose('tasto Indietro')}
       statusBarTranslucent
+      navigationBarTranslucent
     >
-      {/* iOS: con la tastiera aperta il pannello sale sopra di essa (prima, con pochi risultati
-          nella ricerca, si abbassava e finiva dietro la tastiera) e si accorcia se serve */}
+      {/* con la tastiera aperta il pannello sale sopra di essa (prima, con pochi risultati nella
+          ricerca, si abbassava e finiva dietro la tastiera) e si accorcia se serve. Anche su
+          Android: la Modal da bordo a bordo non viene ridimensionata dal sistema */}
       {/* i gesti nativi dentro una Modal richiedono una propria radice */}
       <GestureHandlerRootView style={styles.fill}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={[styles.root, { paddingTop: insets.top + 8 }]}
-        >
+        <KeyboardAvoidingView behavior="padding" style={[styles.root, { paddingTop: insets.top + 8 }]}>
           <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} pointerEvents="none" />
           <Pressable
             style={StyleSheet.absoluteFill}

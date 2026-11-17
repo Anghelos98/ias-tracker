@@ -79,7 +79,14 @@ export default function SpeciesSheet({ species, manifest, visible, onClose, onOp
   const deadline = POSSESSION_DEADLINES[listing.regulation];
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={onClose}
+    >
       <View style={[styles.header, { paddingTop: 12 + topInset }]}>
         <View style={styles.headerText}>
           <Text style={styles.title} accessibilityRole="header">

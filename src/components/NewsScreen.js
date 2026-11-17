@@ -199,6 +199,8 @@ export default function NewsScreen({
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
+      statusBarTranslucent
+      navigationBarTranslucent
       onShow={onShow}
       onRequestClose={close}
     >

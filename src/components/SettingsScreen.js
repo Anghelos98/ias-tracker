@@ -1,5 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useSheetTopInset from '../hooks/useSheetTopInset';
 
@@ -135,7 +148,14 @@ export default function SettingsScreen({
     );
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={onClose}
+    >
       <View style={[styles.headerBar, { paddingTop: 14 + topInset }]}>
         <Text style={styles.headerTitle} accessibilityRole="header">
           Impostazioni
@@ -144,131 +164,135 @@ export default function SettingsScreen({
           <Text style={styles.headerAction}>Chiudi</Text>
         </Pressable>
       </View>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Dati */}
-        <Section title="Dati" styles={styles}>
-          <Text style={styles.rowTitle}>Aggiornamento dei dati</Text>
-          <Text style={styles.description}>
-            I dati dell’app vengono aggiornati ogni 12 ore per impostazione predefinita.
-          </Text>
-          <Text style={styles.meta}>
-            Segnalazioni GBIF aggiornate al {formatDate(dataDate)}
-            {lastCheck ? ` · ultimo controllo ${formatCheck(lastCheck)}` : ''}
-          </Text>
-          {busy ? (
-            <StatusPill label="Aggiornamento dei dati in corso…" style={styles.status} />
-          ) : (
-            <Pressable style={styles.button} onPress={updateNow} accessibilityRole="button">
-              <Text style={styles.buttonText}>Aggiorna ora</Text>
-            </Pressable>
-          )}
-          {result && !busy && (
-            <Text style={styles.result} accessibilityLiveRegion="polite">
-              {result}
+      {/* Android: la Modal da bordo a bordo non si accorcia con la tastiera, che altrimenti
+          coprirebbe i campi in basso (note, firma). iOS invariato. */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'android' ? 'padding' : undefined} style={styles.fill}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Dati */}
+          <Section title="Dati" styles={styles}>
+            <Text style={styles.rowTitle}>Aggiornamento dei dati</Text>
+            <Text style={styles.description}>
+              I dati dell’app vengono aggiornati ogni 12 ore per impostazione predefinita.
             </Text>
-          )}
-          <Divider styles={styles} />
-          <Pressable
-            onPress={confirmClear}
-            disabled={busy}
-            style={busy && styles.disabled}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: busy }}
-          >
-            <Text style={styles.destructive}>Elimina i dati scaricati</Text>
-          </Pressable>
-          <Text style={styles.description}>
-            Torna ai dati inclusi nell’app. Utile se i dati sembrano incompleti o per liberare spazio.
-          </Text>
-        </Section>
-
-        {/* Mappa */}
-        <Section title="Mappa" styles={styles}>
-          <Text style={styles.rowTitle}>Tipo di mappa</Text>
-          <Choices options={MAP_OPTIONS} value={mapType} onChange={onChangeMapType} label="Tipo di mappa" styles={styles} />
-          <Text style={styles.description}>
-            La vista satellitare aiuta a riconoscere boschi, corsi d’acqua e campi durante i sopralluoghi.
-          </Text>
-          <Divider styles={styles} />
-          <SwitchRow
-            title="Griglia ufficiale ISPRA"
-            description="Mostra le celle di 10×10 km in cui ISPRA registra la specie scelta."
-            value={showGrid}
-            onChange={onToggleGrid}
-            styles={styles}
-          />
-          <Divider styles={styles} />
-          <Text style={styles.rowTitle}>Filtri delle segnalazioni</Text>
-          <Text style={styles.description}>
-            {filtersSummary
-              ? `Attivi: ${filtersSummary}. Si cambiano dal pulsante Filtri sulla mappa.`
-              : 'Sono mostrate tutte le segnalazioni verificate. Si cambiano dal pulsante Filtri sulla mappa.'}
-          </Text>
-          {filtersSummary ? (
-            <Pressable style={styles.button} onPress={onResetFilters} accessibilityRole="button">
-              <Text style={styles.buttonText}>Ripristina i filtri predefiniti</Text>
+            <Text style={styles.meta}>
+              Segnalazioni GBIF aggiornate al {formatDate(dataDate)}
+              {lastCheck ? ` · ultimo controllo ${formatCheck(lastCheck)}` : ''}
+            </Text>
+            {busy ? (
+              <StatusPill label="Aggiornamento dei dati in corso…" style={styles.status} />
+            ) : (
+              <Pressable style={styles.button} onPress={updateNow} accessibilityRole="button">
+                <Text style={styles.buttonText}>Aggiorna ora</Text>
+              </Pressable>
+            )}
+            {result && !busy && (
+              <Text style={styles.result} accessibilityLiveRegion="polite">
+                {result}
+              </Text>
+            )}
+            <Divider styles={styles} />
+            <Pressable
+              onPress={confirmClear}
+              disabled={busy}
+              style={busy && styles.disabled}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: busy }}
+            >
+              <Text style={styles.destructive}>Elimina i dati scaricati</Text>
             </Pressable>
-          ) : null}
-        </Section>
+            <Text style={styles.description}>
+              Torna ai dati inclusi nell’app. Utile se i dati sembrano incompleti o per liberare spazio.
+            </Text>
+          </Section>
 
-        {/* Aspetto */}
-        <Section title="Aspetto" styles={styles}>
-          <Text style={styles.rowTitle}>Tema</Text>
-          <Choices options={THEME_OPTIONS} value={theme} onChange={onChangeTheme} label="Tema" styles={styles} />
-          <Text style={styles.description}>Automatico segue l’impostazione chiara o scura del telefono.</Text>
-        </Section>
+          {/* Mappa */}
+          <Section title="Mappa" styles={styles}>
+            <Text style={styles.rowTitle}>Tipo di mappa</Text>
+            <Choices options={MAP_OPTIONS} value={mapType} onChange={onChangeMapType} label="Tipo di mappa" styles={styles} />
+            <Text style={styles.description}>
+              La vista satellitare aiuta a riconoscere boschi, corsi d’acqua e campi durante i sopralluoghi.
+            </Text>
+            <Divider styles={styles} />
+            <SwitchRow
+              title="Griglia ufficiale ISPRA"
+              description="Mostra le celle di 10×10 km in cui ISPRA registra la specie scelta."
+              value={showGrid}
+              onChange={onToggleGrid}
+              styles={styles}
+            />
+            <Divider styles={styles} />
+            <Text style={styles.rowTitle}>Filtri delle segnalazioni</Text>
+            <Text style={styles.description}>
+              {filtersSummary
+                ? `Attivi: ${filtersSummary}. Si cambiano dal pulsante Filtri sulla mappa.`
+                : 'Sono mostrate tutte le segnalazioni verificate. Si cambiano dal pulsante Filtri sulla mappa.'}
+            </Text>
+            {filtersSummary ? (
+              <Pressable style={styles.button} onPress={onResetFilters} accessibilityRole="button">
+                <Text style={styles.buttonText}>Ripristina i filtri predefiniti</Text>
+              </Pressable>
+            ) : null}
+          </Section>
 
-        {/* Segnalazioni */}
-        <Section title="Segnalazioni" styles={styles}>
-          <Text style={styles.rowTitle}>Firma (facoltativa)</Text>
-          <TextInput
-            style={styles.input}
-            value={signature}
-            onChangeText={onChangeSignature}
-            placeholder="Es. Mario Rossi, Comune di …"
-            placeholderTextColor={colors.placeholder}
-            maxLength={SIGNATURE_MAX}
-            autoCorrect={false}
-            returnKeyType="done"
-            accessibilityLabel="Firma delle segnalazioni"
-          />
-          <Text style={styles.description}>
-            Nome ed eventuale ente, aggiunti in fondo alle segnalazioni e nel taccuino: chi le riceve sa chi
-            contattare. È salvata sul telefono e non viene inviata allo sviluppatore.
-          </Text>
-        </Section>
+          {/* Aspetto */}
+          <Section title="Aspetto" styles={styles}>
+            <Text style={styles.rowTitle}>Tema</Text>
+            <Choices options={THEME_OPTIONS} value={theme} onChange={onChangeTheme} label="Tema" styles={styles} />
+            <Text style={styles.description}>Automatico segue l’impostazione chiara o scura del telefono.</Text>
+          </Section>
 
-        {/* Notifiche */}
-        <Section title="Notifiche" styles={styles}>
-          <SwitchRow
-            title="Avvisi delle novità"
-            description={
-              canNotify
-                ? 'Un avviso quando l’aggiornamento settimanale porta novità sulle specie o regioni che segui.'
-                : 'Segui almeno una specie (dalla sua scheda) o una regione (dal rapporto per regione) per attivarli.'
-            }
-            value={notify}
-            onChange={onToggleNotify}
-            disabled={!canNotify && !notify}
-            styles={styles}
-          />
-        </Section>
+          {/* Segnalazioni */}
+          <Section title="Segnalazioni" styles={styles}>
+            <Text style={styles.rowTitle}>Firma (facoltativa)</Text>
+            <TextInput
+              style={styles.input}
+              value={signature}
+              onChangeText={onChangeSignature}
+              placeholder="Es. Mario Rossi, Comune di …"
+              placeholderTextColor={colors.placeholder}
+              maxLength={SIGNATURE_MAX}
+              autoCorrect={false}
+              returnKeyType="done"
+              accessibilityLabel="Firma delle segnalazioni"
+            />
+            <Text style={styles.description}>
+              Nome ed eventuale ente, aggiunti in fondo alle segnalazioni e nel taccuino: chi le riceve sa chi
+              contattare. È salvata sul telefono e non viene inviata allo sviluppatore.
+            </Text>
+          </Section>
 
-        {/* Diagnostica: solo nelle build di prova (beta, RC) */}
-        {DIAGNOSTICS_ENABLED && <DiagnosticsSection styles={styles} />}
+          {/* Notifiche */}
+          <Section title="Notifiche" styles={styles}>
+            <SwitchRow
+              title="Avvisi delle novità"
+              description={
+                canNotify
+                  ? 'Un avviso quando l’aggiornamento settimanale porta novità sulle specie o regioni che segui.'
+                  : 'Segui almeno una specie (dalla sua scheda) o una regione (dal rapporto per regione) per attivarli.'
+              }
+              value={notify}
+              onChange={onToggleNotify}
+              disabled={!canNotify && !notify}
+              styles={styles}
+            />
+          </Section>
 
-        {/* Informazioni */}
-        <Section title="Informazioni" styles={styles}>
-          <LinkRow label="Presentazione dell’app" onPress={onOpenWelcome} styles={styles} />
-          <LinkRow label="Informativa sulla privacy ↗" onPress={() => Linking.openURL(PRIVACY_URL).catch(() => {})} styles={styles} />
-          <LinkRow label="Codice sorgente su GitHub ↗" onPress={() => Linking.openURL(REPO_URL).catch(() => {})} styles={styles} />
-          <Text style={styles.meta}>AlienHub {APP_VERSION} · gratuita e open source (licenza MIT)</Text>
-        </Section>
-      </ScrollView>
+          {/* Diagnostica: solo nelle build di prova (beta, RC) */}
+          {DIAGNOSTICS_ENABLED && <DiagnosticsSection styles={styles} />}
+
+          {/* Informazioni */}
+          <Section title="Informazioni" styles={styles}>
+            <LinkRow label="Presentazione dell’app" onPress={onOpenWelcome} styles={styles} />
+            <LinkRow label="Informativa sulla privacy ↗" onPress={() => Linking.openURL(PRIVACY_URL).catch(() => {})} styles={styles} />
+            <LinkRow label="Codice sorgente su GitHub ↗" onPress={() => Linking.openURL(REPO_URL).catch(() => {})} styles={styles} />
+            <Text style={styles.meta}>AlienHub {APP_VERSION} · gratuita e open source (licenza MIT)</Text>
+          </Section>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -397,6 +421,7 @@ const createStyles = (c) =>
     },
     headerTitle: { fontSize: 17, fontWeight: '700', color: c.text },
     headerAction: { fontSize: 16, color: c.primary, fontWeight: '600' },
+    fill: { flex: 1 },
     scroll: { backgroundColor: c.background },
     content: { padding: 16 },
     flex: { flex: 1 },

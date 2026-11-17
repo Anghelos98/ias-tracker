@@ -69,7 +69,7 @@ export default function WelcomeScreen({ visible, onDone }) {
   };
 
   return (
-    <Modal visible={visible} animationType="fade" onRequestClose={finish}>
+    <Modal visible={visible} animationType="fade" statusBarTranslucent navigationBarTranslucent onRequestClose={finish}>
       <View style={[styles.container, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]}>
         <View style={[styles.topRow, styles.padded]}>
           <Text style={styles.brand}>AlienHub</Text>

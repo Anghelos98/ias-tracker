@@ -240,7 +240,14 @@ export default function RegionReport({
   }
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={close}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={close}
+    >
       <View style={[styles.header, { paddingTop: 14 + topInset }]}>
         {region ? (
           <Pressable

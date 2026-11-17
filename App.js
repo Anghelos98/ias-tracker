@@ -915,7 +915,8 @@ function AlienHubApp() {
           'Per ricevere gli avvisi consenti le notifiche ad AlienHub nelle impostazioni del telefono.',
         );
       }
-    } catch {
+    } catch (e) {
+      console.warn('Avvisi delle novità non attivati:', e); // nel registro di diagnostica delle build di prova
       Alert.alert('Avvisi non disponibili', 'Non è stato possibile attivare il controllo in background.');
     }
   }, [news]);
