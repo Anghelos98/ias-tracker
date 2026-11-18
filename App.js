@@ -302,6 +302,8 @@ function AlienHubApp() {
   }, [area]);
 
   const { clusters, visibleCount, expansionZoom, leaves } = useClusters(datasets, region, filters, area);
+  // segnalazioni della specie scelta non ancora caricate: niente "0 segnalazioni" nella barra
+  const countPending = loading && !datasets;
   useEffect(() => {
     clustersRef.current = clusters;
   }, [clusters]);
@@ -351,6 +353,9 @@ function AlienHubApp() {
         setLoading(false); // un caricamento ancora in corso di un'altra specie non va più atteso
         return;
       }
+      // via i punti della specie precedente: mentre si carica la nuova, la barra superiore
+      // mostrava il suo nome con i punti (e il conteggio) dell'altra, o "0 segnalazioni"
+      setDatasets(null);
       setLoading(true);
       const started = Date.now();
       diag('specie', `${item.commonName}: caricamento`);
@@ -1208,7 +1213,9 @@ function AlienHubApp() {
               ? `Specie mostrata: ${topSpecies.commonName}, ${
                   topSpecies.total === 0
                     ? 'nessuna segnalazione in Italia'
-                    : `${visibleCount} segnalazioni${filtersActive ? ' con i filtri attivi' : ''}`
+                    : countPending
+                      ? 'caricamento delle segnalazioni'
+                      : `${visibleCount} segnalazioni${filtersActive ? ' con i filtri attivi' : ''}`
                 }`
               : 'Scegli una specie'
           }
@@ -1223,7 +1230,9 @@ function AlienHubApp() {
               <Text style={styles.italic}>{topSpecies.scientificName}</Text>
               {topSpecies.total === 0
                 ? ' · nessuna segnalazione in Italia'
-                : ` · ${visibleCount.toLocaleString('it-IT')} segnalazioni${area ? ` entro ${area.radiusM / 1000} km` : ''}`}
+                : countPending
+                  ? ' · caricamento…'
+                  : ` · ${visibleCount.toLocaleString('it-IT')} segnalazioni${area ? ` entro ${area.radiusM / 1000} km` : ''}`}
             </Text>
           )}
         </Pressable>

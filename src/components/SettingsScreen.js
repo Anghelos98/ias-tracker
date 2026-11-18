@@ -277,6 +277,16 @@ export default function SettingsScreen({
               value={notify}
               onChange={onToggleNotify}
               disabled={!canNotify && !notify}
+              onDisabledPress={() =>
+                Alert.alert(
+                  'Avvisi delle novità',
+                  'Gli avvisi riguardano solo le specie e le regioni che segui.\n\n' +
+                    'Per seguire una specie: apri la sua scheda e tocca «Segui questa specie».\n' +
+                    'Per seguire una regione: dall’elenco delle specie apri «Rapporto per regione», scegli la ' +
+                    'regione e tocca «Segui questa regione».\n\n' +
+                    'Poi torna qui e attiva gli avvisi.',
+                )
+              }
               styles={styles}
             />
           </Section>
@@ -387,7 +397,30 @@ function Choices({ options, value, onChange, label, styles }) {
   );
 }
 
-function SwitchRow({ title, description, value, onChange, disabled = false, styles }) {
+function SwitchRow({ title, description, value, onChange, disabled = false, onDisabledPress, styles }) {
+  if (disabled && onDisabledPress) {
+    // Interruttore disattivato: un tocco sulla riga (interruttore compreso) spiega perché,
+    // invece di non fare nulla. L'interruttore non riceve il tocco (pointerEvents) e per
+    // VoiceOver/TalkBack la riga è un unico elemento che legge titolo, stato e spiegazione.
+    return (
+      <Pressable
+        style={styles.switchRow}
+        onPress={onDisabledPress}
+        accessible
+        accessibilityRole="button"
+        accessibilityLabel={`${title}: non disponibile`}
+        accessibilityHint={description}
+      >
+        <View style={styles.flex}>
+          <Text style={[styles.rowTitle, styles.disabled]}>{title}</Text>
+          <Text style={styles.description}>{description}</Text>
+        </View>
+        <View pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+          <Switch value={value} disabled />
+        </View>
+      </Pressable>
+    );
+  }
   return (
     <View style={styles.switchRow}>
       <View style={styles.flex}>

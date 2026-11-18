@@ -244,6 +244,41 @@ describe.each(['light', 'dark'])('tema %s', (scheme) => {
     expect(screen.getByText('Aggiorna ora')).toBeTruthy();
   });
 
+  test('impostazioni: avvisi disattivati, il tocco spiega come attivarli', async () => {
+    const { Alert } = require('react-native');
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const onToggleNotify = jest.fn();
+    await render(
+      <SettingsScreen
+        visible
+        onClose={noop}
+        dataDate={null}
+        updating={false}
+        onUpdateNow={noop}
+        onClearData={noop}
+        mapType="standard"
+        onChangeMapType={noop}
+        showGrid={false}
+        onToggleGrid={noop}
+        filtersSummary=""
+        onResetFilters={noop}
+        theme="auto"
+        onChangeTheme={noop}
+        signature=""
+        onChangeSignature={noop}
+        notify={false}
+        canNotify={false}
+        onToggleNotify={onToggleNotify}
+        onOpenWelcome={noop}
+      />,
+    );
+    fireEvent.press(screen.getByLabelText('Avvisi delle novità: non disponibile'));
+    expect(alert).toHaveBeenCalledTimes(1);
+    expect(alert.mock.calls[0][1]).toMatch(/Segui questa specie/);
+    expect(onToggleNotify).not.toHaveBeenCalled();
+    alert.mockRestore();
+  });
+
   test('novità e specie seguite', async () => {
     const news = {
       settimane: [
